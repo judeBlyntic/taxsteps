@@ -1,0 +1,23 @@
+# Supabase CLI config for Tax Steps. Remote project ref: fqqxiousojmmlqxozxza (TaxSteps, ap-southeast-2).
+# Apply auth settings to the remote project with: npx supabase config push
+project_id = "taxsteps"
+
+[api]
+max_rows = 1000
+
+[auth]
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000/**", "taxsteps://**", "exp://**"]
+minimum_password_length = 8
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = true
+
+# The OAuth callback from Google carries no Supabase JWT; the function verifies a signed state instead.
+[functions.google-sheets]
+verify_jwt = false
+
+[functions.export-documents]
+static_files = ["./functions/export-documents/fonts/*.ttf"]
