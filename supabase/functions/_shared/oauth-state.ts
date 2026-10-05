@@ -27,8 +27,12 @@ export async function verifyState(token: string, secret: string, now: number = D
   return s
 }
 
-/** Only our web app, our mobile scheme, or Expo Go (development) may receive the user back. */
-export function isAllowedReturn(ret: string, env: { webUrl: string; mobileScheme: string }): boolean {
+/**
+ * Only our web app or our app's URL scheme may receive the user (and the authorization code)
+ * back. Expo Go URLs (exp://) can point at any dev server, so they're allowed only when
+ * explicitly enabled for local development.
+ */
+export function isAllowedReturn(ret: string, env: { webUrl: string; mobileScheme: string; allowExpoGo?: boolean }): boolean {
   const web = env.webUrl.replace(/\/+$/, '')
-  return ret === web || ret.startsWith(`${web}/`) || ret.startsWith(`${env.mobileScheme}://`) || ret.startsWith('exp://')
+  return ret === web || ret.startsWith(`${web}/`) || ret.startsWith(`${env.mobileScheme}://`) || (env.allowExpoGo === true && ret.startsWith('exp://'))
 }

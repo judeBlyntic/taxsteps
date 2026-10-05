@@ -66,6 +66,7 @@ export async function deleteAccount(c: TaxStepsClient): Promise<void> {
 export type SheetsRequest =
   | { action: 'status' }
   | { action: 'start'; returnTo: string }
+  | { action: 'complete'; code: string; state: string }
   | { action: 'list-spreadsheets' }
   | { action: 'create-spreadsheet'; title: string }
   | { action: 'list-worksheets'; spreadsheetId: string }

@@ -22,6 +22,7 @@ export type ConnectionStore = {
 }
 export type SheetsEnv = {
   clientId: string; clientSecret: string; redirectUri: string; tokenKey: string; stateSecret: string; webUrl: string; mobileScheme: string
+  allowExpoGo?: boolean
 }
 export type SheetsDeps = {
   requireUser: (req: Request) => Promise<UserContext>
@@ -39,6 +40,7 @@ const Title = z.string().trim().min(1).max(100)
 export const SheetsRequestSchema = z.discriminatedUnion('action', [
   z.object({ action: z.literal('status') }),
   z.object({ action: z.literal('start'), returnTo: z.string().max(500) }),
+  z.object({ action: z.literal('complete'), code: z.string().min(1).max(2000), state: z.string().min(1).max(4000) }),
   z.object({ action: z.literal('list-spreadsheets') }),
   z.object({ action: z.literal('create-spreadsheet'), title: Title }),
   z.object({ action: z.literal('list-worksheets'), spreadsheetId: z.string().min(1).max(200) }),
@@ -51,29 +53,39 @@ export type SheetsRequest = z.infer<typeof SheetsRequestSchema>
 const redirect = (location: string) => new Response(null, { status: 302, headers: { Location: location, 'Cache-Control': 'no-store' } })
 const withParam = (url: string, value: 'connected' | 'error') => `${url}${url.includes('?') ? '&' : '?'}sheets=${value}`
 
+/**
+ * Google redirects here (no Supabase session). We only verify the signed state and relay the
+ * code back to our own app; the signed-in app then calls `complete`, which links the Google
+ * account only if the state was issued to that same user (prevents OAuth CSRF / account linking).
+ */
 async function callback(req: Request, deps: SheetsDeps): Promise<Response> {
   const { env } = deps
   const params = new URL(req.url).searchParams
   const fallback = `${env.webUrl.replace(/\/+$/, '')}/settings`
-  let ret = fallback
   try {
-    const state = await verifyState(params.get('state') ?? '', env.stateSecret, deps.now?.())
-    if (isAllowedReturn(state.ret, env)) ret = state.ret
+    const stateToken = params.get('state') ?? ''
+    const state = await verifyState(stateToken, env.stateSecret, deps.now?.())
+    if (!isAllowedReturn(state.ret, env)) return redirect(withParam(fallback, 'error'))
     const code = params.get('code')
-    if (!code || params.get('error')) return redirect(withParam(ret, 'error'))
-    const tokens = await G.exchangeCode(deps.fetch, code, env)
-    if (!tokens.refresh_token) return redirect(withParam(ret, 'error'))
-    await deps.connections(state.uid).upsert({
-      google_email: G.emailFromIdToken(tokens.id_token),
-      refresh_token_enc: await encryptToken(tokens.refresh_token, env.tokenKey),
-      default_spreadsheet_id: null,
-      default_sheet_name: null,
-    })
-    return redirect(withParam(ret, 'connected'))
+    if (!code || params.get('error')) return redirect(withParam(state.ret, 'error'))
+    const sep = state.ret.includes('?') ? '&' : '?'
+    return redirect(`${state.ret}${sep}${new URLSearchParams({ sheets_code: code, sheets_state: stateToken })}`)
   } catch {
-    console.error(JSON.stringify({ fn: 'google-sheets', code: 'CALLBACK_FAILED' }))
-    return redirect(withParam(ret, 'error'))
+    return redirect(withParam(fallback, 'error'))
   }
+}
+
+async function complete(user: UserContext, code: string, stateToken: string, deps: SheetsDeps, store: ConnectionStore) {
+  const state = await verifyState(stateToken, deps.env.stateSecret, deps.now?.())
+  if (state.uid !== user.userId) throw new AppError('UNAUTHORIZED')
+  const tokens = await G.exchangeCode(deps.fetch, code, deps.env)
+  if (!tokens.refresh_token) throw new AppError('SHEETS_AUTH_EXPIRED')
+  await store.upsert({
+    google_email: G.emailFromIdToken(tokens.id_token),
+    refresh_token_enc: await encryptToken(tokens.refresh_token, deps.env.tokenKey),
+    default_spreadsheet_id: null,
+    default_sheet_name: null,
+  })
 }
 
 export async function handleSheets(req: Request, deps: SheetsDeps): Promise<Response> {
@@ -103,6 +115,11 @@ export async function handleSheets(req: Request, deps: SheetsDeps): Promise<Resp
       if (!isAllowedReturn(body.returnTo, env)) throw new AppError('VALIDATION', 'Invalid return address')
       const state = await signState({ uid: user.userId, nonce: crypto.randomUUID(), exp: (deps.now?.() ?? Date.now()) + 10 * 60_000, ret: body.returnTo }, env.stateSecret)
       return json({ url: G.authUrl({ clientId: env.clientId, redirectUri: env.redirectUri, state }) }, { origin })
+    }
+
+    if (body.action === 'complete') {
+      await complete(user, body.code, body.state, deps, store)
+      return json({ connected: true }, { origin })
     }
 
     const row = await store.get()

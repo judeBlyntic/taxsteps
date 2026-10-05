@@ -8,6 +8,7 @@ import { deleteDocument, listDocuments, saveDocument } from './documents.ts'
 import { getProfile, updateProfile } from './profile.ts'
 import { subscribeToUserChanges, type SyncState } from './realtime.ts'
 import { getSummary } from './summary.ts'
+import { sheets, type SheetsStatus } from './functions.ts'
 
 export const qk = {
   profile: ['profile'] as const,
@@ -16,6 +17,7 @@ export const qk = {
   documents: (f: DocumentFilter) => ['documents', f] as const,
   summaryRoot: ['summary'] as const,
   summary: (r: DateRange | null, f: DocumentFilter) => ['summary', r, f] as const,
+  sheetsStatus: ['sheets-status'] as const,
 }
 
 export function invalidateDocuments(qc: QueryClient) {
@@ -95,4 +97,9 @@ export function useRealtimeSync(userId: string | null): SyncState {
     }, setState)
   }, [c, qc, userId])
   return state
+}
+
+export function useSheetsStatus() {
+  const c = useClient()
+  return useQuery({ queryKey: qk.sheetsStatus, queryFn: () => sheets<SheetsStatus>(c, { action: 'status' }), staleTime: 60_000, retry: false })
 }

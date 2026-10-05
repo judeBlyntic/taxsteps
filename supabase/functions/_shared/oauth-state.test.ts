@@ -23,7 +23,8 @@ Deno.test('state: rejects tampering, wrong secret and expiry', async () => {
 Deno.test('state: only our own return targets are allowed', () => {
   assertEquals(isAllowedReturn('http://localhost:3000/settings', env), true)
   assertEquals(isAllowedReturn('taxsteps://sheets', env), true)
-  assertEquals(isAllowedReturn('exp://192.168.1.5:8081/--/sheets', env), true)
+  assertEquals(isAllowedReturn('exp://192.168.1.5:8081/--/sheets', env), false) // attacker-hostable
+  assertEquals(isAllowedReturn('exp://192.168.1.5:8081/--/sheets', { ...env, allowExpoGo: true }), true) // dev only
   assertEquals(isAllowedReturn('https://evil.com', env), false)
   assertEquals(isAllowedReturn('http://localhost:3000.evil.com/x', env), false)
   assertEquals(isAllowedReturn('javascript:alert(1)', env), false)

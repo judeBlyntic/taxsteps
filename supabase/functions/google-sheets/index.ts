@@ -35,6 +35,7 @@ Deno.serve((req) =>
       stateSecret: Deno.env.get('OAUTH_STATE_SECRET') ?? '',
       webUrl: Deno.env.get('APP_WEB_URL') ?? 'http://localhost:3000',
       mobileScheme: Deno.env.get('APP_MOBILE_SCHEME') ?? 'taxsteps',
+      allowExpoGo: Deno.env.get('APP_ALLOW_EXPO_GO') === 'true', // local development only
     },
   })
 )

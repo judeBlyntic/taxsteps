@@ -91,25 +91,38 @@ Deno.test('sheets start: rejects foreign return targets', async () => {
   assertEquals((await handleSheets(post({ action: 'start', returnTo: 'https://evil.com' }), deps())).status, 400)
 })
 
-Deno.test('sheets callback: stores an encrypted refresh token and returns to the app', async () => {
+Deno.test('sheets callback: relays the code to the app without storing anything', async () => {
+  const mem = memoryStore()
+  const g = google()
+  const state = await signState({ uid: 'u1', nonce: 'n', exp: NOW + 60_000, ret: 'http://localhost:3000/settings' }, env.stateSecret)
+  const res = await handleSheets(new Request(`https://x/functions/v1/google-sheets/callback?code=abc&state=${state}`), deps({}, mem, g))
+  assertEquals(res.status, 302)
+  const loc = new URL(res.headers.get('location')!)
+  assertEquals(loc.origin + loc.pathname, 'http://localhost:3000/settings')
+  assertEquals(loc.searchParams.get('sheets_code'), 'abc')
+  assertEquals(loc.searchParams.get('sheets_state'), state)
+  assertEquals(mem.log, [])
+  assertEquals(g.calls.length, 0) // no token exchange in the unauthenticated callback
+})
+
+Deno.test('sheets complete: the signed-in user who started the flow gets an encrypted token', async () => {
   const mem = memoryStore()
   const state = await signState({ uid: 'u1', nonce: 'n', exp: NOW + 60_000, ret: 'http://localhost:3000/settings' }, env.stateSecret)
-  const res = await handleSheets(new Request(`https://x/functions/v1/google-sheets/callback?code=abc&state=${state}`), deps({}, mem))
-  assertEquals(res.status, 302)
-  assertEquals(res.headers.get('location'), 'http://localhost:3000/settings?sheets=connected')
+  const res = await handleSheets(post({ action: 'complete', code: 'abc', state }), deps({}, mem))
+  assertEquals(res.status, 200)
   assert(mem.row && mem.row.refresh_token_enc !== 'rt-secret')
   assertEquals(await decryptToken(mem.row!.refresh_token_enc, KEY), 'rt-secret')
   assertEquals(mem.row!.google_email, 'me@gmail.com')
 })
 
-Deno.test('sheets callback: bad state or denied consent stores nothing', async () => {
+Deno.test("sheets complete: someone else's connect link can't link into their account (OAuth CSRF)", async () => {
   const mem = memoryStore()
-  const bad = await handleSheets(new Request('https://x/functions/v1/google-sheets/callback?code=abc&state=forged.sig'), deps({}, mem))
-  assertEquals(bad.headers.get('location'), 'http://localhost:3000/settings?sheets=error')
-  const state = await signState({ uid: 'u1', nonce: 'n', exp: NOW + 60_000, ret: 'taxsteps://sheets' }, env.stateSecret)
-  const denied = await handleSheets(new Request(`https://x/functions/v1/google-sheets/callback?error=access_denied&state=${state}`), deps({}, mem))
-  assertEquals(denied.headers.get('location'), 'taxsteps://sheets?sheets=error')
+  const g = google()
+  const attackerState = await signState({ uid: 'attacker', nonce: 'n', exp: NOW + 60_000, ret: 'http://localhost:3000/settings' }, env.stateSecret)
+  const res = await handleSheets(post({ action: 'complete', code: 'victim-code', state: attackerState }), deps({}, mem, g)) // signed in as u1
+  assertEquals(res.status, 401)
   assertEquals(mem.log, [])
+  assertEquals(g.calls.length, 0)
 })
 
 Deno.test('sheets export: header + rows appended as RAW values', async () => {
