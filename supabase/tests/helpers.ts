@@ -24,7 +24,7 @@ export function anonClient(): TaxStepsClient {
   return createClient<Database>(env('SUPABASE_URL'), env('SUPABASE_ANON_KEY'), noSession)
 }
 
-export type TestUser = { client: TaxStepsClient; userId: string; email: string }
+export type TestUser = { client: TaxStepsClient; userId: string; email: string; password: string }
 
 export async function createTestUser(meta: Record<string, unknown> = {}): Promise<TestUser> {
   const email = `test+${randomUUID()}@taxsteps.test`
@@ -34,7 +34,7 @@ export async function createTestUser(meta: Record<string, unknown> = {}): Promis
   const client = anonClient()
   const signIn = await client.auth.signInWithPassword({ email, password })
   if (signIn.error) throw signIn.error
-  return { client, userId: data.user.id, email }
+  return { client, userId: data.user.id, email, password }
 }
 
 export async function deleteTestUser(userId: string): Promise<void> {
@@ -49,4 +49,12 @@ export function input(overrides: Partial<DocumentInput> = {}): DocumentInput {
     transaction_date: '2026-09-25', invoice_number: '548921', payment_method: 'Visa', status: 'complete', source: 'manual',
     metadata: {}, ...overrides,
   }
+}
+
+/** A second, independent session for the same user (e.g. "phone" and "web"). */
+export async function signInAgain(u: TestUser): Promise<TaxStepsClient> {
+  const client = anonClient()
+  const { error } = await client.auth.signInWithPassword({ email: u.email, password: u.password })
+  if (error) throw error
+  return client
 }
