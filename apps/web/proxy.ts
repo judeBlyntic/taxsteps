@@ -1,9 +1,9 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const PUBLIC_PATHS = ['/sign-in', '/sign-up', '/forgot-password', '/reset-password', '/auth/']
+const PUBLIC_PATHS = ['/home', '/sign-in', '/sign-up', '/forgot-password', '/reset-password', '/auth/']
 
-/** Refreshes the Supabase session cookie and sends signed-out visitors to /sign-in. */
+/** Refreshes the Supabase session cookie, shows signed-out visitors the website at / and sends them to /sign-in elsewhere. */
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request })
   const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
@@ -22,6 +22,11 @@ export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname
   const isPublic = PUBLIC_PATHS.some((p) => path === p || path.startsWith(p))
 
+  if (!signedIn && path === '/') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/home' // the public website; the address bar keeps '/'
+    return NextResponse.rewrite(url)
+  }
   if (!signedIn && !isPublic) {
     const url = request.nextUrl.clone()
     url.pathname = '/sign-in'
