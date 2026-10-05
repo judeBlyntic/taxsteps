@@ -17,20 +17,38 @@ async function call<T>(f: Fetch, url: string, init: RequestInit = {}): Promise<T
 }
 
 const bearer = (token: string, extra: Record<string, string> = {}) => ({ Authorization: `Bearer ${token}`, ...extra })
+const b64url = (bytes: ArrayBuffer) => btoa(String.fromCharCode(...new Uint8Array(bytes))).replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_')
 
-export function authUrl(p: { clientId: string; redirectUri: string; state: string }): string {
+/**
+ * PKCE verifier derived from the flow's state nonce with a server-only secret, so each
+ * authorization code can only be redeemed together with the state that started its flow
+ * (blocks authorization-code injection) without storing anything server-side.
+ */
+export async function pkceVerifier(nonce: string, secret: string): Promise<string> {
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
+  return b64url(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(`pkce:${nonce}`)))
+}
+
+export async function pkceChallenge(verifier: string): Promise<string> {
+  return b64url(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)))
+}
+
+export function authUrl(p: { clientId: string; redirectUri: string; state: string; codeChallenge: string }): string {
   const q = new URLSearchParams({
     client_id: p.clientId, redirect_uri: p.redirectUri, response_type: 'code', scope: SCOPES.join(' '),
     access_type: 'offline', prompt: 'consent', include_granted_scopes: 'true', state: p.state,
+    code_challenge: p.codeChallenge, code_challenge_method: 'S256',
   })
   return `https://accounts.google.com/o/oauth2/v2/auth?${q}`
 }
 
-export function exchangeCode(f: Fetch, code: string, cfg: Cfg) {
+export function exchangeCode(f: Fetch, code: string, codeVerifier: string, cfg: Cfg) {
   return call<{ access_token: string; refresh_token?: string; id_token?: string }>(f, 'https://oauth2.googleapis.com/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ code, client_id: cfg.clientId, client_secret: cfg.clientSecret, redirect_uri: cfg.redirectUri, grant_type: 'authorization_code' }).toString(),
+    body: new URLSearchParams({
+      code, code_verifier: codeVerifier, client_id: cfg.clientId, client_secret: cfg.clientSecret, redirect_uri: cfg.redirectUri, grant_type: 'authorization_code',
+    }).toString(),
   })
 }
 

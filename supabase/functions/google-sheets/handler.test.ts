@@ -185,3 +185,41 @@ Deno.test('sheets: clear message when Google credentials are not configured', as
   const status = await (await handleSheets(post({ action: 'status' }), deps({ env: { ...env, clientId: '' } }))).json() as { configured: boolean }
   assertEquals(status.configured, false)
 })
+
+Deno.test('sheets PKCE: a code can only be redeemed with the state that started its flow', async () => {
+  const { pkceChallenge, pkceVerifier } = await import('./google.ts')
+  // Victim starts a flow; Google binds the issued code to the victim's code_challenge.
+  const victimStart = await (await handleSheets(post({ action: 'start', returnTo: 'http://localhost:3000/settings' }), deps())).json() as { url: string }
+  const challenge = new URL(victimStart.url).searchParams.get('code_challenge')
+  assertEquals(new URL(victimStart.url).searchParams.get('code_challenge_method'), 'S256')
+  const victimState = await verifyState(new URL(victimStart.url).searchParams.get('state')!, env.stateSecret, NOW)
+  assertEquals(challenge, await pkceChallenge(await pkceVerifier(victimState.nonce, env.stateSecret)))
+
+  // Google mock: only accepts the verifier matching the code's challenge.
+  const sent: string[] = []
+  const strict: typeof fetch = async (input, init) => {
+    const url = String(input)
+    if (url.startsWith('https://oauth2.googleapis.com/token')) {
+      const verifier = new URLSearchParams(String(init?.body)).get('code_verifier') ?? ''
+      sent.push(verifier)
+      const ok = (await pkceChallenge(verifier)) === challenge
+      return new Response(JSON.stringify(ok ? { access_token: 'at', refresh_token: 'victim-rt', id_token: idToken({ email: 'victim@gmail.com' }) } : { error: 'invalid_grant' }), { status: ok ? 200 : 400 })
+    }
+    return new Response('{}', { status: 500 })
+  }
+
+  // Attacker steals the victim's code and redeems it with their OWN valid state.
+  const attackerStore = memoryStore()
+  const attackerState = await signState({ uid: 'attacker', nonce: 'attacker-nonce', exp: NOW + 60_000, ret: 'http://localhost:3000/settings' }, env.stateSecret)
+  const res = await handleSheets(post({ action: 'complete', code: 'victim-code', state: attackerState }), deps({
+    requireUser: () => Promise.resolve({ userId: 'attacker', email: null, client: {} as never }), fetch: strict,
+  }, attackerStore))
+  assertEquals(res.status, 409) // invalid_grant → SHEETS_AUTH_EXPIRED
+  assertEquals(attackerStore.log, [])
+
+  // The real victim completes with their own state and it works.
+  const victimStore = memoryStore()
+  const ok = await handleSheets(post({ action: 'complete', code: 'victim-code', state: new URL(victimStart.url).searchParams.get('state')! }), deps({ fetch: strict }, victimStore))
+  assertEquals(ok.status, 200)
+  assertEquals(victimStore.row?.google_email, 'victim@gmail.com')
+})

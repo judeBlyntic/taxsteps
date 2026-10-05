@@ -78,7 +78,7 @@ async function callback(req: Request, deps: SheetsDeps): Promise<Response> {
 async function complete(user: UserContext, code: string, stateToken: string, deps: SheetsDeps, store: ConnectionStore) {
   const state = await verifyState(stateToken, deps.env.stateSecret, deps.now?.())
   if (state.uid !== user.userId) throw new AppError('UNAUTHORIZED')
-  const tokens = await G.exchangeCode(deps.fetch, code, deps.env)
+  const tokens = await G.exchangeCode(deps.fetch, code, await G.pkceVerifier(state.nonce, deps.env.stateSecret), deps.env)
   if (!tokens.refresh_token) throw new AppError('SHEETS_AUTH_EXPIRED')
   await store.upsert({
     google_email: G.emailFromIdToken(tokens.id_token),
@@ -113,8 +113,10 @@ export async function handleSheets(req: Request, deps: SheetsDeps): Promise<Resp
 
     if (body.action === 'start') {
       if (!isAllowedReturn(body.returnTo, env)) throw new AppError('VALIDATION', 'Invalid return address')
-      const state = await signState({ uid: user.userId, nonce: crypto.randomUUID(), exp: (deps.now?.() ?? Date.now()) + 10 * 60_000, ret: body.returnTo }, env.stateSecret)
-      return json({ url: G.authUrl({ clientId: env.clientId, redirectUri: env.redirectUri, state }) }, { origin })
+      const nonce = crypto.randomUUID()
+      const state = await signState({ uid: user.userId, nonce, exp: (deps.now?.() ?? Date.now()) + 10 * 60_000, ret: body.returnTo }, env.stateSecret)
+      const codeChallenge = await G.pkceChallenge(await G.pkceVerifier(nonce, env.stateSecret))
+      return json({ url: G.authUrl({ clientId: env.clientId, redirectUri: env.redirectUri, state, codeChallenge }) }, { origin })
     }
 
     if (body.action === 'complete') {
