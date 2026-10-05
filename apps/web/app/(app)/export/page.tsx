@@ -37,7 +37,7 @@ function ExportView() {
   const label = range === 'selected' ? `${ids.length} selected documents` : periodLabel(spec, fy, locale)
   const filter: DocumentFilter = range === 'selected' ? { ids } : {
     ...(dates ?? {}),
-    ...(excluded.size ? { categoryIds: active.filter((c) => !excluded.has(c.id)).map((c) => c.id) } : {}),
+    ...(excluded.size ? { excludeCategoryIds: [...excluded] } : {}), // uncategorised documents always stay in
   }
   const invalid = range === 'custom' && !dates
 

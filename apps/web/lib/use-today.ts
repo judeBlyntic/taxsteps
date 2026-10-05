@@ -1,6 +1,6 @@
 'use client'
 import { useMemo } from 'react'
-import { regionFor, todayIn, type Profile } from '@taxsteps/core'
+import { regionFor, todayIn, uiLocale, type Profile } from '@taxsteps/core'
 import { useProfile } from '@taxsteps/data'
 
 /** Today's calendar date in the user's profile timezone, plus profile-derived display settings. */
@@ -18,7 +18,7 @@ export function useToday(): {
     return {
       today: todayIn(tz),
       profile,
-      locale: profile?.locale ?? 'en-US',
+      locale: uiLocale(profile?.locale),
       currency: profile?.currency ?? 'USD',
       taxLabel: regionFor(profile?.country).taxLabel,
       fy: { fyStartMonth: profile?.fy_start_month ?? 1, fyStartDay: profile?.fy_start_day ?? 1 },

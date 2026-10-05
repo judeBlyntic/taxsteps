@@ -138,7 +138,13 @@ export const ProfileUpdateSchema = z.object({
   country: z.string().regex(/^[A-Z]{2}$/).nullable(),
   currency: z.string().regex(/^[A-Z]{3}$/),
   timezone: z.string().min(1).max(64),
-  locale: z.string().min(2).max(35),
+  locale: z.string().min(2).max(35).refine((l) => {
+    try {
+      return Intl.getCanonicalLocales(l).length === 1 && Boolean(new Intl.NumberFormat(l))
+    } catch {
+      return false
+    }
+  }, 'Use a locale like en-NZ or en-US'),
   fy_start_month: z.number().int().min(1).max(12),
   fy_start_day: z.number().int().min(1).max(31),
 }).partial()

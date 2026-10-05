@@ -16,12 +16,19 @@ function decimalSeparator(locale: string): string {
   return new Intl.NumberFormat(locale).formatToParts(1.1).find((p) => p.type === 'decimal')?.value ?? '.'
 }
 
-/** Parses a user-typed amount ("$87.45", "1.234,56") into cents, or null if it isn't a clean amount. */
+/**
+ * Parses a user-typed amount ("$87.45", "87.45 NZD", "1.234,56") into cents, or null if it
+ * isn't a clean amount. Currency text is only allowed before/after the number; anything else
+ * (letters inside, negatives, brackets) is rejected rather than guessed.
+ */
 export function parseAmount(input: string, locale: string = DEFAULT_LOCALE): number | null {
-  if (input.includes('-')) return null
-  // Drop currency symbols/letters and every kind of space or apostrophe used for grouping.
-  const s = input.replace(/[^\d.,]/g, '')
-  if (!s) return null
+  if (/[-\u2212(]/.test(input)) return null // negatives (incl. U+2212 minus) and accounting brackets
+  const s = input
+    .trim()
+    .replace(/^[^\d.,]+/, '') // leading currency symbol/code
+    .replace(/[^\d.,]+$/, '') // trailing currency code
+    .replace(/[\s\u00a0\u202f'\u2019]/g, '') // grouping spaces (incl. narrow no-break) and apostrophes
+  if (!s || /[^\d.,]/.test(s)) return null
 
   const dec = decimalSeparator(locale) === ',' ? ',' : '.'
   const group = dec === '.' ? ',' : '.'

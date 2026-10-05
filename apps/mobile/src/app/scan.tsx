@@ -9,7 +9,8 @@ import { COPY, draftFromExtraction, toUserMessage } from '@taxsteps/core'
 import { useQueryClient } from '@tanstack/react-query'
 import { extractDocument, getProfile, listCategories, qk, useClient } from '@taxsteps/data'
 import { Banner, Button, H, Screen, T } from '@/components/ui'
-import { prepareCapture } from '@/lib/capture'
+import { discardUri, prepareCapture } from '@/lib/capture'
+import { withTempFile } from '@/lib/temp-file'
 import { setPendingDraft } from '@/lib/draft-store'
 import { colors, shadow } from '@/lib/theme'
 import { useOfflineQueue } from '@/lib/use-offline-queue'
@@ -47,7 +48,11 @@ export default function ScanScreen() {
   const [torch, setTorch] = useState(false)
   const [phase, setPhase] = useState<Phase>({ kind: 'camera' })
 
-  async function process(uri: string, width: number | undefined, height: number | undefined, source: 'scan' | 'upload') {
+  // The photo is deleted however this ends: success, offline, or an error before processing starts.
+  const process = (uri: string, width: number | undefined, height: number | undefined, source: 'scan' | 'upload') =>
+    withTempFile(uri, discardUri, () => processPhoto(uri, width, height, source))
+
+  async function processPhoto(uri: string, width: number | undefined, height: number | undefined, source: 'scan' | 'upload') {
     if (!isOnline) return setPhase({ kind: 'error', message: toUserMessage(new TypeError('Network request failed')) })
     setPhase({ kind: 'working', step: 0 })
     try {

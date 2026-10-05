@@ -35,7 +35,7 @@ export default function ReportsPage() {
   const activeCats = (categories ?? []).filter((c) => !c.archived)
   const filter: DocumentFilter = {
     ...(range ?? {}),
-    ...(excluded.size ? { categoryIds: activeCats.filter((c) => !excluded.has(c.id)).map((c) => c.id) } : {}),
+    ...(excluded.size ? { excludeCategoryIds: [...excluded] } : {}), // uncategorised documents always stay in
     ...(type !== 'all' ? { expenseType: type } : {}),
   }
   const summary = useSummary(range, { ...filter, from: undefined, to: undefined })

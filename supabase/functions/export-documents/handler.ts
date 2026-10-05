@@ -1,7 +1,7 @@
 // POST { format, filter, label } → { filename, contentType, base64 }.
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { encodeBase64 } from '@std/encoding'
-import { EXPORT_HEADERS, ExportRequestSchema, exportRow, toCsv, type DocumentFilter, type ExportDoc } from '../_shared/core.ts'
+import { EXPORT_HEADERS, ExportRequestSchema, exportRow, toCsv, uiLocale, type DocumentFilter, type ExportDoc } from '../_shared/core.ts'
 import type { UserContext } from '../_shared/auth.ts'
 import { errorResponse, json, preflight, readJson, requirePost } from '../_shared/http.ts'
 import type { ExportContext } from './context.ts'
@@ -39,7 +39,7 @@ export async function handleExport(req: Request, deps: ExportDeps): Promise<Resp
 
     const [docs, profile] = await Promise.all([deps.fetchExportDocs(user.client, body.filter), deps.getProfile(user)])
     const ctx: ExportContext = {
-      label: body.label, businessName: profile.business_name, timeZone: profile.timezone, locale: profile.locale,
+      label: body.label, businessName: profile.business_name, timeZone: profile.timezone, locale: uiLocale(profile.locale),
       generatedAt: deps.now?.() ?? new Date(),
     }
 

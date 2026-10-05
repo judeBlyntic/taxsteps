@@ -1,6 +1,6 @@
 // Review-form state shared by web and mobile: build a draft from an extraction or
 // a saved row, then validate it into a DocumentInput on Save.
-import { formatDate, parseUserDate, type ISODate } from './dates.ts'
+import { formatDate, parseUserDate, uiLocale, type ISODate } from './dates.ts'
 import { formatAmountInput, parseAmount, toCents } from './money.ts'
 import { checkTaxRate, regionFor } from './regions.ts'
 import { EXTRACTION_FIELDS, FIELD_KEYS, type FieldKey } from './registry.ts'
@@ -37,7 +37,7 @@ const amountText = (v: number | null | undefined, locale: string) =>
 
 export function emptyDraft(ctx: DraftContext): Draft {
   const values = blankValues()
-  values.transaction_date = formatDate(ctx.today, ctx.profile.locale)
+  values.transaction_date = formatDate(ctx.today, uiLocale(ctx.profile.locale))
   values.currency = ctx.profile.currency
   values.tax_label = regionFor(ctx.profile.country).taxLabel
   values.document_type = 'receipt'
@@ -47,7 +47,7 @@ export function emptyDraft(ctx: DraftContext): Draft {
 export function draftFromExtraction(res: ExtractionResponse, ctx: DraftContext, source: 'scan' | 'upload'): Draft {
   const base = emptyDraft(ctx)
   const f = res.fields
-  const locale = ctx.profile.locale
+  const locale = uiLocale(ctx.profile.locale)
   const category = f.category
     ? ctx.categories.find((c) => !c.archived && c.name.toLowerCase() === f.category!.toLowerCase())
     : undefined
@@ -81,7 +81,7 @@ function statusFor(amountCents: number, taxCents: number | null, categoryId: str
 }
 
 export function draftFromRow(row: DocumentRow, ctx: DraftContext): Draft {
-  const locale = ctx.profile.locale
+  const locale = uiLocale(ctx.profile.locale)
   const subtotal = typeof row.metadata.subtotal === 'number' ? row.metadata.subtotal : null
   const values: Record<FieldKey, string> = {
     merchant_name: row.merchant_name,
@@ -109,7 +109,7 @@ const opt = (s: string) => (s.trim() ? s.trim() : null)
 
 export function draftToInput(draft: Draft, ctx: DraftContext): DraftResult {
   const v = draft.values
-  const locale = ctx.profile.locale
+  const locale = uiLocale(ctx.profile.locale)
   const errors: Partial<Record<FieldKey, string>> = {}
   const example = formatAmountInput(8745, locale)
 

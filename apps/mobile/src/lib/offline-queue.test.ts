@@ -100,3 +100,32 @@ describe('flush guard', () => {
     expect((await q.list()).map((i) => [i.input.id, i.attempts])).toEqual([[U('b'), 0], [U('c'), 0]])
   })
 })
+
+describe('queue concurrency (review #2)', () => {
+  const slow = () => new Promise((r) => setTimeout(r, 20))
+  it('keeps an expense queued while a flush is in flight', async () => {
+    const q = createOfflineQueue(memKV())
+    await q.enqueue(inp('a'))
+    const flushing = q.flush(async () => { await slow() })
+    await q.enqueue(inp('b')) // user saves while offline-flush is running
+    await flushing
+    expect((await q.list()).map((i) => i.input.id)).toEqual([U('b')])
+  })
+  it('keeps a newer edit of an item that was being flushed', async () => {
+    const q = createOfflineQueue(memKV())
+    await q.enqueue(inp('a'))
+    const flushing = q.flush(async () => { await slow() })
+    await q.enqueue(inp('a', { merchant_name: 'Edited later' }))
+    await flushing
+    expect((await q.list()).map((i) => i.input.merchant_name)).toEqual(['Edited later'])
+  })
+  it('does not save the same item twice when flushes overlap', async () => {
+    const q = createOfflineQueue(memKV())
+    await q.enqueue(inp('a'))
+    let saves = 0
+    const save = async () => { saves++; await slow() }
+    await Promise.all([q.flush(save), q.flush(save)])
+    expect(saves).toBe(1)
+    expect(await q.list()).toEqual([])
+  })
+})

@@ -1,6 +1,6 @@
 'use client'
 import { useState, type FormEvent } from 'react'
-import { CURRENCIES, FALLBACK_REGION, TAX_REGIONS, regionFor, toUserMessage, type Profile } from '@taxsteps/core'
+import { CURRENCIES, FALLBACK_REGION, ProfileUpdateSchema, TAX_REGIONS, regionFor, toUserMessage, type Profile } from '@taxsteps/core'
 import { useUpdateProfile } from '@taxsteps/data'
 import { SelectField, TextField } from '@/components/ui/Field'
 import { useToast } from '@/components/ui/Toast'
@@ -56,10 +56,13 @@ export function RegionCard({ profile }: { profile: Profile }) {
       : { ...f, country: code, currency: r.currency, fy_start_month: r.fyStartMonth, fy_start_day: r.fyStartDay })
   }
 
+  const localeError = ProfileUpdateSchema.shape.locale.safeParse(form.locale.trim()).success ? null : 'Use a locale like en-NZ, en-US or de-DE'
+
   async function save(e: FormEvent) {
     e.preventDefault()
+    if (localeError) return
     try {
-      await update.mutateAsync({ ...form, country: form.country === FALLBACK_REGION.country ? null : form.country })
+      await update.mutateAsync({ ...form, locale: form.locale.trim(), country: form.country === FALLBACK_REGION.country ? null : form.country })
       toast.show('Region settings saved')
     } catch (err) {
       toast.show(toUserMessage(err), 'error')
@@ -87,7 +90,7 @@ export function RegionCard({ profile }: { profile: Profile }) {
           {Array.from({ length: 31 }, (_, i) => <option key={i} value={i + 1}>{i + 1}</option>)}
         </SelectField>
         <TextField label="Number & date format" className="full" value={form.locale} maxLength={35}
-          onChange={(e) => setForm({ ...form, locale: e.target.value })} note={<span className="muted">e.g. en-NZ, en-US, de-DE</span>} />
+          onChange={(e) => setForm({ ...form, locale: e.target.value })} error={localeError} note={<span className="muted">e.g. en-NZ, en-US, de-DE</span>} />
       </div>
       <p className="muted" style={{ margin: 0, fontSize: 13 }}>Tax is labelled “{region.taxLabel}” for this country.</p>
       <button className="btn btn-dark btn-lg" style={{ alignSelf: 'flex-start' }} disabled={update.isPending}>{update.isPending ? 'Saving…' : 'Save region'}</button>

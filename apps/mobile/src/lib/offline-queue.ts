@@ -2,7 +2,14 @@
 // flushed in order when connectivity returns. Saves are idempotent upserts by id.
 import { DocumentInputSchema, type DocumentInput } from '@taxsteps/core'
 
-export type QueueItem = { input: DocumentInput; queuedAt: string; attempts: number; lastError: string | null }
+export type QueueItem = {
+  input: DocumentInput
+  queuedAt: string
+  /** Changes on every re-queue, so a flush never removes an edit made while it was running. */
+  version?: string
+  attempts: number
+  lastError: string | null
+}
 export type KV = { getItem(k: string): Promise<string | null>; setItem(k: string, v: string): Promise<void> }
 
 /** Each signed-in user gets their own queue, so one person's offline saves can never be
@@ -22,53 +29,79 @@ export function createOfflineQueue(kv: KV, key = 'taxsteps.queue.v1') {
   }
   const write = (items: QueueItem[]) => kv.setItem(key, JSON.stringify(items))
 
-  return {
-    list: read,
+  // Every read-modify-write runs one at a time, so concurrent enqueue/flush/discard can't
+  // overwrite each other's changes.
+  let lock: Promise<unknown> = Promise.resolve()
+  function exclusive<T>(fn: () => Promise<T>): Promise<T> {
+    const run = lock.then(fn, fn)
+    lock = run.catch(() => undefined)
+    return run
+  }
+  const sameVersion = (a: QueueItem, b: QueueItem) => a.input.id === b.input.id && a.version === b.version
 
-    async enqueue(input: DocumentInput): Promise<void> {
+  let inFlight: Promise<{ saved: number; failed: number }> | null = null
+
+  async function flushOnce(
+    save: (input: DocumentInput) => Promise<unknown>,
+    canContinue: () => Promise<boolean>,
+  ): Promise<{ saved: number; failed: number }> {
+    const snapshot = await exclusive(read)
+    const saved: QueueItem[] = []
+    const failed = new Map<string, string>()
+    for (const item of snapshot) {
+      if (!(await canContinue())) break
+      try {
+        await save(item.input) // slow network call: deliberately outside the lock
+        saved.push(item)
+      } catch (e) {
+        failed.set(`${item.input.id}|${item.version}`, e instanceof Error ? e.message : String(e))
+      }
+    }
+    // Re-read: anything queued or edited during the flush is kept untouched.
+    return exclusive(async () => {
+      const current = await read()
+      const next = current
+        .filter((i) => !saved.some((s) => sameVersion(s, i)))
+        .map((i) => {
+          const err = failed.get(`${i.input.id}|${i.version}`)
+          return err === undefined ? i : { ...i, attempts: i.attempts + 1, lastError: err }
+        })
+      await write(next)
+      return { saved: saved.length, failed: failed.size }
+    })
+  }
+
+  return {
+    list: () => exclusive(read),
+
+    enqueue: (input: DocumentInput) => exclusive(async () => {
       const clean = DocumentInputSchema.parse(input) // strips anything that isn't a document field
       const items = await read()
+      const item: QueueItem = { input: clean, queuedAt: new Date().toISOString(), version: Math.random().toString(36).slice(2), attempts: 0, lastError: null }
       const i = items.findIndex((x) => x.input.id === clean.id)
-      const item: QueueItem = { input: clean, queuedAt: new Date().toISOString(), attempts: 0, lastError: null }
       if (i >= 0) items[i] = item
       else items.push(item)
       await write(items)
-    },
+    }),
 
     /**
      * Saves queued items in order. `canContinue` is checked before each item (e.g. "is the
      * same user still signed in?"); when it returns false, flushing stops and the remaining
-     * items stay queued untouched.
+     * items stay queued untouched. Overlapping calls share one flush.
      */
-    async flush(
+    flush(
       save: (input: DocumentInput) => Promise<unknown>,
       canContinue: () => Promise<boolean> = async () => true,
     ): Promise<{ saved: number; failed: number }> {
-      const items = await read()
-      const remaining: QueueItem[] = []
-      let saved = 0
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i]!
-        if (!(await canContinue())) {
-          remaining.push(...items.slice(i))
-          break
-        }
-        try {
-          await save(item.input)
-          saved++
-        } catch (e) {
-          remaining.push({ ...item, attempts: item.attempts + 1, lastError: e instanceof Error ? e.message : String(e) })
-        }
-      }
-      await write(remaining)
-      return { saved, failed: remaining.filter((r) => r.attempts > 0).length }
+      inFlight ??= flushOnce(save, canContinue).finally(() => { inFlight = null })
+      return inFlight
     },
 
-    async discard(id: string): Promise<void> {
+    discard: (id: string) => exclusive(async () => {
       await write((await read()).filter((x) => x.input.id !== id))
-    },
+    }),
 
-    clear: () => write([]),
+    clear: () => exclusive(() => write([])),
   }
 }
 

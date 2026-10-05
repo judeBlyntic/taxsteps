@@ -46,7 +46,8 @@ export default function SignUpPage() {
         emailRedirectTo: `${window.location.origin}/auth/confirm`,
         data: {
           full_name: form.fullName.trim(), country: form.country === FALLBACK_REGION.country ? null : form.country,
-          currency: form.currency, timezone, locale: navigator.language || region.locale,
+          currency: form.currency, timezone,
+          locale: form.country === FALLBACK_REGION.country ? navigator.language || region.locale : region.locale,
           fy_start_month: form.fyStartMonth, fy_start_day: form.fyStartDay,
         },
       },

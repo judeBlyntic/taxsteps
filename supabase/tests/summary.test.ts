@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { totalsFor } from '@taxsteps/core'
-import { getSummary, listCategories, saveDocument } from '@taxsteps/data/api'
+import { getSummary, listCategories, listDocuments, saveDocument } from '@taxsteps/data/api'
 import { createTestUser, deleteTestUser, input, type TestUser } from './helpers.ts'
 
 let A: TestUser
@@ -32,6 +32,12 @@ describe('document_summary', () => {
     expect(s.byMonth).toEqual(expect.arrayContaining([{ month: '2026-09', currency: 'NZD', totalCents: 1000 }]))
     expect(s.byType).toEqual(expect.arrayContaining([{ expenseType: 'personal', currency: 'NZD', totalCents: 5000 }]))
     expect(s.byDay.find((d) => d.date === '2026-10-03')).toEqual({ date: '2026-10-03', business: 0, personal: 1 })
+  })
+  it('excluding a category keeps uncategorised documents (list and summary agree)', async () => {
+    const s = await getSummary(A.client, null, { excludeCategoryIds: [office] })
+    expect(s.byCategory.map((c) => c.name).sort()).toEqual(['Travel', 'Uncategorised'])
+    const list = await listDocuments(A.client, { excludeCategoryIds: [office] }, null)
+    expect(list.rows.map((r) => r.category_id === null ? 'none' : r.category_id === travel ? 'travel' : 'other').sort()).toEqual(['none', 'travel'])
   })
   it('applies filters', async () => {
     const s = await getSummary(A.client, { from: '2026-10-01', to: '2026-10-31' }, { categoryIds: [office] })

@@ -35,3 +35,27 @@ export function subscribeToUserChanges(
     if (channel) void c.removeChannel(channel)
   }
 }
+
+/** Calls `onResync` each time the channel becomes live again after the first connect, so
+ *  changes missed while disconnected (e.g. app in background) are fetched. */
+export function resyncOnReconnect(onResync: () => void): (s: SyncState) => void {
+  let wasLive = false
+  let last: SyncState | null = null
+  return (s) => {
+    if (s === 'live' && last !== 'live') {
+      if (wasLive) onResync()
+      wasLive = true
+    }
+    last = s
+  }
+}
+
+/** Calls `onChange` when a different user signs in than the last one seen (shared devices). */
+export function userChangeGuard(onChange: () => void): (userId: string | null) => void {
+  let lastUser: string | null = null
+  return (userId) => {
+    if (!userId) return
+    if (lastUser && lastUser !== userId) onChange()
+    lastUser = userId
+  }
+}

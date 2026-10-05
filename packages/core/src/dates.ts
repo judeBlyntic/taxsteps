@@ -84,9 +84,26 @@ function numericOrder(locale: string): ('day' | 'month' | 'year')[] {
     .filter((t): t is 'day' | 'month' | 'year' => t === 'day' || t === 'month' || t === 'year')
 }
 
-/** Accepts YYYY-MM-DD or a numeric date in the locale's order (05/10/2026, 5.10.2026). */
+/**
+ * A safe display locale for a stored profile locale: Gregorian calendar and Latin digits so
+ * dates/amounts round-trip through our parsers; invalid tags fall back to en-US instead of
+ * making every Intl call throw.
+ */
+export function uiLocale(locale?: string | null): string {
+  try {
+    const [canonical] = Intl.getCanonicalLocales(locale || DEFAULT_LOCALE)
+    const tag = new Intl.Locale(canonical!, { calendar: 'gregory', numberingSystem: 'latn' }).toString()
+    new Intl.DateTimeFormat(tag)
+    new Intl.NumberFormat(tag)
+    return tag
+  } catch {
+    return new Intl.Locale(DEFAULT_LOCALE, { calendar: 'gregory', numberingSystem: 'latn' }).toString()
+  }
+}
+
+/** Accepts YYYY-MM-DD or a numeric date in the locale's order (05/10/2026, 5.10.2026, 2026. 10. 05.). */
 export function parseUserDate(input: string, locale: string = DEFAULT_LOCALE): ISODate | null {
-  const s = input.trim()
+  const s = input.replace(/[\u200e\u200f\u061c]/g, '').trim().replace(/[/.\-\s]+$/, '') // bidi marks, trailing separators
   if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(s)) {
     const [y, m, d] = parts(s)
     const out = iso(y, m, d)

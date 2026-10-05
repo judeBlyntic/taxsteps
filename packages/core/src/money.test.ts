@@ -50,3 +50,30 @@ describe('formatAmountInput', () => {
     expect(formatAmountInput(1200, 'en-NZ')).toBe('12.00')
   })
 })
+
+describe('parseAmount strictness (review: never a silently wrong value)', () => {
+  it('rejects letters or symbols inside the number', () => {
+    expect(parseAmount('8O.45')).toBeNull()
+    expect(parseAmount('1a2')).toBeNull()
+    expect(parseAmount('1e5')).toBeNull()
+  })
+  it('rejects negative notations', () => {
+    expect(parseAmount('(5.00)')).toBeNull()
+    expect(parseAmount('−5')).toBeNull()
+  })
+  it('still accepts currency text around the number and grouping spaces/apostrophes', () => {
+    expect(parseAmount('NZ$ 87.45')).toBe(8745)
+    expect(parseAmount('87.45 NZD')).toBe(8745)
+    expect(parseAmount('€12,50', 'de-DE')).toBe(1250)
+    expect(parseAmount('1 234,56', 'fr-FR')).toBe(123456)
+    expect(parseAmount("1'234.50", 'de-CH')).toBe(123450)
+  })
+})
+
+describe('parseAmount keeps every digit', () => {
+  it('never silently removes a letter inside the number', () => {
+    expect(parseAmount('5s')).toBe(500) // trailing text is treated as a currency suffix
+    expect(parseAmount('1s5')).toBeNull()
+    expect(parseAmount('12 345.67')).toBe(1234567) // grouping space
+  })
+})

@@ -77,3 +77,18 @@ describe('schemas and helpers', () => {
     expect(ExportRequestSchema.safeParse({ format: 'pdf', filter: { from: '2026-01-01' }, label: 'January 2026' }).success).toBe(true)
   })
 })
+
+describe('category exclusion (review: never drop Uncategorised rows)', () => {
+  const A = '11111111-1111-4111-8111-111111111111'
+  const B = '22222222-2222-4222-8222-222222222222'
+  it('excludes categories while keeping uncategorised documents', () => {
+    expect(applyDocumentFilter(rq(), { excludeCategoryIds: [A, B] }).calls)
+      .toEqual([['or', `category_id.is.null,category_id.not.in.(${A},${B})`]])
+  })
+  it('passes exclusions to the summary RPC', () => {
+    expect(filterToRpc({ excludeCategoryIds: [A] })).toEqual({ exclude_category_ids: [A] })
+  })
+  it('validates exclusion ids', () => {
+    expect(DocumentFilterSchema.safeParse({ excludeCategoryIds: ['nope'] }).success).toBe(false)
+  })
+})

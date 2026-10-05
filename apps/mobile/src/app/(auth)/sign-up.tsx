@@ -39,7 +39,8 @@ export default function SignUp() {
         emailRedirectTo: `${WEB_URL}/auth/confirmed`,
         data: {
           full_name: fullName.trim(), country: country === FALLBACK_REGION.country ? null : country, currency: region.currency,
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, locale: Intl.DateTimeFormat().resolvedOptions().locale,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          locale: country === FALLBACK_REGION.country ? Intl.DateTimeFormat().resolvedOptions().locale : region.locale,
           fy_start_month: region.fyStartMonth, fy_start_day: region.fyStartDay,
         },
       },

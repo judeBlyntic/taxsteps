@@ -1,5 +1,5 @@
 'use client'
-import { DOCUMENT_TYPES, financialYearRange, formatMonth, lastNMonths, monthRange, yearRange, type Category, type DocumentFilter, type PeriodSpec } from '@taxsteps/core'
+import { DOCUMENT_TYPES, fromCents, parseAmount, financialYearRange, formatMonth, lastNMonths, monthRange, yearRange, type Category, type DocumentFilter, type PeriodSpec } from '@taxsteps/core'
 import { SelectField, TextField } from '@/components/ui/Field'
 
 type Fy = { fyStartMonth: number; fyStartDay: number }
@@ -21,11 +21,14 @@ export function quickPeriods(today: string, fy: Fy): QuickPeriod[] {
   ]
 }
 
-const num = (v: string) => (v.trim() === '' || !Number.isFinite(Number(v)) ? undefined : Number(v))
 
 export function FilterPanel({ filter, onChange, categories, today, locale }: {
   filter: DocumentFilter; onChange: (f: DocumentFilter) => void; categories: Category[]; today: string; locale: string
 }) {
+  const num = (v: string) => {
+    const cents = v.trim() ? parseAmount(v, locale) : null
+    return cents === null ? undefined : fromCents(cents)
+  }
   const set = (patch: Partial<DocumentFilter>) => {
     const next = { ...filter, ...patch }
     for (const k of Object.keys(next) as (keyof DocumentFilter)[]) if (next[k] === undefined || next[k] === '') delete next[k]

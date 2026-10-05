@@ -41,7 +41,13 @@ describe('realtime sync', () => {
     const onPhone = listen(phone, A.userId)
     const onB = listen(B.client, B.userId)
     const spy = listen(B.client, A.userId) // B tries to join A's private channel
-    await Promise.all([onWeb.ready, onPhone.ready, onB.ready])
+    const publicSpy: unknown[] = [] // B tries A's topic as a PUBLIC channel
+    let publicReady!: () => void
+    const publicJoined = new Promise<void>((r) => { publicReady = r })
+    const pub = B.client.channel(`user:${A.userId}`).on('broadcast', { event: '*' }, (m) => publicSpy.push(m))
+      .subscribe((s) => { if (s === 'SUBSCRIBED') publicReady() })
+    unsubs.push(() => void B.client.removeChannel(pub))
+    await Promise.all([onWeb.ready, onPhone.ready, onB.ready, publicJoined])
 
     const doc = await saveDocument(phone, input())                       // saved on the phone
     await waitFor(() => onWeb.events.some((e) => e.id === doc.id && e.operation === 'INSERT'))
@@ -55,5 +61,6 @@ describe('realtime sync', () => {
     await new Promise((r) => setTimeout(r, 1500))
     expect(onB.events).toEqual([])
     expect(spy.events).toEqual([])
+    expect(publicSpy).toEqual([])
   })
 })

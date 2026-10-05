@@ -70,3 +70,24 @@ describe('formatShortDate / formatMonth', () => {
     expect(formatMonth(2026, 10, 'en-NZ', 'short')).toBe('Oct')
   })
 })
+
+describe('uiLocale (review: profile locales must be safe and round-trippable)', () => {
+  it('normalises to the Gregorian calendar and Latin digits', async () => {
+    const { uiLocale } = await import('./dates.ts')
+    expect(uiLocale('th-TH')).toBe('th-TH-u-ca-gregory-nu-latn')
+    expect(uiLocale('ar-EG')).toBe('ar-EG-u-ca-gregory-nu-latn')
+  })
+  it('falls back to en-US for invalid or empty tags instead of crashing Intl', async () => {
+    const { uiLocale } = await import('./dates.ts')
+    for (const bad of ['en-NZ-NZ', 'en-NZZ', 'en-N2', 'not a locale', '', null, undefined]) {
+      expect(uiLocale(bad)).toBe('en-US-u-ca-gregory-nu-latn')
+    }
+  })
+  it('round-trips dates through format and parse for every supported script', async () => {
+    const { uiLocale } = await import('./dates.ts')
+    for (const raw of ['en-NZ', 'en-US', 'de-DE', 'th-TH', 'ar-EG', 'ar-AE', 'fa-IR', 'bn-BD', 'ko-KR', 'ja-JP', 'my-MM']) {
+      const l = uiLocale(raw)
+      expect(parseUserDate(formatDate('2026-10-05', l), l), raw).toBe('2026-10-05')
+    }
+  })
+})

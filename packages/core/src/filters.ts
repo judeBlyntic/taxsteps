@@ -12,6 +12,8 @@ export const DocumentFilterSchema = z.object({
   search: z.string().max(100).optional(),
   merchant: z.string().max(200).optional(),
   categoryIds: z.array(z.uuid()).max(100).optional(),
+  /** Categories to leave out; uncategorised documents are always kept. */
+  excludeCategoryIds: z.array(z.uuid()).max(200).optional(),
   documentType: DocumentTypeCodeSchema.optional(),
   expenseType: ExpenseTypeSchema.optional(),
   status: DocumentStatusSchema.optional(),
@@ -88,6 +90,7 @@ export function applyDocumentFilter<Q extends FilterableQuery<Q>>(q: Q, f: Docum
   if (f.to) r = r.lte('transaction_date', f.to)
   if (f.ids) r = r.in('id', f.ids)
   if (f.categoryIds?.length) r = r.in('category_id', f.categoryIds)
+  if (f.excludeCategoryIds?.length) r = r.or(`category_id.is.null,category_id.not.in.(${f.excludeCategoryIds.join(',')})`)
   if (f.documentType) r = r.eq('document_type', f.documentType)
   if (f.expenseType) r = r.eq('expense_type', f.expenseType)
   if (f.status) r = r.eq('status', f.status)
@@ -119,6 +122,7 @@ export function applyCursor<Q extends FilterableQuery<Q>>(q: Q, c: Cursor | null
 export function filterToRpc(f: DocumentFilter): Record<string, unknown> {
   const out: Record<string, unknown> = {
     category_ids: f.categoryIds?.length ? f.categoryIds : undefined,
+    exclude_category_ids: f.excludeCategoryIds?.length ? f.excludeCategoryIds : undefined,
     document_type: f.documentType,
     expense_type: f.expenseType,
     status: f.status,

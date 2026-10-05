@@ -6,7 +6,7 @@ import { useClient } from './context.tsx'
 import { listCategories, upsertCategory } from './categories.ts'
 import { deleteDocument, listDocuments, saveDocument } from './documents.ts'
 import { getProfile, updateProfile } from './profile.ts'
-import { subscribeToUserChanges, type SyncState } from './realtime.ts'
+import { resyncOnReconnect, subscribeToUserChanges, type SyncState } from './realtime.ts'
 import { getSummary } from './summary.ts'
 import { sheets, type SheetsStatus } from './functions.ts'
 
@@ -90,11 +90,16 @@ export function useRealtimeSync(userId: string | null): SyncState {
   const [state, setState] = useState<SyncState>('connecting')
   useEffect(() => {
     if (!userId) return
+    const resync = resyncOnReconnect(() => {
+      void qc.invalidateQueries({ queryKey: qk.categories })
+      void qc.invalidateQueries({ queryKey: qk.profile })
+      invalidateDocuments(qc)
+    })
     return subscribeToUserChanges(c, userId, (e) => {
       if (e.table === 'categories') void qc.invalidateQueries({ queryKey: qk.categories })
       if (e.table === 'profiles') void qc.invalidateQueries({ queryKey: qk.profile })
       invalidateDocuments(qc)
-    }, setState)
+    }, (s) => { setState(s); resync(s) })
   }, [c, qc, userId])
   return state
 }

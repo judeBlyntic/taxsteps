@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { regionFor, todayIn, type Profile } from '@taxsteps/core'
+import { regionFor, todayIn, uiLocale, type Profile } from '@taxsteps/core'
 import { useProfile } from '@taxsteps/data'
 
 export function useToday(): {
@@ -14,7 +14,7 @@ export function useToday(): {
   return useMemo(() => ({
     today: todayIn(profile?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone),
     profile,
-    locale: profile?.locale ?? 'en-US',
+    locale: uiLocale(profile?.locale),
     currency: profile?.currency ?? 'USD',
     taxLabel: regionFor(profile?.country).taxLabel,
     fy: { fyStartMonth: profile?.fy_start_month ?? 1, fyStartDay: profile?.fy_start_day ?? 1 },

@@ -16,6 +16,8 @@ export const supabase: TaxStepsClient = createClient<Database>(url, key, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
+    // PKCE: email links carry a one-time code, never session tokens in the URL.
+    flowType: 'pkce',
   },
 })
 

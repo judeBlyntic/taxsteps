@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Pressable, View } from 'react-native'
-import { CURRENCIES, FALLBACK_REGION, TAX_REGIONS, regionFor, toUserMessage, type Profile } from '@taxsteps/core'
+import { CURRENCIES, FALLBACK_REGION, ProfileUpdateSchema, TAX_REGIONS, regionFor, toUserMessage, type Profile } from '@taxsteps/core'
 import { useProfile, useUpdateProfile } from '@taxsteps/data'
 import { BackHeader } from '@/components/BackHeader'
 import { PickerModal, type PickerOption } from '@/components/PickerModal'
@@ -40,7 +40,10 @@ function RegionForm({ profile }: { profile: Profile }) {
   const [picker, setPicker] = useState<'country' | 'currency' | 'month' | null>(null)
   const region = regionFor(form.country)
 
+  const localeError = ProfileUpdateSchema.shape.locale.safeParse(form.locale).success ? null : 'Use a locale like en-NZ, en-US or de-DE'
+
   async function save() {
+    if (localeError) return
     try {
       await update.mutateAsync({ ...form, country: form.country === FALLBACK_REGION.country ? null : form.country, fy_start_day: Math.min(31, Math.max(1, form.fy_start_day)) })
       toast.show('Region settings saved')
@@ -59,7 +62,7 @@ function RegionForm({ profile }: { profile: Profile }) {
       <TextField label="Timezone" value={form.timezone} onChangeText={(v) => setForm({ ...form, timezone: v.trim() })} autoCapitalize="none"
         note={`This device: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`} />
       <Button label="Use this device's timezone" variant="ghost" size="md" onPress={() => setForm({ ...form, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone })} />
-      <TextField label="Number & date format" value={form.locale} onChangeText={(v) => setForm({ ...form, locale: v.trim() })} autoCapitalize="none" note="e.g. en-NZ, en-US" />
+      <TextField label="Number & date format" value={form.locale} onChangeText={(v) => setForm({ ...form, locale: v.trim() })} autoCapitalize="none" note="e.g. en-NZ, en-US" error={localeError} />
       <Muted>Tax is labelled “{region.taxLabel}” for this country.</Muted>
       <Button label={update.isPending ? 'Saving…' : 'Save'} loading={update.isPending} onPress={() => void save()} />
       {picker === 'country' && (

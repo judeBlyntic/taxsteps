@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
+import { AppState, Platform } from 'react-native'
+import NetInfo from '@react-native-community/netinfo'
 import { Stack, SplashScreen } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { useFonts, Caprasimo_400Regular } from '@expo-google-fonts/caprasimo'
 import { Figtree_400Regular, Figtree_600SemiBold, Figtree_700Bold } from '@expo-google-fonts/figtree'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { DataProvider, useRealtimeSync } from '@taxsteps/data'
+import { QueryClient, QueryClientProvider, focusManager, onlineManager, useQueryClient } from '@tanstack/react-query'
+import { DataProvider, useRealtimeSync, userChangeGuard } from '@taxsteps/data'
 import { ToastProvider } from '@/components/Toast'
 import { SessionProvider, useSession } from '@/lib/session'
 import { supabase } from '@/lib/supabase'
@@ -14,8 +16,21 @@ import { colors } from '@/lib/theme'
 
 void SplashScreen.preventAutoHideAsync()
 
+// Tell TanStack Query when the app returns to the foreground or the network comes back,
+// so screens refetch anything that changed on other devices meanwhile.
+if (Platform.OS !== 'web') {
+  focusManager.setEventListener((setFocused) => {
+    const sub = AppState.addEventListener('change', (s) => setFocused(s === 'active'))
+    return () => sub.remove()
+  })
+  onlineManager.setEventListener((setOnline) => NetInfo.addEventListener((s) => setOnline(s.isConnected !== false)))
+}
+
 function RootNavigator() {
   const { session, loading } = useSession()
+  const qc = useQueryClient()
+  const [guard] = useState(() => userChangeGuard(() => qc.clear()))
+  guard(session?.user.id ?? null) // a different person signed in: drop the previous user's cached data
   useRealtimeSync(session?.user.id ?? null)
   useEffect(() => { if (!loading) void SplashScreen.hideAsync() }, [loading])
   if (loading) return null

@@ -1,7 +1,7 @@
 // Google Sheets: OAuth connect (GET …/callback) and JSON actions (POST).
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { z } from 'zod'
-import { AppError, DocumentFilterSchema, EXPORT_HEADERS, exportRow, type DocumentFilter, type ExportDoc } from '../_shared/core.ts'
+import { AppError, DocumentFilterSchema, EXPORT_HEADERS, exportRow, uiLocale, type DocumentFilter, type ExportDoc } from '../_shared/core.ts'
 import type { UserContext } from '../_shared/auth.ts'
 import { decryptToken, encryptToken } from '../_shared/crypto.ts'
 import { errorResponse, json, preflight, readJson, requirePost } from '../_shared/http.ts'
@@ -150,7 +150,7 @@ export async function handleSheets(req: Request, deps: SheetsDeps): Promise<Resp
         return json({ ok: true }, { origin })
       case 'export': {
         const [docs, profile] = await Promise.all([deps.fetchExportDocs(user.client, body.filter), deps.getProfile(user)])
-        const rows = docs.map((d) => exportRow(d, { timeZone: profile.timezone, locale: profile.locale }))
+        const rows = docs.map((d) => exportRow(d, { timeZone: profile.timezone, locale: uiLocale(profile.locale) }))
         if (await G.isSheetEmpty(deps.fetch, token, body.spreadsheetId, body.sheet)) rows.unshift(EXPORT_HEADERS)
         const updatedRows = rows.length ? await G.appendRows(deps.fetch, token, body.spreadsheetId, body.sheet, rows) : 0
         await store.update({ default_spreadsheet_id: body.spreadsheetId, default_sheet_name: body.sheet })
