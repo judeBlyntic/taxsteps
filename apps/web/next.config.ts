@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   // Workspace packages ship TypeScript source.
   transpilePackages: ['@taxsteps/core', '@taxsteps/data'],
   poweredByHeader: false,
+  // Hide the Next.js dev-tools badge (errors are still shown when they happen).
+  devIndicators: false,
   async headers() {
     return [
       {
