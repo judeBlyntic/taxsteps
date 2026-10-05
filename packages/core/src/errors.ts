@@ -45,3 +45,34 @@ export class AppError extends Error {
     this.status = status ?? STATUS[code] ?? 500
   }
 }
+
+export function isAppError(e: unknown): e is AppError {
+  return e instanceof AppError
+}
+
+const AUTH_CODES: Record<string, ErrorCode> = {
+  invalid_credentials: 'INVALID_CREDENTIALS',
+  email_not_confirmed: 'EMAIL_NOT_CONFIRMED',
+  weak_password: 'WEAK_PASSWORD',
+  over_request_rate_limit: 'RATE_LIMITED',
+  over_email_send_rate_limit: 'RATE_LIMITED',
+}
+
+const isCode = (c: unknown): c is ErrorCode => typeof c === 'string' && c in ERROR_MESSAGES
+
+/** Maps anything thrown (AppError, function error JSON, Supabase auth error, fetch failure) to user copy. */
+export function toUserMessage(e: unknown): string {
+  if (isAppError(e)) return e.message
+  if (e instanceof TypeError && /fetch|network request failed/i.test(e.message)) return ERROR_MESSAGES.NETWORK
+  if (e && typeof e === 'object') {
+    const o = e as { error?: { code?: unknown }; code?: unknown; message?: unknown }
+    if (isCode(o.error?.code)) return ERROR_MESSAGES[o.error.code]
+    if (typeof o.code === 'string') {
+      const mapped = AUTH_CODES[o.code]
+      if (mapped) return ERROR_MESSAGES[mapped]
+      if (isCode(o.code)) return ERROR_MESSAGES[o.code]
+    }
+    if (o.message === 'Invalid login credentials') return ERROR_MESSAGES.INVALID_CREDENTIALS
+  }
+  return ERROR_MESSAGES.INTERNAL
+}
