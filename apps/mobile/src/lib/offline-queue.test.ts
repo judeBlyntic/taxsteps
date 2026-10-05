@@ -87,3 +87,16 @@ describe('per-user isolation', () => {
     expect(await alice.list()).toHaveLength(1)
   })
 })
+
+describe('flush guard', () => {
+  it('stops flushing as soon as the owner check fails, leaving the rest untouched', async () => {
+    const q = createOfflineQueue(memKV())
+    await q.enqueue(inp('a')); await q.enqueue(inp('b')); await q.enqueue(inp('c'))
+    let checks = 0
+    const saved: string[] = []
+    const res = await q.flush(async (i) => { saved.push(i.id) }, async () => ++checks <= 1)
+    expect(saved).toEqual([U('a')])
+    expect(res).toEqual({ saved: 1, failed: 0 })
+    expect((await q.list()).map((i) => [i.input.id, i.attempts])).toEqual([[U('b'), 0], [U('c'), 0]])
+  })
+})

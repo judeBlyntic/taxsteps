@@ -30,11 +30,14 @@ export function OfflineQueueProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(async () => setPending(queue ? await queue.list() : []), [queue])
   const retry = useCallback(async () => {
-    if (!queue) return
-    const { saved } = await queue.flush((input) => saveDocument(client, input))
+    if (!queue || !userId) return
+    // The Supabase client is shared: if a different user signs in mid-flush, stop so this
+    // user's queued expenses are never saved into their account.
+    const stillOwner = async () => (await client.auth.getSession()).data.session?.user.id === userId
+    const { saved } = await queue.flush((input) => saveDocument(client, input), stillOwner)
     if (saved) invalidateDocuments(qc)
     await refresh()
-  }, [queue, client, qc, refresh])
+  }, [queue, userId, client, qc, refresh])
 
   useEffect(() => {
     void refresh()
