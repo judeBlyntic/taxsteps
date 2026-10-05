@@ -9,6 +9,7 @@ import { DataProvider, useRealtimeSync } from '@taxsteps/data'
 import { ToastProvider } from '@/components/Toast'
 import { SessionProvider, useSession } from '@/lib/session'
 import { supabase } from '@/lib/supabase'
+import { OfflineQueueProvider } from '@/lib/use-offline-queue'
 import { colors } from '@/lib/theme'
 
 void SplashScreen.preventAutoHideAsync()
@@ -45,10 +46,12 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <DataProvider client={supabase}>
           <SessionProvider>
-            <ToastProvider>
-              <StatusBar style="dark" />
-              <RootNavigator />
-            </ToastProvider>
+            <OfflineQueueProvider>
+              <ToastProvider>
+                <StatusBar style="dark" />
+                <RootNavigator />
+              </ToastProvider>
+            </OfflineQueueProvider>
           </SessionProvider>
         </DataProvider>
       </QueryClientProvider>
