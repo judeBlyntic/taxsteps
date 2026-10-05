@@ -6,7 +6,8 @@ import { ArrowRight, BarChart3, ScanLine, ShieldCheck, Sparkles, type LucideIcon
 import { Button, H, Muted, Screen, T } from '@/components/ui'
 import { colors, shadow } from '@/lib/theme'
 
-const SLIDES: { kicker: string; title: string; body: string; chip: string; icon: LucideIcon; bg: string; c1: string; c2: string; fg: string }[] = [
+// A function, not a constant: theme colours must be read at render time.
+const slides = (): { kicker: string; title: string; body: string; chip: string; icon: LucideIcon; bg: string; c1: string; c2: string; fg: string }[] => [
   { kicker: '01 · Scan', title: 'Track your receipts automatically', body: 'Take a photo and let AI pull out the merchant, totals and tax for you.', chip: 'Countdown · $87.45', icon: ScanLine, bg: colors.accent2Ramp[300], c1: colors.accent2Ramp[400], c2: colors.accentRamp[300], fg: colors.accent2Ramp[800] },
   { kicker: '02 · Private', title: "Your receipt photo isn't stored", body: 'We process the photo to extract the information, then discard the image.', chip: 'Photo discarded', icon: ShieldCheck, bg: colors.accentRamp[200], c1: colors.accentRamp[300], c2: colors.accent2Ramp[300], fg: colors.accentRamp[700] },
   { kicker: '03 · Organised', title: 'Everything in one place', body: 'Search, analyse and export to CSV, Excel, PDF or Google Sheets — on phone and web.', chip: 'Synced across devices', icon: BarChart3, bg: colors.neutral[200], c1: colors.accent2Ramp[200], c2: colors.accentRamp[400], fg: colors.text },
@@ -20,6 +21,7 @@ export default function Onboarding() {
   useEffect(() => { void AsyncStorage.getItem(SEEN_KEY).then((v) => setSeen(v === '1')).catch(() => setSeen(false)) }, [])
   if (seen === null) return null
   if (seen) return <Redirect href="/sign-in" />
+  const SLIDES = slides()
   const s = SLIDES[i]!
   const last = i === SLIDES.length - 1
   const finish = (to: '/sign-in' | '/sign-up') => { void AsyncStorage.setItem(SEEN_KEY, '1'); router.replace(to) }

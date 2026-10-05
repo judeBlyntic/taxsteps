@@ -21,7 +21,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       {toast && (
         <View accessibilityLiveRegion="polite" pointerEvents="none"
-          style={[{ position: 'absolute', left: 20, right: 20, bottom: 118, flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14, paddingHorizontal: 18, borderRadius: 999, backgroundColor: colors.text }, shadow.lg]}>
+          style={[{ position: 'absolute', left: 20, right: 20, bottom: 118, flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14, paddingHorizontal: 18, borderRadius: 999, backgroundColor: colors.selected }, shadow.lg]}>
           <View style={{ width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', backgroundColor: toast.kind === 'error' ? colors.accentRamp[400] : colors.accent2Ramp[400] }}>
             {toast.kind === 'error' ? <AlertTriangle size={12} color={colors.accentRamp[900]} strokeWidth={2.75} /> : <Check size={12} color={colors.accent2Ramp[900]} strokeWidth={2.75} />}
           </View>

@@ -1,10 +1,11 @@
 'use client'
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { BarChart3, CloudOff, Home, Receipt, RefreshCw, ScanLine, Settings } from 'lucide-react'
 import { useProfile, useRealtimeSync, type SyncState } from '@taxsteps/data'
 import { Logo } from '@/components/ui/Logo'
+import { applyTheme } from '@/lib/theme'
 import { ICON } from '@/components/ui/icons'
 import { NAV, isActive } from './nav'
 import { DrawerProvider } from '@/components/documents/DrawerContext'
@@ -24,6 +25,8 @@ export function AppShell({ userId, email, children }: { userId: string; email: s
   const pathname = usePathname()
   const sync = useRealtimeSync(userId)
   const { data: profile } = useProfile()
+  const theme = profile?.theme
+  useEffect(() => { if (theme) applyTheme(theme) }, [theme]) // the account's choice, also when changed on another device
   const copy = SYNC_COPY[sync]
 
   return (

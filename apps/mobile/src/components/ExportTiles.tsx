@@ -9,7 +9,8 @@ import { colors } from '@/lib/theme'
 import { useToast } from './Toast'
 import { T } from './ui'
 
-const TILES: { key: ExportFormat | 'sheets'; label: string; sub: string; icon: LucideIcon; bg: string; fg: string }[] = [
+// A function, not a constant: theme colours must be read at render time.
+const tiles = (): { key: ExportFormat | 'sheets'; label: string; sub: string; icon: LucideIcon; bg: string; fg: string }[] => [
   { key: 'csv', label: 'CSV', sub: 'Spreadsheet-ready', icon: FileText, bg: colors.neutral[200], fg: colors.text },
   { key: 'xlsx', label: 'Excel', sub: '.xlsx · 3 sheets', icon: FileSpreadsheet, bg: colors.accent2Ramp[200], fg: colors.accent2Ramp[900] },
   { key: 'pdf', label: 'PDF', sub: 'Accountant report', icon: Table, bg: colors.accentRamp[200], fg: colors.accentRamp[900] },
@@ -35,7 +36,7 @@ export function ExportTiles({ filter, label }: { filter: DocumentFilter; label: 
 
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
-      {TILES.map(({ key, label: l, sub, icon: Icon, bg, fg }) => (
+      {tiles().map(({ key, label: l, sub, icon: Icon, bg, fg }) => (
         <Pressable key={key} accessibilityRole="button" accessibilityLabel={`Export ${l}`} disabled={busy !== null}
           onPress={() => (key === 'sheets'
             ? router.push({ pathname: '/sheets', params: { from: filter.from ?? '', to: filter.to ?? '', label } })

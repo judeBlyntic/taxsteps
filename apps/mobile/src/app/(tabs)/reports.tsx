@@ -9,7 +9,7 @@ import { colors } from '@/lib/theme'
 import { useToday } from '@/lib/use-today'
 
 type Kind = 'month' | 'year' | 'fy'
-const BAR = [colors.accent2Ramp[500], colors.accentRamp[500], colors.accent2Ramp[400], colors.accentRamp[400], colors.neutral[500]]
+const barColor = (k: number) => [colors.accent2Ramp[500], colors.accentRamp[500], colors.accent2Ramp[400], colors.accentRamp[400], colors.neutral[500]][k % 5]
 
 export default function ReportsScreen() {
   const { today, locale, currency, taxLabel, fy } = useToday()
@@ -66,7 +66,7 @@ export default function ReportsScreen() {
             <T weight="semibold">{c.name}</T><T>{formatMoney(c.totalCents, cur, locale)}</T>
           </View>
           <View style={{ height: 14, borderRadius: 999, backgroundColor: colors.neutral[200], overflow: 'hidden' }}>
-            <View style={{ height: '100%', width: `${Math.round((c.totalCents / max) * 100)}%`, borderRadius: 999, backgroundColor: BAR[k % BAR.length] }} />
+            <View style={{ height: '100%', width: `${Math.round((c.totalCents / max) * 100)}%`, borderRadius: 999, backgroundColor: barColor(k) }} />
           </View>
         </View>
       ))}

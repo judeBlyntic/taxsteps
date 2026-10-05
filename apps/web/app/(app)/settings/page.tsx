@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { LogOut } from 'lucide-react'
 import { useCategories, useClient, useProfile } from '@taxsteps/data'
 import { PageHeader } from '@/components/shell/PageHeader'
+import { AppearanceCard } from '@/components/settings/AppearanceCard'
 import { CategoryManager } from '@/components/settings/CategoryManager'
 import { PrivacyCard } from '@/components/settings/PrivacyCard'
 import { ProfileCard, RegionCard } from '@/components/settings/ProfileCards'
@@ -29,7 +30,7 @@ export default function SettingsPage() {
 
   return (
     <>
-      <PageHeader title="Settings" subtitle="Account, region, categories, integrations and privacy." actions={
+      <PageHeader title="Settings" subtitle="Account, region, appearance, categories, integrations and privacy." actions={
         <button type="button" className="btn btn-secondary btn-lg btn-paper" onClick={() => void signOut()}><LogOut {...ICON} />Sign out</button>
       } />
       <div className="page-body">
@@ -41,6 +42,7 @@ export default function SettingsPage() {
               <SheetsCard />
             </div>
             <div className="stack">
+              <AppearanceCard profile={profile} />
               <CategoryManager categories={categories} />
               <PrivacyCard />
             </div>

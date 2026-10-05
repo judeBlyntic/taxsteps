@@ -44,16 +44,17 @@ type ButtonProps = {
   accessibilityLabel?: string
 }
 
-const BTN: Record<NonNullable<ButtonProps['variant']>, { bg: string; fg: string; border?: string }> = {
+// Theme colours are read at render time (they change when the user switches theme), so no module-level copies.
+const btnColors = (): Record<NonNullable<ButtonProps['variant']>, { bg: string; fg: string; border?: string }> => ({
   primary: { bg: colors.accent, fg: colors.bg },
   dark: { bg: colors.text, fg: colors.bg },
   secondary: { bg: 'transparent', fg: colors.text, border: colors.divider },
   ghost: { bg: 'transparent', fg: colors.accentRamp[700] },
   danger: { bg: 'transparent', fg: colors.accentRamp[700], border: colors.divider },
-}
+})
 
 export function Button({ label, onPress, variant = 'primary', size = 'lg', icon: Icon, disabled, loading, style, accessibilityLabel }: ButtonProps) {
-  const v = BTN[variant]
+  const v = btnColors()[variant]
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={accessibilityLabel ?? label} accessibilityState={{ disabled: disabled || loading }}
       disabled={disabled || loading} onPress={onPress}
@@ -76,7 +77,8 @@ export const TextField = forwardRef<TextInput, TextInputProps & { label: string;
           {flagged ? <T weight="bold" size={12} color={colors.accentRamp[700]}>Review</T> : note ? <Muted size={12}>{note}</Muted> : null}
         </View>
         <TextInput ref={ref} placeholderTextColor={colors.neutral[500]} accessibilityLabel={label} {...input}
-          style={[styles.input, flagged && styles.flagged, error ? { borderColor: colors.accentRamp[600] } : null, style as StyleProp<TextStyle>]} />
+          style={[styles.input, { borderColor: colors.divider, backgroundColor: colors.surface, fontFamily: fonts.semibold, color: colors.text },
+            flagged && { backgroundColor: colors.accentRamp[100], borderColor: colors.accentRamp[400] }, error ? { borderColor: colors.accentRamp[600] } : null, style as StyleProp<TextStyle>]} />
         {error ? <T size={12} weight="semibold" color={colors.accentRamp[700]}>{error}</T> : null}
       </View>
     )
@@ -90,7 +92,7 @@ export function Card({ children, style, tone = 'paper' }: { children: ReactNode;
 export function Chip({ label, selected, onPress }: { label: string; selected?: boolean; onPress?: () => void }) {
   return (
     <Pressable accessibilityRole="button" accessibilityState={{ selected }} onPress={onPress}
-      style={[styles.chip, selected ? { backgroundColor: colors.text, borderColor: colors.text } : null]}>
+      style={[styles.chip, { borderColor: colors.divider }, selected ? { backgroundColor: colors.selected, borderColor: colors.selected } : null]}>
       <T weight="bold" size={13} color={selected ? colors.bg : colors.text}>{label}</T>
     </Pressable>
   )
@@ -98,7 +100,7 @@ export function Chip({ label, selected, onPress }: { label: string; selected?: b
 
 export function Segmented<V extends string>({ options, value, onChange }: { options: { value: V; label: string }[]; value: V; onChange: (v: V) => void }) {
   return (
-    <View style={styles.seg} accessibilityRole="tablist">
+    <View style={[styles.seg, { backgroundColor: colors.surface }]} accessibilityRole="tablist">
       {options.map((o) => {
         const on = o.value === value
         return (
@@ -124,9 +126,8 @@ export function Banner({ children, tone = 'warn', icon: Icon }: { children: Reac
 
 const styles = StyleSheet.create({
   btn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 22, borderRadius: radius.pill, borderWidth: 1 },
-  input: { minHeight: 48, paddingHorizontal: 16, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.divider, backgroundColor: colors.surface, fontFamily: fonts.semibold, fontSize: 15, color: colors.text },
-  flagged: { backgroundColor: colors.accentRamp[100], borderColor: colors.accentRamp[400] },
-  chip: { height: 38, paddingHorizontal: 16, borderRadius: radius.pill, borderWidth: 1, borderColor: colors.divider, justifyContent: 'center' },
-  seg: { flexDirection: 'row', padding: 4, borderRadius: radius.pill, backgroundColor: colors.surface },
+  input: { minHeight: 48, paddingHorizontal: 16, borderRadius: radius.pill, borderWidth: 1, fontSize: 15 },
+  chip: { height: 38, paddingHorizontal: 16, borderRadius: radius.pill, borderWidth: 1, justifyContent: 'center' },
+  seg: { flexDirection: 'row', padding: 4, borderRadius: radius.pill },
   segOpt: { flex: 1, height: 40, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center' },
 })

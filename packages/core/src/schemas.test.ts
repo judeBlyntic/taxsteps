@@ -10,3 +10,11 @@ describe('ProfileUpdateSchema.locale', () => {
     }
   })
 })
+
+describe('ProfileUpdateSchema.theme', () => {
+  it('accepts only the known app themes', () => {
+    expect(ProfileUpdateSchema.safeParse({ theme: 'fresh' }).success).toBe(true)
+    expect(ProfileUpdateSchema.safeParse({ theme: 'classic' }).success).toBe(true)
+    expect(ProfileUpdateSchema.safeParse({ theme: 'dark' }).success).toBe(false)
+  })
+})

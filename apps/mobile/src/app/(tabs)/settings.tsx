@@ -3,8 +3,8 @@ import { Pressable, View } from 'react-native'
 import { useRouter, type Href } from 'expo-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { Building, ChevronRight, Globe2, LogOut, Sheet, ShieldCheck, Tag, type LucideIcon } from 'lucide-react-native'
-import { COPY, regionFor, toUserMessage } from '@taxsteps/core'
-import { deleteAccount, deleteAllDocuments, exportDocuments, invalidateDocuments, useClient, useProfile } from '@taxsteps/data'
+import { COPY, THEME_OPTIONS, regionFor, toUserMessage, type ThemeName } from '@taxsteps/core'
+import { deleteAccount, deleteAllDocuments, exportDocuments, invalidateDocuments, useClient, useProfile, useUpdateProfile } from '@taxsteps/data'
 import { ConfirmDelete } from '@/components/ConfirmDelete'
 import { useToast } from '@/components/Toast'
 import { Button, H, Muted, Screen, T } from '@/components/ui'
@@ -25,6 +25,43 @@ function Row({ icon: Icon, label, value, href, tint }: { icon: LucideIcon; label
       {value ? <Muted>{value}</Muted> : null}
       <ChevronRight size={16} color={colors.neutral[500]} strokeWidth={2.75} />
     </Pressable>
+  )
+}
+
+function Appearance({ current }: { current: ThemeName | undefined }) {
+  const update = useUpdateProfile()
+  const toast = useToast()
+  const shown = update.isPending ? update.variables.theme : current
+
+  async function choose(theme: ThemeName) {
+    if (theme === current) return
+    try {
+      await update.mutateAsync({ theme }) // the root layout applies the saved theme here and on the user's other devices
+    } catch (e) {
+      toast.show(toUserMessage(e), 'error')
+    }
+  }
+
+  return (
+    <View style={{ gap: 10, padding: 14, borderRadius: 30, backgroundColor: colors.neutral[100] }}>
+      <T weight="bold">Appearance</T>
+      <View style={{ flexDirection: 'row', gap: 10 }}>
+        {THEME_OPTIONS.map((t) => {
+          const on = shown === t.value
+          return (
+            <Pressable key={t.value} accessibilityRole="button" accessibilityLabel={`${t.label} theme`} accessibilityState={{ selected: on }}
+              onPress={() => void choose(t.value)}
+              style={{ flex: 1, gap: 8, padding: 14, borderRadius: 22, borderWidth: 2, borderColor: on ? colors.selected : colors.divider }}>
+              <View style={{ flexDirection: 'row', gap: 4 }}>
+                {t.swatch.map((c) => <View key={c} style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: c, borderWidth: 1, borderColor: colors.divider }} />)}
+              </View>
+              <T weight="semibold">{t.label}</T>
+              <Muted size={12}>{t.note}</Muted>
+            </Pressable>
+          )
+        })}
+      </View>
+    </View>
   )
 }
 
@@ -87,6 +124,7 @@ export default function SettingsScreen() {
         <Row icon={Tag} label="Categories" href="/categories" tint={[colors.accentRamp[200], colors.accentRamp[800]]} />
         <Row icon={Sheet} label="Google Sheets" href="/sheets" tint={[colors.accent2Ramp[200], colors.accent2Ramp[800]]} />
       </View>
+      <Appearance current={profile?.theme} />
       <View style={{ gap: 10, padding: 18, borderRadius: 30, backgroundColor: colors.accent2Ramp[100] }}>
         <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
           <ShieldCheck size={18} color={colors.accent2Ramp[900]} strokeWidth={2.75} /><T weight="bold" color={colors.accent2Ramp[900]}>Privacy</T>

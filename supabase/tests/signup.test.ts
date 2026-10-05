@@ -25,4 +25,12 @@ describe('signup trigger', () => {
     await expect(updateProfile(u.client, { timezone: 'Mars/Olympus' })).rejects.toThrow()
     expect((await updateProfile(u.client, { timezone: 'Pacific/Auckland' })).timezone).toBe('Pacific/Auckland')
   })
+
+  it('starts on the fresh theme, saves a switch and rejects unknown themes', async () => {
+    const u = users[0]!
+    expect((await getProfile(u.client)).theme).toBe('fresh')
+    expect((await updateProfile(u.client, { theme: 'classic' })).theme).toBe('classic')
+    const { error } = await u.client.from('profiles').update({ theme: 'dark' as never }).eq('id', u.userId)
+    expect(error?.code).toBe('23514')
+  })
 })

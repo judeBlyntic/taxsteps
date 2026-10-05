@@ -116,6 +116,14 @@ export type DocumentInput = z.infer<typeof DocumentInputSchema>
 export type DocumentRow = DocumentInput & { user_id: string; created_at: string; updated_at: string }
 
 // ── Profiles and categories ──
+export const THEMES = ['fresh', 'classic'] as const
+export type ThemeName = (typeof THEMES)[number]
+/** Picker copy plus a preview swatch (ground, accent, second accent) for each theme. */
+export const THEME_OPTIONS: { value: ThemeName; label: string; note: string; swatch: [string, string, string] }[] = [
+  { value: 'fresh', label: 'Fresh', note: 'Off-white, lilac and lime', swatch: ['#f5f5f1', '#7e6be0', '#c6db5c'] },
+  { value: 'classic', label: 'Classic', note: 'Cream, terracotta and sage', swatch: ['#f5ead8', '#c67139', '#7a8a5e'] },
+]
+
 export type Profile = {
   id: string
   full_name: string | null
@@ -127,6 +135,7 @@ export type Profile = {
   locale: string
   fy_start_month: number
   fy_start_day: number
+  theme: ThemeName
   created_at: string
   updated_at: string
 }
@@ -147,6 +156,7 @@ export const ProfileUpdateSchema = z.object({
   }, 'Use a locale like en-NZ or en-US'),
   fy_start_month: z.number().int().min(1).max(12),
   fy_start_day: z.number().int().min(1).max(31),
+  theme: z.enum(THEMES),
 }).partial()
 export type ProfileUpdate = z.infer<typeof ProfileUpdateSchema>
 
