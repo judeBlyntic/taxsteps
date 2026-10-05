@@ -1,10 +1,10 @@
 'use client'
-import { DOCUMENT_TYPES, financialYearRange, formatMonth, lastNMonths, monthRange, yearRange, type Category, type DocumentFilter } from '@taxsteps/core'
+import { DOCUMENT_TYPES, financialYearRange, formatMonth, lastNMonths, monthRange, yearRange, type Category, type DocumentFilter, type PeriodSpec } from '@taxsteps/core'
 import { SelectField, TextField } from '@/components/ui/Field'
 
 type Fy = { fyStartMonth: number; fyStartDay: number }
 
-export type QuickPeriod = { id: string; label: string; from: string; to: string }
+export type QuickPeriod = { id: string; label: string; from: string; to: string; spec: PeriodSpec }
 
 export function quickPeriods(today: string, fy: Fy): QuickPeriod[] {
   const [cur, prev] = [lastNMonths(today, 2)[1]!, lastNMonths(today, 2)[0]!]
@@ -13,11 +13,11 @@ export function quickPeriods(today: string, fy: Fy): QuickPeriod[] {
   const lastFy = financialYearRange(lastFyDate, fy.fyStartMonth, fy.fyStartDay)
   const year = Number(today.slice(0, 4))
   return [
-    { id: 'this-month', label: 'This month', ...monthRange(cur.year, cur.month) },
-    { id: 'last-month', label: 'Last month', ...monthRange(prev.year, prev.month) },
-    { id: 'this-fy', label: 'This financial year', ...thisFy },
-    { id: 'last-fy', label: 'Last financial year', ...lastFy },
-    { id: 'this-year', label: String(year), ...yearRange(year) },
+    { id: 'this-month', label: 'This month', ...monthRange(cur.year, cur.month), spec: { kind: 'month', ...cur } },
+    { id: 'last-month', label: 'Last month', ...monthRange(prev.year, prev.month), spec: { kind: 'month', ...prev } },
+    { id: 'this-fy', label: 'This financial year', ...thisFy, spec: { kind: 'fy', date: thisFy.from } },
+    { id: 'last-fy', label: 'Last financial year', ...lastFy, spec: { kind: 'fy', date: lastFy.from } },
+    { id: 'this-year', label: String(year), ...yearRange(year), spec: { kind: 'year', year } },
   ]
 }
 
