@@ -5,6 +5,12 @@ import { DocumentInputSchema, type DocumentInput } from '@taxsteps/core'
 export type QueueItem = { input: DocumentInput; queuedAt: string; attempts: number; lastError: string | null }
 export type KV = { getItem(k: string): Promise<string | null>; setItem(k: string, v: string): Promise<void> }
 
+/** Each signed-in user gets their own queue, so one person's offline saves can never be
+ *  flushed into another account on a shared device. */
+export function queueKeyFor(userId: string): string {
+  return `taxsteps.queue.v1.${userId}`
+}
+
 export function createOfflineQueue(kv: KV, key = 'taxsteps.queue.v1') {
   async function read(): Promise<QueueItem[]> {
     try {

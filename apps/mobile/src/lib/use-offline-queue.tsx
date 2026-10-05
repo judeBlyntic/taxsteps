@@ -3,9 +3,10 @@ import { AppState } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import NetInfo from '@react-native-community/netinfo'
 import { useQueryClient } from '@tanstack/react-query'
-import { isAppError, type DocumentInput } from '@taxsteps/core'
+import { AppError, isAppError, type DocumentInput } from '@taxsteps/core'
 import { invalidateDocuments, saveDocument, useClient } from '@taxsteps/data'
-import { createOfflineQueue, type QueueItem } from './offline-queue'
+import { createOfflineQueue, queueKeyFor, type QueueItem } from './offline-queue'
+import { useSession } from './session'
 
 type Api = {
   pending: QueueItem[]
@@ -16,21 +17,24 @@ type Api = {
   clear: () => Promise<void>
 }
 
-const queue = createOfflineQueue(AsyncStorage)
 const Ctx = createContext<Api | null>(null)
 
 export function OfflineQueueProvider({ children }: { children: ReactNode }) {
   const client = useClient()
   const qc = useQueryClient()
+  const userId = useSession().session?.user.id ?? null
+  // Scoped to the signed-in user: queued saves only ever flush into the account that made them.
+  const queue = useMemo(() => (userId ? createOfflineQueue(AsyncStorage, queueKeyFor(userId)) : null), [userId])
   const [pending, setPending] = useState<QueueItem[]>([])
   const [isOnline, setOnline] = useState(true)
 
-  const refresh = useCallback(async () => setPending(await queue.list()), [])
+  const refresh = useCallback(async () => setPending(queue ? await queue.list() : []), [queue])
   const retry = useCallback(async () => {
+    if (!queue) return
     const { saved } = await queue.flush((input) => saveDocument(client, input))
     if (saved) invalidateDocuments(qc)
     await refresh()
-  }, [client, qc, refresh])
+  }, [queue, client, qc, refresh])
 
   useEffect(() => {
     void refresh()
@@ -53,16 +57,17 @@ export function OfflineQueueProvider({ children }: { children: ReactNode }) {
         if (!(isAppError(e) && e.code === 'NETWORK') && !(e instanceof TypeError)) throw e
       }
     }
+    if (!queue) throw new AppError('UNAUTHORIZED')
     await queue.enqueue(input)
     await refresh()
     return 'queued'
-  }, [client, qc, isOnline, refresh])
+  }, [queue, client, qc, isOnline, refresh])
 
   const api = useMemo<Api>(() => ({
     pending, isOnline, saveOrQueue, retry,
-    discard: async (id) => { await queue.discard(id); await refresh() },
-    clear: async () => { await queue.clear(); await refresh() },
-  }), [pending, isOnline, saveOrQueue, retry, refresh])
+    discard: async (id) => { await queue?.discard(id); await refresh() },
+    clear: async () => { await queue?.clear(); await refresh() },
+  }), [queue, pending, isOnline, saveOrQueue, retry, refresh])
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>
 }

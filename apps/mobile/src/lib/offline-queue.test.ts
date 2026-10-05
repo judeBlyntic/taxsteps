@@ -72,3 +72,18 @@ describe('offline queue', () => {
     expect(await createOfflineQueue(kv).list()).toEqual([])
   })
 })
+
+describe('per-user isolation', () => {
+  it("never shows or flushes another user's queued expenses", async () => {
+    const { queueKeyFor } = await import('./offline-queue')
+    const kv = memKV()
+    const alice = createOfflineQueue(kv, queueKeyFor('alice-id'))
+    const bob = createOfflineQueue(kv, queueKeyFor('bob-id'))
+    await alice.enqueue(inp('a'))
+    expect(await bob.list()).toEqual([])
+    const flushed: string[] = []
+    await bob.flush(async (i) => { flushed.push(i.id) })
+    expect(flushed).toEqual([])
+    expect(await alice.list()).toHaveLength(1)
+  })
+})
