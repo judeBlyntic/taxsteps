@@ -2,7 +2,8 @@
 import { useRef, useState, type DragEvent } from 'react'
 import { Camera, Check, PencilLine, ShieldCheck, Upload } from 'lucide-react'
 import { COPY, draftFromExtraction, toUserMessage, type DraftContext } from '@taxsteps/core'
-import { extractDocument, useCategories, useClient } from '@taxsteps/data'
+import { useQueryClient } from '@tanstack/react-query'
+import { extractDocument, getProfile, listCategories, qk, useClient } from '@taxsteps/data'
 import { useDocumentDrawer } from '@/components/documents/DrawerContext'
 import { ICON } from '@/components/ui/icons'
 import { prepareFile } from '@/lib/image'
@@ -15,18 +16,21 @@ type Phase = { kind: 'idle' } | { kind: 'working'; step: number } | { kind: 'err
 export function ScanPanel() {
   const client = useClient()
   const drawer = useDocumentDrawer()
-  const { today, profile } = useToday()
-  const { data: categories } = useCategories()
+  const { today } = useToday()
+  const qc = useQueryClient()
   const [phase, setPhase] = useState<Phase>({ kind: 'idle' })
   const [over, setOver] = useState(false)
   const fileInput = useRef<HTMLInputElement>(null)
   const cameraInput = useRef<HTMLInputElement>(null)
-  const ready = Boolean(profile && categories)
-
   async function handle(file: File | undefined, source: 'scan' | 'upload') {
-    if (!file || !profile || !categories) return
+    if (!file) return
     setPhase({ kind: 'working', step: 0 })
     try {
+      // Load (or reuse cached) settings so an early drop never gets silently ignored.
+      const [profile, categories] = await Promise.all([
+        qc.ensureQueryData({ queryKey: qk.profile, queryFn: () => getProfile(client) }),
+        qc.ensureQueryData({ queryKey: qk.categories, queryFn: () => listCategories(client, { includeArchived: true }) }),
+      ])
       let prepared: { base64: string; mimeType: string; filename: string } | null = await prepareFile(file)
       setPhase({ kind: 'working', step: 1 })
       const res = await extractDocument(client, {
@@ -70,7 +74,7 @@ export function ScanPanel() {
         </div>
       ) : (
         <>
-          <button type="button" className="dropzone" data-over={over} disabled={!ready}
+          <button type="button" className="dropzone" data-over={over} 
             onClick={() => fileInput.current?.click()}
             onDragOver={(e) => { e.preventDefault(); setOver(true) }} onDragLeave={() => setOver(false)} onDrop={onDrop}>
             <span className="disc"><Upload {...ICON} /></span>
@@ -78,10 +82,10 @@ export function ScanPanel() {
             <span className="muted" style={{ fontSize: 14 }}>or click to browse · JPG, PNG, WebP or PDF up to 10 MB</span>
           </button>
           <div className="row" style={{ flexWrap: 'wrap' }}>
-            <button type="button" className="btn btn-dark btn-lg show-mobile" disabled={!ready} onClick={() => cameraInput.current?.click()}>
+            <button type="button" className="btn btn-dark btn-lg show-mobile" onClick={() => cameraInput.current?.click()}>
               <Camera {...ICON} />Take photo
             </button>
-            <button type="button" className="btn btn-secondary btn-lg btn-paper" disabled={!ready} onClick={() => drawer.openNew()}>
+            <button type="button" className="btn btn-secondary btn-lg btn-paper" onClick={() => drawer.openNew()}>
               <PencilLine {...ICON} />Enter manually
             </button>
           </div>

@@ -6,7 +6,8 @@ import { CameraView, useCameraPermissions } from 'expo-camera'
 import * as ImagePicker from 'expo-image-picker'
 import { Check, Image as ImageIcon, PencilLine, ShieldCheck, X, Zap } from 'lucide-react-native'
 import { COPY, draftFromExtraction, toUserMessage } from '@taxsteps/core'
-import { extractDocument, useCategories, useClient } from '@taxsteps/data'
+import { useQueryClient } from '@tanstack/react-query'
+import { extractDocument, getProfile, listCategories, qk, useClient } from '@taxsteps/data'
 import { Banner, Button, H, Screen, T } from '@/components/ui'
 import { prepareCapture } from '@/lib/capture'
 import { setPendingDraft } from '@/lib/draft-store'
@@ -39,18 +40,22 @@ export default function ScanScreen() {
   const router = useRouter()
   const client = useClient()
   const { isOnline } = useOfflineQueue()
-  const { today, profile } = useToday()
-  const { data: categories } = useCategories()
+  const { today } = useToday()
+  const qc = useQueryClient()
   const [permission, requestPermission] = useCameraPermissions()
   const camera = useRef<CameraView>(null)
   const [torch, setTorch] = useState(false)
   const [phase, setPhase] = useState<Phase>({ kind: 'camera' })
 
   async function process(uri: string, width: number | undefined, height: number | undefined, source: 'scan' | 'upload') {
-    if (!profile || !categories) return
     if (!isOnline) return setPhase({ kind: 'error', message: toUserMessage(new TypeError('Network request failed')) })
     setPhase({ kind: 'working', step: 0 })
     try {
+      // Load (or reuse cached) settings so a quick capture is never silently ignored.
+      const [profile, categories] = await Promise.all([
+        qc.ensureQueryData({ queryKey: qk.profile, queryFn: () => getProfile(client) }),
+        qc.ensureQueryData({ queryKey: qk.categories, queryFn: () => listCategories(client, { includeArchived: true }) }),
+      ])
       let file: { base64: string; mimeType: string; filename: string } | null = await prepareCapture(uri, width, height)
       setPhase({ kind: 'working', step: 1 })
       const res = await extractDocument(client, {
