@@ -32,6 +32,7 @@ function RootNavigator() {
         <Stack.Screen name="profile" />
         <Stack.Screen name="region" />
         <Stack.Screen name="categories" />
+        <Stack.Screen name="sheets" />
       </Stack.Protected>
     </Stack>
   )
