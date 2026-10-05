@@ -1,0 +1,17 @@
+node_modules/
+.next/
+.expo/
+dist/
+web-build/
+.env
+.env.*
+!.env.example
+supabase/.temp/
+supabase/.branches/
+supabase/functions/.env
+playwright-report/
+test-results/
+*.log
+.DS_Store
+*.tsbuildinfo
+.superpowers/
