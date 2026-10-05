@@ -15,3 +15,6 @@ test-results/
 .DS_Store
 *.tsbuildinfo
 .superpowers/
+
+# Supabase CLI personal access token (never commit)
+supabase/.access-token
