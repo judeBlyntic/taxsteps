@@ -44,3 +44,8 @@ export function parseAmount(input: string, locale: string = DEFAULT_LOCALE): num
 export function formatMoney(cents: number, currency: string, locale: string = DEFAULT_LOCALE): string {
   return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(fromCents(cents))
 }
+
+/** Cents → editable text in the locale's decimal style, no grouping ("1234.56" / "1234,56"). */
+export function formatAmountInput(cents: number, locale: string = DEFAULT_LOCALE): string {
+  return new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: false }).format(fromCents(cents))
+}

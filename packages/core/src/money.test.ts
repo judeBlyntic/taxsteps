@@ -41,3 +41,12 @@ describe('formatMoney', () => {
     expect(formatMoney(1000, 'EUR', 'de-DE')).toMatch(/10,00\s€/)
   })
 })
+
+describe('formatAmountInput', () => {
+  it('formats cents for an editable field without grouping, in the locale', async () => {
+    const { formatAmountInput } = await import('./money.ts')
+    expect(formatAmountInput(123456, 'en-NZ')).toBe('1234.56')
+    expect(formatAmountInput(123456, 'de-DE')).toBe('1234,56')
+    expect(formatAmountInput(1200, 'en-NZ')).toBe('12.00')
+  })
+})
