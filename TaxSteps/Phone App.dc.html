@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/organic-63f81bda-d3d8-44a7-86a2-9a4185c3135e/styles.css">
+<script src="_ds/organic-63f81bda-d3d8-44a7-86a2-9a4185c3135e/_ds_bundle.js"></script>
+<script src="tr-data.js"></script>
+<style>@keyframes trspin{to{transform:rotate(360deg)}}@keyframes trscan{0%,100%{top:6%}50%{top:90%}}a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}</style>
+</helmet>
+<div style="width:390px;height:844px;border-radius:{{ frameR }};padding:10px;background:var(--color-text);box-shadow:var(--shadow-lg);box-sizing:border-box;font-family:var(--font-body);color:var(--color-text)">
+<div style="position:relative;width:100%;height:100%;border-radius:{{ innerR }};overflow:hidden;background:{{ screenBg }};display:flex;flex-direction:column">
+
+<sc-if value="{{ isIOS }}" hint-placeholder-val="{{ true }}">
+<div style="height:50px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 30px 0 38px;position:relative;color:{{ sbColor }};font-weight:700;font-size:15px">
+<span>9:41</span>
+<div style="position:absolute;left:50%;top:11px;transform:translateX(-50%);width:118px;height:34px;border-radius:999px;background:var(--color-text)"></div>
+<div style="display:flex;align-items:center;gap:6px"><div style="display:flex;align-items:flex-end;gap:2px;height:11px"><span style="width:3px;height:4px;border-radius:1px;background:currentColor"></span><span style="width:3px;height:6px;border-radius:1px;background:currentColor"></span><span style="width:3px;height:8px;border-radius:1px;background:currentColor"></span><span style="width:3px;height:11px;border-radius:1px;background:currentColor"></span></div><div style="width:25px;height:12px;border-radius:4px;border:1.5px solid currentColor;padding:1.5px;box-sizing:border-box"><div style="width:75%;height:100%;border-radius:1.5px;background:currentColor"></div></div></div>
+</div>
+</sc-if>
+<sc-if value="{{ isAndroid }}" hint-placeholder-val="{{ false }}">
+<div style="height:38px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:relative;color:{{ sbColor }};font-weight:600;font-size:13px">
+<span>9:41</span>
+<div style="position:absolute;left:50%;top:10px;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:var(--color-text)"></div>
+<div style="display:flex;align-items:center;gap:6px"><div style="width:0;height:0;border-left:11px solid transparent;border-bottom:11px solid currentColor"></div><div style="width:9px;height:14px;border-radius:2.5px;background:currentColor"></div></div>
+</div>
+</sc-if>
+
+<div style="flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;position:relative;scrollbar-width:none">
+
+<sc-if value="{{ s.onboard }}" hint-placeholder-val="{{ false }}">
+<div style="height:100%;display:flex;flex-direction:column;padding:6px 18px 22px;gap:22px;box-sizing:border-box">
+<div style="position:relative;flex:1;min-height:0;border-radius:40px;background:{{ ob.bg }};overflow:hidden">
+<div style="position:absolute;width:320px;height:320px;border-radius:50%;right:-110px;top:-80px;background:{{ ob.c1 }}"></div>
+<div style="position:absolute;width:190px;height:190px;border-radius:50%;left:-50px;bottom:-40px;background:{{ ob.c2 }}"></div>
+<div style="position:absolute;width:40px;height:40px;border-radius:50%;left:64px;top:96px;background:var(--color-bg)"></div>
+<div style="position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:156px;height:156px;border-radius:50%;background:var(--color-bg);display:grid;place-items:center;box-shadow:var(--shadow-lg);color:{{ ob.fg }}"><span style="width:62px;height:62px;display:flex">{{ ob.icon }}</span></div>
+<span class="tag" style="position:absolute;left:18px;top:18px;background:var(--color-bg);color:var(--color-text);font-weight:700">{{ ob.kicker }}</span>
+<div style="position:absolute;right:16px;bottom:18px;display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;background:var(--color-text);color:var(--color-bg);font-size:13px;font-weight:700;box-shadow:var(--shadow-md)"><span style="width:16px;height:16px;display:flex">{{ i.sparkles }}</span>{{ ob.chip }}</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;padding:0 4px">
+<div style="display:flex;gap:6px"><sc-for list="{{ dots }}" as="d" hint-placeholder-count="3"><span style="height:8px;width:{{ d.w }};border-radius:999px;background:{{ d.bg }};transition:all .3s"></span></sc-for></div>
+<h1 style="font-size:36px;line-height:1.05;margin:4px 0 0;text-wrap:pretty">{{ ob.title }}</h1>
+<p style="margin:0;font-size:15px;color:var(--color-neutral-700);text-wrap:pretty">{{ ob.body }}</p>
+</div>
+<sc-if value="{{ obLast }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:8px">
+<button class="btn btn-primary" onClick="{{ toPlan }}" style="height:54px;font-size:17px">Create account</button>
+<button class="btn btn-secondary" onClick="{{ toPlan }}" style="height:50px;font-size:15px">Continue with Google</button>
+<sc-if value="{{ isIOS }}"><button class="btn" onClick="{{ toPlan }}" style="height:50px;font-size:15px;background:var(--color-text);color:var(--color-bg)">Continue with Apple</button></sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ obNotLast }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;gap:8px;align-items:center">
+<button class="btn btn-ghost" onClick="{{ toPlan }}" style="height:54px;padding:0 18px;font-size:15px;color:var(--color-neutral-700)">Skip</button>
+<button class="btn btn-primary" onClick="{{ obNext }}" style="flex:1;height:54px;font-size:17px">Continue<span style="width:18px;height:18px;display:flex">{{ i.arrowRight }}</span></button>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ s.plan }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px;padding:8px 22px 26px">
+<div style="display:flex;justify-content:space-between;align-items:center"><button class="btn btn-secondary btn-icon" onClick="{{ toOnboard }}" style="width:44px;height:44px"><span style="width:20px;height:20px;display:flex">{{ i.back }}</span></button><span class="tag tag-accent-2" style="font-weight:700">7-day free trial</span></div>
+<h1 style="font-size:36px;line-height:1.05;margin:6px 0 0">Choose your plan</h1>
+<p style="margin:0;color:var(--color-neutral-700)">Every feature on both plans. Unlimited scans, exports and devices.</p>
+<sc-for list="{{ plans }}" as="p" hint-placeholder-count="2">
+<div onClick="{{ p.onClick }}" style="position:relative;cursor:pointer;display:flex;align-items:center;gap:14px;padding:20px;border-radius:30px;background:{{ p.bg }};border:2px solid {{ p.bd }};transition:all .2s">
+<span style="width:24px;height:24px;flex:none;border-radius:50%;border:2px solid {{ p.dotBd }};background:{{ p.dotBg }};box-shadow:inset 0 0 0 4px var(--color-bg)"></span>
+<div style="flex:1"><div style="font-family:var(--font-heading);font-size:21px">{{ p.name }}</div><div style="font-size:13px;color:var(--color-neutral-700)">{{ p.note }}</div></div>
+<div style="text-align:right"><div style="font-weight:700;font-size:20px">{{ p.price }}</div><div style="font-size:12px;color:var(--color-neutral-700)">{{ p.per }}</div></div>
+<sc-if value="{{ p.best }}"><span class="tag" style="position:absolute;top:-11px;right:20px;background:var(--color-accent-2-700);color:var(--color-accent-2-100);font-weight:700">Best value · save $25.98</span></sc-if>
+</div>
+</sc-for>
+<div style="display:flex;gap:12px;padding:16px;border-radius:24px;background:var(--color-surface)"><span style="width:22px;height:22px;flex:none;display:flex;color:var(--color-accent-2-700)">{{ i.shield }}</span><div style="font-size:13px;line-height:1.5">You won't be charged during the trial. Billing starts on <b>8 Oct 2026</b> unless you cancel before then.</div></div>
+<div style="display:flex;justify-content:space-between;font-size:14px;padding:0 4px"><span>Due today</span><b>$0.00</b></div>
+<button class="btn btn-primary" onClick="{{ startTrial }}" style="height:56px;font-size:17px">Start free trial</button>
+<div style="text-align:center;font-size:12px;color:var(--color-neutral-700)">Billed securely through {{ storeName }} · <a href="#">Restore purchase</a></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ s.home }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:20px;padding:6px 0 28px">
+<div style="display:flex;align-items:center;gap:12px;padding:0 22px">
+<div style="width:46px;height:46px;border-radius:50%;background:var(--color-accent-300);display:grid;place-items:center;font-family:var(--font-heading);font-size:17px;color:var(--color-accent-900)">AN</div>
+<div style="flex:1;line-height:1.25"><div style="font-size:13px;color:var(--color-neutral-700)">Good afternoon</div><div style="font-weight:700;font-size:16px">Aroha Ngata</div></div>
+<button class="btn btn-secondary btn-icon" style="width:46px;height:46px;position:relative"><span style="width:20px;height:20px;display:flex">{{ i.bell }}</span><span style="position:absolute;top:11px;right:12px;width:8px;height:8px;border-radius:50%;background:var(--color-accent)"></span></button>
+</div>
+<h1 style="font-size:34px;line-height:1.05;margin:0;padding:0 22px">Every receipt,<br>sorted.</h1>
+<div style="position:relative;margin:0 18px;padding-top:16px">
+<div style="position:absolute;left:22px;right:22px;top:0;height:50px;border-radius:28px;background:var(--color-accent-2-400)"></div>
+<div style="position:absolute;left:11px;right:11px;top:8px;height:50px;border-radius:30px;background:var(--color-accent-300)"></div>
+<div style="position:relative;border-radius:34px;background:var(--color-neutral-100);padding:22px;overflow:hidden;box-shadow:var(--shadow-md)">
+<div style="position:absolute;width:190px;height:190px;border-radius:50%;right:-60px;bottom:-70px;background:var(--color-accent-2-200)"></div>
+<div style="position:absolute;width:56px;height:56px;border-radius:50%;right:70px;bottom:60px;background:var(--color-accent-300)"></div>
+<div style="position:relative;display:flex;flex-direction:column;gap:4px">
+<div style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:700;color:var(--color-neutral-700)">September 2026<span style="width:16px;height:16px;display:flex">{{ i.down }}</span></div>
+<div style="font-family:var(--font-heading);font-size:46px;line-height:1.05;margin-top:6px;font-variant-numeric:tabular-nums">$4,285.70</div>
+<div style="font-size:14px;color:var(--color-neutral-700)">Total expenses</div>
+<div style="display:flex;gap:18px;margin:12px 0 16px"><div><div style="font-weight:700;font-size:18px">47</div><div style="font-size:12px;color:var(--color-neutral-700)">Receipts</div></div><div><div style="font-weight:700;font-size:18px">$558.35</div><div style="font-size:12px;color:var(--color-neutral-700)">GST</div></div><div><div style="font-weight:700;font-size:18px">$91.19</div><div style="font-size:12px;color:var(--color-neutral-700)">Average</div></div></div>
+<button class="btn" onClick="{{ toScan }}" style="align-self:flex-start;height:46px;padding:0 20px;background:var(--color-text);color:var(--color-bg);font-size:15px" style-hover="background:var(--color-neutral-800)">Scan receipt<span style="width:16px;height:16px;display:flex">{{ i.arrowRight }}</span></button>
+</div>
+</div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;padding:0 22px"><h4 style="margin:0">Overview</h4><span style="font-size:13px;color:var(--color-neutral-700)">This month</span></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 18px">
+<div style="position:relative;overflow:hidden;display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:30px;background:var(--color-accent-2-300);color:var(--color-accent-2-900)">
+<div style="position:absolute;width:90px;height:90px;border-radius:50%;right:-26px;bottom:-26px;background:var(--color-accent-2-400)"></div>
+<div style="font-weight:700;font-size:15px">Business</div>
+<div style="width:42px;height:42px;border-radius:50%;background:conic-gradient(var(--color-accent-2-800) 0 72%, var(--color-accent-2-200) 0);display:grid;place-items:center"><div style="width:28px;height:28px;border-radius:50%;background:var(--color-accent-2-300)"></div></div>
+<div style="position:relative"><div style="font-family:var(--font-heading);font-size:34px;line-height:1">72<span style="font-size:18px">%</span></div><div style="font-size:12.5px;font-weight:600">$3,086.00</div></div>
+</div>
+<div style="position:relative;overflow:hidden;display:flex;flex-direction:column;gap:14px;padding:18px;border-radius:30px;background:var(--color-accent-200);color:var(--color-accent-900)">
+<div style="position:absolute;width:90px;height:90px;border-radius:50%;right:-26px;bottom:-26px;background:var(--color-accent-300)"></div>
+<div style="font-weight:700;font-size:15px">Personal</div>
+<div style="width:42px;height:42px;border-radius:50%;background:conic-gradient(var(--color-accent-700) 0 28%, var(--color-accent-100) 0);display:grid;place-items:center"><div style="width:28px;height:28px;border-radius:50%;background:var(--color-accent-200)"></div></div>
+<div style="position:relative"><div style="font-family:var(--font-heading);font-size:34px;line-height:1">28<span style="font-size:18px">%</span></div><div style="font-size:12.5px;font-weight:600">$1,199.70</div></div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;padding:0 22px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><h4 style="margin:0">Receipt days</h4><div style="display:flex;gap:10px;font-size:12px;color:var(--color-neutral-700)"><span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:var(--color-accent-2-400)"></span>Business</span><span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:var(--color-accent-400)"></span>Personal</span></div></div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;justify-items:center">
+<sc-for list="{{ wk }}" as="w" hint-placeholder-count="7"><span style="font-size:12px;color:var(--color-neutral-700)">{{ w }}</span></sc-for>
+<sc-for list="{{ cal }}" as="c" hint-placeholder-count="31"><span style="width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:600;background:{{ c.bg }};color:{{ c.fg }};box-shadow:inset 0 0 0 1px {{ c.bd }}">{{ c.d }}</span></sc-for>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:2px;padding:0 12px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;padding:0 10px 6px"><h4 style="margin:0">Recent</h4><button class="btn btn-ghost" onClick="{{ toReceipts }}" style="font-size:14px">See all</button></div>
+<sc-for list="{{ recent }}" as="r" hint-placeholder-count="4">
+<div onClick="{{ r.onClick }}" style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:24px;cursor:pointer" style-hover="background:var(--color-surface)">
+<div style="width:46px;height:46px;border-radius:50%;background:{{ r.bg }};color:{{ r.fg }};display:grid;place-items:center;flex:none"><span style="width:20px;height:20px;display:flex">{{ r.ic }}</span></div>
+<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:15px">{{ r.vendor }}</div><div style="font-size:12.5px;color:var(--color-neutral-700)">{{ r.cat }} · {{ r.date }}</div></div>
+<div style="font-weight:700;font-size:15px;font-variant-numeric:tabular-nums">{{ r.amt }}</div>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ s.scan }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;color:var(--color-neutral-100)">
+<div style="position:absolute;top:6px;left:18px;right:18px;display:flex;justify-content:space-between;align-items:center">
+<button class="btn btn-icon" onClick="{{ toHome }}" style="width:46px;height:46px;background:color-mix(in srgb, var(--color-neutral-100) 14%, transparent);color:var(--color-neutral-100)"><span style="width:20px;height:20px;display:flex">{{ i.x }}</span></button>
+<span style="font-family:var(--font-heading);font-size:18px">Scan receipt</span>
+<button class="btn btn-icon" onClick="{{ toggleFlash }}" style="width:46px;height:46px;background:{{ flashBg }};color:{{ flashFg }}"><span style="width:20px;height:20px;display:flex">{{ i.zap }}</span></button>
+</div>
+<div style="position:absolute;top:72px;left:34px;right:34px;bottom:206px;border-radius:30px;overflow:hidden;background:var(--color-neutral-800)">
+<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-3deg);width:62%;height:82%;border-radius:10px;background:var(--color-neutral-200);padding:18px 16px;box-sizing:border-box;display:flex;flex-direction:column;gap:9px;opacity:.92">
+<div style="height:10px;width:55%;margin:0 auto 8px;border-radius:999px;background:var(--color-neutral-500)"></div>
+<div style="height:6px;width:80%;border-radius:999px;background:var(--color-neutral-400)"></div><div style="height:6px;width:64%;border-radius:999px;background:var(--color-neutral-400)"></div><div style="height:6px;width:72%;border-radius:999px;background:var(--color-neutral-400)"></div><div style="height:6px;width:50%;border-radius:999px;background:var(--color-neutral-400)"></div><div style="height:6px;width:76%;border-radius:999px;background:var(--color-neutral-400)"></div>
+<div style="flex:1"></div>
+<div style="display:flex;justify-content:space-between"><div style="height:8px;width:30%;border-radius:999px;background:var(--color-neutral-600)"></div><div style="height:8px;width:24%;border-radius:999px;background:var(--color-neutral-600)"></div></div>
+</div>
+<div style="position:absolute;left:14px;top:14px;width:44px;height:44px;border-left:4px solid var(--color-accent-400);border-top:4px solid var(--color-accent-400);border-top-left-radius:22px"></div>
+<div style="position:absolute;right:14px;top:14px;width:44px;height:44px;border-right:4px solid var(--color-accent-400);border-top:4px solid var(--color-accent-400);border-top-right-radius:22px"></div>
+<div style="position:absolute;left:14px;bottom:14px;width:44px;height:44px;border-left:4px solid var(--color-accent-400);border-bottom:4px solid var(--color-accent-400);border-bottom-left-radius:22px"></div>
+<div style="position:absolute;right:14px;bottom:14px;width:44px;height:44px;border-right:4px solid var(--color-accent-400);border-bottom:4px solid var(--color-accent-400);border-bottom-right-radius:22px"></div>
+{{ scanLine }}
+</div>
+<div style="position:absolute;left:0;right:0;bottom:162px;display:flex;justify-content:center"><span style="padding:8px 14px;border-radius:999px;background:color-mix(in srgb, var(--color-neutral-100) 14%, transparent);font-size:13px">Place the entire receipt inside the frame.</span></div>
+<div style="position:absolute;left:30px;right:30px;bottom:44px;display:flex;justify-content:space-between;align-items:center">
+<button class="btn" onClick="{{ capture }}" style="flex-direction:column;gap:4px;width:64px;padding:0;color:var(--color-neutral-100);font-family:var(--font-body);font-size:11px"><span style="width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb, var(--color-neutral-100) 14%, transparent)"><span style="width:20px;height:20px;display:flex">{{ i.image }}</span></span>Gallery</button>
+<button onClick="{{ capture }}" style="all:unset;cursor:pointer;width:84px;height:84px;border-radius:50%;border:4px solid var(--color-neutral-100);display:grid;place-items:center;box-sizing:border-box"><span style="width:64px;height:64px;border-radius:50%;background:var(--color-accent)"></span></button>
+<button class="btn" onClick="{{ manual }}" style="flex-direction:column;gap:4px;width:64px;padding:0;color:var(--color-neutral-100);font-family:var(--font-body);font-size:11px"><span style="width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb, var(--color-neutral-100) 14%, transparent)"><span style="width:20px;height:20px;display:flex">{{ i.pencil }}</span></span>Manual</button>
+</div>
+<sc-if value="{{ processing }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:color-mix(in srgb, var(--color-neutral-900) 55%, transparent)"></div>
+<div style="position:absolute;left:10px;right:10px;bottom:10px;border-radius:38px;background:var(--color-bg);color:var(--color-text);padding:26px 24px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow-lg)">
+<h3 style="margin:0">Reading your receipt…</h3>
+<sc-for list="{{ steps }}" as="st" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;gap:12px;font-size:15px;font-weight:600;color:{{ st.color }}"><span style="width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;background:{{ st.bg }};color:var(--color-accent-2-900)">{{ st.mark }}</span>{{ st.label }}</div>
+</sc-for>
+<div style="display:flex;gap:10px;padding:14px;border-radius:22px;background:var(--color-accent-2-100);color:var(--color-accent-2-800);font-size:13px"><span style="width:18px;height:18px;flex:none;display:flex">{{ i.shield }}</span>Your photo is used only to extract the details. It's deleted straight after.</div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ s.review }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:14px;padding:6px 18px 26px">
+<div style="display:flex;justify-content:space-between;align-items:center"><button class="btn btn-secondary btn-icon" onClick="{{ reviewBack }}" style="width:44px;height:44px"><span style="width:20px;height:20px;display:flex">{{ i.back }}</span></button><span class="tag tag-accent-2" style="display:flex;gap:5px;font-weight:700"><span style="width:13px;height:13px;display:flex">{{ i.shield }}</span>{{ reviewTag }}</span></div>
+<h1 style="font-size:34px;line-height:1.05;margin:4px 4px 0">{{ reviewTitle }}</h1>
+<sc-if value="{{ hasFlags }}">
+<div style="display:flex;gap:10px;padding:14px 16px;border-radius:24px;background:var(--color-accent-100);color:var(--color-accent-800);font-size:13.5px;line-height:1.45"><span style="width:20px;height:20px;flex:none;display:flex">{{ i.alert }}</span>We found most of the receipt. Please check the highlighted fields.</div>
+</sc-if>
+<div style="display:flex;flex-direction:column;gap:4px;padding:8px;border-radius:32px;background:var(--color-neutral-100);box-shadow:var(--shadow-sm)">
+<sc-for list="{{ fields }}" as="f" hint-placeholder-count="8">
+<label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:22px;background:{{ f.bg }}">
+<span style="font-size:13px;color:var(--color-neutral-700);width:78px;flex:none">{{ f.label }}</span>
+<input value="{{ f.value }}" onChange="{{ f.onChange }}" style="all:unset;flex:1;min-width:0;text-align:right;font-weight:700;font-size:15px;font-variant-numeric:tabular-nums">
+<span style="width:22px;height:22px;flex:none;border-radius:50%;display:grid;place-items:center;background:{{ f.markBg }};color:{{ f.markFg }}"><span style="width:12px;height:12px;display:flex">{{ f.mark }}</span></span>
+</label>
+</sc-for>
+</div>
+<div style="display:flex;gap:8px">
+<sc-for list="{{ typeOpts }}" as="t" hint-placeholder-count="2"><button class="btn" onClick="{{ t.onClick }}" style="flex:1;height:46px;background:{{ t.bg }};color:{{ t.fg }};font-size:15px">{{ t.label }}</button></sc-for>
+</div>
+<div onClick="{{ toggleDeduct }}" style="display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-radius:24px;background:var(--color-surface);cursor:pointer"><span style="font-weight:600;font-size:15px">Tax deductible</span><span style="width:48px;height:28px;border-radius:999px;background:{{ deductBg }};position:relative;transition:background .2s"><span style="position:absolute;top:3px;left:{{ deductX }};width:22px;height:22px;border-radius:50%;background:var(--color-bg);box-shadow:var(--shadow-sm);transition:left .2s"></span></span></div>
+<button class="btn btn-primary" onClick="{{ save }}" style="height:56px;font-size:17px;margin-top:4px">Save receipt</button>
+<button class="btn btn-secondary" onClick="{{ reviewAlt }}" style="height:48px;font-size:15px;color:{{ altColor }}">{{ altLabel }}</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ s.receipts }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:14px;padding:6px 0 26px">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:0 22px"><h1 style="font-size:34px;margin:0">Receipts</h1><button class="btn btn-secondary btn-icon" onClick="{{ manual }}" style="width:46px;height:46px"><span style="width:20px;height:20px;display:flex">{{ i.plus }}</span></button></div>
+<div style="display:flex;align-items:center;gap:10px;margin:0 18px;padding:0 18px;height:50px;border-radius:999px;background:var(--color-surface)"><span style="width:18px;height:18px;display:flex;color:var(--color-neutral-700)">{{ i.search }}</span><input value="{{ q }}" onChange="{{ onQ }}" placeholder="Vendor, amount, receipt #" style="all:unset;flex:1;font-size:15px"></div>
+<div style="display:flex;gap:8px;padding:0 18px;overflow-x:auto;scrollbar-width:none">
+<sc-for list="{{ chips }}" as="c" hint-placeholder-count="4"><button class="btn" onClick="{{ c.onClick }}" style="flex:none;height:38px;padding:0 16px;font-family:var(--font-body);font-weight:700;font-size:13px;background:{{ c.bg }};color:{{ c.fg }};border:1px solid {{ c.bd }}">{{ c.label }}</button></sc-for>
+</div>
+<div style="display:flex;justify-content:space-between;padding:0 22px;font-size:13px;color:var(--color-neutral-700)"><span>{{ countLabel }}</span><span>{{ sumLabel }}</span></div>
+<div style="display:flex;flex-direction:column;gap:2px;padding:0 12px">
+<sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+<div onClick="{{ r.onClick }}" style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:24px;cursor:pointer" style-hover="background:var(--color-surface)">
+<div style="width:46px;height:46px;border-radius:50%;background:{{ r.bg }};color:{{ r.fg }};display:grid;place-items:center;flex:none"><span style="width:20px;height:20px;display:flex">{{ r.ic }}</span></div>
+<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:15px">{{ r.vendor }}</div><div style="font-size:12.5px;color:var(--color-neutral-700)">{{ r.cat }} · {{ r.date }}</div></div>
+<div style="text-align:right"><div style="font-weight:700;font-size:15px;font-variant-numeric:tabular-nums">{{ r.amt }}</div><div style="font-size:11.5px;color:var(--color-neutral-700)">{{ r.typeLabel }}</div></div>
+</div>
+</sc-for>
+<sc-if value="{{ noRows }}"><div style="padding:40px 20px;text-align:center;color:var(--color-neutral-700)">No receipts match. Try another search.</div></sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ s.reports }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px;padding:6px 18px 26px">
+<h1 style="font-size:34px;margin:0 4px">Reports</h1>
+<div style="display:flex;padding:4px;border-radius:999px;background:var(--color-surface)">
+<sc-for list="{{ periods }}" as="p" hint-placeholder-count="3"><button class="btn" onClick="{{ p.onClick }}" style="flex:1;height:40px;font-family:var(--font-body);font-weight:700;font-size:14px;background:{{ p.bg }};color:{{ p.fg }};box-shadow:{{ p.sh }}">{{ p.label }}</button></sc-for>
+</div>
+<div style="position:relative;overflow:hidden;padding:22px;border-radius:34px;background:var(--color-accent-2-300);color:var(--color-accent-2-900)">
+<div style="position:absolute;width:150px;height:150px;border-radius:50%;right:-40px;top:-50px;background:var(--color-accent-2-400)"></div>
+<div style="position:relative;font-size:13px;font-weight:700">{{ rep.range }}</div>
+<div style="position:relative;font-family:var(--font-heading);font-size:40px;line-height:1.1;margin:6px 0 12px">{{ rep.total }}</div>
+<div style="position:relative;display:flex;gap:22px;font-size:13px"><div><b style="font-size:17px">{{ rep.count }}</b><br>Receipts</div><div><b style="font-size:17px">{{ rep.gst }}</b><br>GST claimable</div></div>
+</div>
+<h4 style="margin:4px 4px 0">By category</h4>
+<div style="display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ catBars }}" as="c" hint-placeholder-count="5">
+<div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;font-size:14px"><span style="font-weight:600">{{ c.name }}</span><span style="font-variant-numeric:tabular-nums">{{ c.amt }}</span></div><div style="height:14px;border-radius:999px;background:var(--color-neutral-200)"><div style="height:100%;width:{{ c.w }};border-radius:999px;background:{{ c.bg }}"></div></div></div>
+</sc-for>
+</div>
+<h4 style="margin:8px 4px 0">Export</h4>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<sc-for list="{{ exportsList }}" as="e" hint-placeholder-count="4">
+<button onClick="{{ e.onClick }}" style="all:unset;cursor:pointer;display:flex;flex-direction:column;gap:18px;padding:16px;border-radius:26px;background:{{ e.bg }};color:{{ e.fg }}" style-hover="filter:brightness(.97)"><span style="width:40px;height:40px;border-radius:50%;background:var(--color-bg);display:grid;place-items:center"><span style="width:18px;height:18px;display:flex">{{ e.ic }}</span></span><span><span style="display:block;font-weight:700;font-size:15px">{{ e.label }}</span><span style="display:block;font-size:12px;opacity:.85">{{ e.sub }}</span></span></button>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ s.settings }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px;padding:6px 18px 26px">
+<h1 style="font-size:34px;margin:0 4px">Settings</h1>
+<div style="display:flex;align-items:center;gap:12px;padding:14px;border-radius:30px;background:var(--color-neutral-100)">
+<div style="width:52px;height:52px;border-radius:50%;background:var(--color-accent-300);display:grid;place-items:center;font-family:var(--font-heading);font-size:19px;color:var(--color-accent-900)">AN</div>
+<div style="flex:1;line-height:1.3"><div style="font-weight:700">Aroha Ngata</div><div style="font-size:13px;color:var(--color-neutral-700)">aroha@kowhaibuild.co.nz</div></div>
+<span style="width:20px;height:20px;display:flex;color:var(--color-neutral-600)">{{ i.right }}</span>
+</div>
+<div style="position:relative;overflow:hidden;padding:20px;border-radius:32px;background:var(--color-accent-200);color:var(--color-accent-900)">
+<div style="position:absolute;width:120px;height:120px;border-radius:50%;right:-30px;bottom:-40px;background:var(--color-accent-300)"></div>
+<div style="position:relative;display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:700">Your plan</span><span class="tag" style="background:var(--color-bg);color:var(--color-accent-800);font-weight:700">Free trial · ends 8 Oct</span></div>
+<div style="position:relative;font-family:var(--font-heading);font-size:26px;margin:8px 0 2px">Annual</div>
+<div style="position:relative;font-size:14px">$69.90 / year · next billing 8 Oct 2026</div>
+<button class="btn" style="position:relative;margin-top:14px;height:42px;padding:0 18px;background:var(--color-text);color:var(--color-bg)">Manage subscription</button>
+</div>
+<div style="display:flex;flex-direction:column;padding:6px;border-radius:30px;background:var(--color-neutral-100)">
+<sc-for list="{{ setRows }}" as="r" hint-placeholder-count="5">
+<div onClick="{{ r.onClick }}" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:22px;cursor:pointer" style-hover="background:var(--color-surface)"><span style="width:38px;height:38px;border-radius:50%;flex:none;display:grid;place-items:center;background:{{ r.bg }};color:{{ r.fg }}"><span style="width:17px;height:17px;display:flex">{{ r.ic }}</span></span><span style="flex:1;font-weight:600;font-size:15px">{{ r.label }}</span><span style="font-size:13px;color:{{ r.vc }};font-weight:600">{{ r.value }}</span><span style="width:16px;height:16px;display:flex;color:var(--color-neutral-500)">{{ i.right }}</span></div>
+</sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:30px;background:var(--color-accent-2-100);color:var(--color-accent-2-900)">
+<div style="display:flex;align-items:center;gap:8px;font-weight:700"><span style="width:18px;height:18px;display:flex">{{ i.shield }}</span>Privacy</div>
+<div style="font-size:13.5px;line-height:1.5">Receipt photos are never stored. We extract the details, then delete the image.</div>
+<div style="display:flex;flex-direction:column;gap:2px;margin-top:4px">
+<button class="btn btn-ghost" style="justify-content:flex-start;color:var(--color-accent-2-800);font-size:14px">Export all my data</button>
+<button class="btn btn-ghost" style="justify-content:flex-start;color:var(--color-accent-700);font-size:14px">Delete all receipt data</button>
+<button class="btn btn-ghost" style="justify-content:flex-start;color:var(--color-accent-700);font-size:14px">Delete account</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+</div>
+
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:24px;right:24px;bottom:{{ toastY }};display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:999px;background:var(--color-text);color:var(--color-bg);font-size:14px;font-weight:600;box-shadow:var(--shadow-lg);z-index:5"><span style="width:22px;height:22px;flex:none;border-radius:50%;background:var(--color-accent-2-400);color:var(--color-accent-2-900);display:grid;place-items:center"><span style="width:12px;height:12px;display:flex">{{ i.check }}</span></span>{{ toast }}</div>
+</sc-if>
+
+<sc-if value="{{ showTabs }}" hint-placeholder-val="{{ false }}">
+<div style="flex:none;display:grid;grid-template-columns:1fr 1fr 80px 1fr 1fr;align-items:center;padding:10px 8px 2px;background:var(--color-bg);box-shadow:0 -1px 0 var(--color-divider)">
+<sc-for list="{{ tabsL }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.onClick }}" style="all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:{{ t.color }};font-size:11px;font-weight:700"><span style="display:grid;place-items:center;width:54px;height:30px;border-radius:999px;background:{{ t.pill }}"><span style="width:22px;height:22px;display:flex">{{ t.ic }}</span></span>{{ t.label }}</button></sc-for>
+<div style="display:flex;justify-content:center"><button onClick="{{ toScan }}" style="all:unset;cursor:pointer;width:66px;height:66px;margin-top:-30px;border-radius:50%;background:var(--color-accent);color:var(--color-bg);display:grid;place-items:center;box-shadow:0 0 0 6px var(--color-bg), var(--shadow-md)" style-hover="background:var(--color-accent-600)"><span style="width:28px;height:28px;display:flex">{{ i.scan }}</span></button></div>
+<sc-for list="{{ tabsR }}" as="t" hint-placeholder-count="2"><button onClick="{{ t.onClick }}" style="all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:{{ t.color }};font-size:11px;font-weight:700"><span style="display:grid;place-items:center;width:54px;height:30px;border-radius:999px;background:{{ t.pill }}"><span style="width:22px;height:22px;display:flex">{{ t.ic }}</span></span>{{ t.label }}</button></sc-for>
+</div>
+</sc-if>
+<div style="flex:none;height:{{ homeH }};display:flex;align-items:center;justify-content:center;background:{{ homeBarBg }}"><span style="width:{{ homeW }};height:5px;border-radius:999px;background:{{ homeColor }}"></span></div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844},&quot;platform&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;ios&quot;,&quot;android&quot;],&quot;default&quot;:&quot;ios&quot;,&quot;tsType&quot;:&quot;'ios'|'android'&quot;},&quot;start&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;onboard&quot;,&quot;plan&quot;,&quot;home&quot;,&quot;scan&quot;,&quot;review&quot;,&quot;receipts&quot;,&quot;reports&quot;,&quot;settings&quot;],&quot;default&quot;:&quot;onboard&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { screen:null, ob:0, plan:'annual', scanStage:'camera', step:0, filter:'All', q:'', toast:null, list:null, draft:null, editId:null, touched:{}, period:'Month', flash:false, ready:!!window.TR };
+  timers = [];
+  componentDidMount(){ if(!window.TR){ this.iv=setInterval(()=>{ if(window.TR){ clearInterval(this.iv); this.setState({ready:true}); } },50); } }
+  componentWillUnmount(){ clearInterval(this.iv); clearTimeout(this.tt); this.timers.forEach(clearTimeout); }
+  scr(){ return this.state.screen || this.props.start || 'onboard'; }
+  go(s){ this.timers.forEach(clearTimeout); this.timers=[]; this.setState({screen:s, scanStage:'camera', step:0}); }
+  flashMsg(m){ this.setState({toast:m}); clearTimeout(this.tt); this.tt=setTimeout(()=>this.setState({toast:null}),2400); }
+  list(){ return this.state.list || window.TR.receipts; }
+  capture(){
+    this.setState({scanStage:'processing',step:0});
+    [650,1350,2050].forEach((ms,i)=>this.timers.push(setTimeout(()=>this.setState({step:i+1}),ms)));
+    this.timers.push(setTimeout(()=>this.setState({screen:'review',scanStage:'camera',draft:{...window.TR.scanDraft,deductible:true},editId:null,touched:{}}),2700));
+  }
+  edit(r){
+    const [y,m,d]=r.date.split('-');
+    this.setState({screen:'review',editId:r.id,touched:{},draft:{vendor:r.vendor,date:d+'/'+m+'/'+y,num:r.num,subtotal:r.subtotal.toFixed(2),gst:r.gst.toFixed(2),total:r.total.toFixed(2),pay:r.pay,cat:r.cat,type:r.type,deductible:r.deductible}});
+  }
+  save(){
+    const d=this.state.draft; const [dd,mm,yy]=(d.date||'').split('/');
+    const rec={id:this.state.editId||('n'+Date.now()),vendor:d.vendor,cat:window.TR.cats[d.cat]?d.cat:'Tools & Equipment',date:(yy||'2026')+'-'+(mm||'10')+'-'+(dd||'01'),subtotal:+d.subtotal||0,gst:+d.gst||0,total:+d.total||0,type:d.type,pay:d.pay,num:d.num,deductible:d.deductible};
+    const L=this.list();
+    const list=this.state.editId?L.map(r=>r.id===rec.id?rec:r):[rec,...L];
+    this.setState({list,screen:'receipts',filter:'All',q:''});
+    this.flashMsg(this.state.editId?'Changes synced to all devices':'Receipt saved · photo deleted');
+  }
+  remove(){ this.setState({list:this.list().filter(r=>r.id!==this.state.editId),screen:'receipts'}); this.flashMsg('Receipt deleted everywhere'); }
+  renderVals(){
+    const TR=window.TR; if(!TR) return {s:{},i:{}};
+    const I=this.I||(this.I=TR.mkIcons(React));
+    const st=this.state, scr=this.scr(), ios=(this.props.platform||'ios')!=='android';
+    const s={[scr]:true};
+    const dark=scr==='scan';
+    const row=r=>{const c=TR.cats[r.cat]||TR.cats['Office'];return {vendor:r.vendor,cat:r.cat,date:TR.dlabel(r.date),amt:TR.money(r.total),ic:I[c.icon],bg:c.bg,fg:c.fg,typeLabel:r.type==='business'?'Business':'Personal',onClick:()=>this.edit(r)};};
+    const L=this.list();
+    const q=st.q.trim().toLowerCase();
+    const filtered=L.filter(r=>(st.filter==='All'||(st.filter==='Business'&&r.type==='business')||(st.filter==='Personal'&&r.type==='personal')||(st.filter==='Tax deductible'&&r.deductible))&&(!q||(r.vendor+' '+r.cat+' '+r.num+' '+r.total.toFixed(2)).toLowerCase().includes(q)));
+    const OB=[
+      {kicker:'01 · Scan',title:'Track your receipts automatically',body:'Take a photo and let AI pull out the vendor, totals and GST for you.',bg:'var(--color-accent-2-300)',c1:'var(--color-accent-2-400)',c2:'var(--color-accent-300)',fg:'var(--color-accent-2-800)',icon:I.scan,chip:'Mitre 10 · $115.00'},
+      {kicker:'02 · Private',title:"Your receipt photo isn't stored",body:'We process the photo to extract the information, then delete the image.',bg:'var(--color-accent-200)',c1:'var(--color-accent-300)',c2:'var(--color-accent-2-300)',fg:'var(--color-accent-700)',icon:I.shield,chip:'Photo deleted'},
+      {kicker:'03 · Organised',title:'Everything in one place',body:'Search, analyse and export to CSV, Excel, PDF or Google Sheets — on phone and web.',bg:'var(--color-neutral-200)',c1:'var(--color-accent-2-200)',c2:'var(--color-accent-400)',fg:'var(--color-text)',icon:I.chart,chip:'Synced · 3 devices'}];
+    const fieldDefs=[['vendor','Vendor'],['date','Date'],['num','Receipt #'],['subtotal','Subtotal','$'],['gst','GST 15%','$'],['total','Total','$'],['pay','Payment'],['cat','Category']];
+    const flagsNew={gst:true,total:true};
+    const d=st.draft||{...TR.scanDraft,deductible:true};
+    if(!st.draft&&scr==='review') setTimeout(()=>!this.state.draft&&this.setState({draft:d}),0);
+    const fields=fieldDefs.map(([k,label])=>{const flag=!st.editId&&flagsNew[k]&&!st.touched[k];return {label,value:d[k]??'',onChange:e=>{const v=e.target.value;this.setState(p=>({draft:{...p.draft,[k]:v},touched:{...p.touched,[k]:true}}));},bg:flag?'var(--color-accent-100)':'transparent',mark:flag?I.alert:I.check,markBg:flag?'var(--color-accent-300)':'var(--color-accent-2-200)',markFg:flag?'var(--color-accent-900)':'var(--color-accent-2-800)'};});
+    const tab=(id,label,ic)=>{const a=scr===id;return {label,ic:I[ic],onClick:()=>this.go(id),color:a?'var(--color-text)':'var(--color-neutral-600)',pill:a&&!ios?'var(--color-accent-2-200)':'transparent'};};
+    const P={Month:{range:'1 – 30 Sep 2026',total:'$4,285.70',count:'47',gst:'$558.35'},Quarter:{range:'Jul – Sep 2026',total:'$11,565.70',count:'131',gst:'$1,508.57'},Year:{range:'Apr 2026 – Mar 2027',total:'$15,205.70',count:'176',gst:'$1,983.35'}};
+    const max=TR.categoryTotals[0].amt;
+    const exp=(label,sub,ic,bg,fg)=>({label,sub,ic:I[ic],bg,fg,onClick:()=>this.flashMsg(label+' export ready')});
+    const sr=(ic,label,value,bg,fg,vc)=>({ic:I[ic],label,value,bg,fg,vc:vc||'var(--color-neutral-700)',onClick:()=>{}});
+    return {
+      s,i:{...I,back:ios?I.left:I.arrowLeft},isIOS:ios,isAndroid:!ios,
+      frameR:ios?'56px':'44px',innerR:ios?'46px':'34px',
+      screenBg:dark?'var(--color-neutral-900)':'var(--color-bg)',sbColor:dark?'var(--color-neutral-100)':'var(--color-text)',
+      homeH:ios?'30px':'22px',homeW:ios?'134px':'100px',homeColor:dark?'var(--color-neutral-100)':'var(--color-text)',homeBarBg:dark?'var(--color-neutral-900)':'var(--color-bg)',
+      storeName:ios?'the App Store':'Google Play',
+      ob:OB[st.ob],dots:OB.map((_,k)=>({w:k===st.ob?'26px':'8px',bg:k===st.ob?'var(--color-accent)':'var(--color-neutral-300)'})),obLast:st.ob===2,obNotLast:st.ob!==2,
+      obNext:()=>this.setState({ob:Math.min(2,st.ob+1)}),toPlan:()=>this.go('plan'),toOnboard:()=>{this.setState({ob:0});this.go('onboard');},
+      plans:[['monthly','Monthly','$7.99','/ month','Flexible, cancel anytime'],['annual','Annual','$69.90','/ year','Works out at $5.83 a month']].map(([id,name,price,per,note])=>{const a=st.plan===id;return {name,price,per,note,best:id==='annual',onClick:()=>this.setState({plan:id}),bg:a?'var(--color-neutral-100)':'transparent',bd:a?'var(--color-accent)':'var(--color-divider)',dotBd:a?'var(--color-accent)':'var(--color-neutral-400)',dotBg:a?'var(--color-accent)':'transparent'};}),
+      startTrial:()=>{this.go('home');this.flashMsg('Trial started · ends 8 Oct');},
+      toScan:()=>this.go('scan'),toHome:()=>this.go('home'),toReceipts:()=>this.go('receipts'),
+      wk:['M','T','W','T','F','S','S'],cal:TR.calendar(),
+      recent:L.slice(0,4).map(row),
+      flashBg:st.flash?'var(--color-accent-300)':'color-mix(in srgb, var(--color-neutral-100) 14%, transparent)',flashFg:st.flash?'var(--color-accent-900)':'var(--color-neutral-100)',
+      toggleFlash:()=>this.setState({flash:!st.flash}),
+      capture:()=>this.capture(),
+      manual:()=>this.setState({screen:'review',editId:null,touched:{gst:1,total:1},draft:{vendor:'',date:'01/10/2026',num:'',subtotal:'',gst:'',total:'',pay:'Visa',cat:'Office',type:'business',deductible:true}}),
+      scanLine:React.createElement('div',{style:{position:'absolute',left:'8%',right:'8%',height:3,borderRadius:3,background:'var(--color-accent-400)',boxShadow:'0 0 18px 4px color-mix(in srgb, var(--color-accent-400) 60%, transparent)',animation:'trscan 2.6s ease-in-out infinite'}}),
+      processing:st.scanStage==='processing',
+      steps:['Uploading securely','Extracting vendor, totals & GST','Deleting your photo'].map((label,k)=>{const done=st.step>k,act=st.step===k;return {label,color:done||act?'var(--color-text)':'var(--color-neutral-500)',bg:done?'var(--color-accent-2-300)':'var(--color-neutral-200)',mark:done?React.createElement('span',{style:{width:14,height:14,display:'flex'}},I.check):act?React.createElement('div',{style:{width:16,height:16,borderRadius:'50%',border:'2.5px solid var(--color-accent-300)',borderTopColor:'var(--color-accent)',animation:'trspin .8s linear infinite'}}):null};}),
+      reviewTitle:st.editId?d.vendor:(d.vendor?'Receipt found':'New receipt'),reviewTag:st.editId?'Synced':'Photo deleted',
+      hasFlags:fields.some(f=>f.bg!=='transparent'),fields,
+      reviewBack:()=>this.go(st.editId?'receipts':'scan'),
+      typeOpts:[['business','Business'],['personal','Personal']].map(([id,label])=>{const a=d.type===id;return {label,bg:a?'var(--color-text)':'var(--color-surface)',fg:a?'var(--color-bg)':'var(--color-text)',onClick:()=>this.setState(p=>({draft:{...p.draft,type:id}}))};}),
+      deductBg:d.deductible?'var(--color-accent-2-600)':'var(--color-neutral-400)',deductX:d.deductible?'23px':'3px',
+      toggleDeduct:()=>this.setState(p=>({draft:{...p.draft,deductible:!p.draft.deductible}})),
+      save:()=>this.save(),
+      altLabel:st.editId?'Delete receipt':'Scan again',altColor:st.editId?'var(--color-accent-700)':'var(--color-text)',
+      reviewAlt:()=>st.editId?this.remove():this.go('scan'),
+      q:st.q,onQ:e=>this.setState({q:e.target.value}),
+      chips:['All','Business','Personal','Tax deductible'].map(label=>{const a=st.filter===label;return {label,bg:a?'var(--color-text)':'transparent',fg:a?'var(--color-bg)':'var(--color-text)',bd:a?'var(--color-text)':'var(--color-divider)',onClick:()=>this.setState({filter:label})};}),
+      rows:filtered.map(row),noRows:filtered.length===0,
+      countLabel:filtered.length+' receipts',sumLabel:TR.money(filtered.reduce((a,r)=>a+r.total,0)),
+      periods:['Month','Quarter','Year'].map(label=>{const a=st.period===label;return {label,bg:a?'var(--color-bg)':'transparent',fg:a?'var(--color-text)':'var(--color-neutral-700)',sh:a?'var(--shadow-sm)':'none',onClick:()=>this.setState({period:label})};}),
+      rep:P[st.period],
+      catBars:TR.categoryTotals.map((c,k)=>({name:c.name,amt:TR.money(c.amt),w:Math.round(c.amt/max*100)+'%',bg:['var(--color-accent-2-500)','var(--color-accent-500)','var(--color-accent-2-400)','var(--color-accent-400)','var(--color-neutral-500)'][k]})),
+      exportsList:[exp('CSV','Spreadsheet-ready','file','var(--color-neutral-200)','var(--color-text)'),exp('Excel','.xlsx · 3 sheets','sheet','var(--color-accent-2-200)','var(--color-accent-2-900)'),exp('PDF','Accountant report','file','var(--color-accent-200)','var(--color-accent-900)'),exp('Google Sheets','Receipt Tracker 2026','sheet','var(--color-accent-2-300)','var(--color-accent-2-900)')],
+      setRows:[sr('building','Business','Kōwhai Build Ltd','var(--color-accent-2-200)','var(--color-accent-2-800)'),sr('tag','Categories','11','var(--color-accent-200)','var(--color-accent-800)'),sr('card','Default currency','NZD','var(--color-neutral-200)','var(--color-text)'),sr('sheet','Google Sheets','Connected','var(--color-accent-2-200)','var(--color-accent-2-800)','var(--color-accent-2-700)'),sr('download','Export format','Excel','var(--color-neutral-200)','var(--color-text)')],
+      toast:st.toast,toastY:['home','receipts','reports','settings'].includes(scr)?'118px':'40px',
+      showTabs:['home','receipts','reports','settings'].includes(scr),
+      tabsL:[tab('home','Home','home'),tab('receipts','Receipts','receipt')],tabsR:[tab('reports','Reports','chart'),tab('settings','Settings','settings')]
+    };
+  }
+}
+</script>
+</body>
+</html>

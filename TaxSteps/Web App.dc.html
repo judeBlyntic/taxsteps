@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/organic-63f81bda-d3d8-44a7-86a2-9a4185c3135e/styles.css">
+<script src="_ds/organic-63f81bda-d3d8-44a7-86a2-9a4185c3135e/_ds_bundle.js"></script>
+<script src="tr-data.js"></script>
+<style>@keyframes trspin{to{transform:rotate(360deg)}}a{color:var(--color-accent-700)}a:hover{color:var(--color-accent-800)}</style>
+</helmet>
+<div style="position:relative;width:1440px;height:900px;display:flex;background:var(--color-bg);font-family:var(--font-body);color:var(--color-text);overflow:hidden">
+
+<aside style="width:248px;flex:none;display:flex;flex-direction:column;gap:6px;padding:26px 18px;box-sizing:border-box">
+<div style="display:flex;align-items:center;gap:10px;padding:0 8px 22px"><span style="width:40px;height:40px;border-radius:50%;background:var(--color-accent);color:var(--color-bg);display:grid;place-items:center"><span style="width:20px;height:20px;display:flex">{{ i.receipt }}</span></span><span style="font-family:var(--font-heading);font-size:21px">TrackerRabbit</span></div>
+<sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+<button onClick="{{ n.onClick }}" style="all:unset;cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:999px;font-weight:700;font-size:15px;background:{{ n.bg }};color:{{ n.fg }}" style-hover="background:var(--color-surface)"><span style="width:20px;height:20px;display:flex">{{ n.ic }}</span>{{ n.label }}</button>
+</sc-for>
+<div style="flex:1"></div>
+<div style="display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:26px;background:var(--color-accent-2-200);color:var(--color-accent-2-900)">
+<div style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px"><span style="width:16px;height:16px;display:flex">{{ i.sync }}</span>All synced</div>
+<div style="font-size:12.5px;line-height:1.45">iPhone, Pixel and this browser are up to date. Last change 2 min ago.</div>
+</div>
+<div style="display:flex;align-items:center;gap:10px;padding:12px 8px 0"><div style="width:38px;height:38px;border-radius:50%;background:var(--color-accent-300);display:grid;place-items:center;font-family:var(--font-heading);font-size:14px;color:var(--color-accent-900)">AN</div><div style="line-height:1.25;flex:1;min-width:0"><div style="font-weight:700;font-size:14px">Aroha Ngata</div><div style="font-size:12px;color:var(--color-neutral-700)">Kōwhai Build Ltd</div></div></div>
+</aside>
+
+<main style="flex:1;min-width:0;display:flex;flex-direction:column;padding:12px 12px 12px 0">
+<div style="flex:1;min-height:0;display:flex;flex-direction:column;border-radius:40px;background:var(--color-neutral-100);box-shadow:var(--shadow-sm);overflow:hidden">
+<header style="display:flex;align-items:center;gap:14px;padding:26px 34px 10px">
+<div style="flex:1"><h2 style="margin:0;font-size:34px">{{ title }}</h2><div style="font-size:14px;color:var(--color-neutral-700)">{{ subtitle }}</div></div>
+<div style="display:flex;align-items:center;gap:10px;width:280px;height:46px;padding:0 18px;border-radius:999px;background:var(--color-bg);box-sizing:border-box"><span style="width:17px;height:17px;display:flex;color:var(--color-neutral-700)">{{ i.search }}</span><input value="{{ q }}" onChange="{{ onQ }}" placeholder="Search receipts" style="all:unset;flex:1;font-size:14px"></div>
+<button class="btn btn-secondary btn-icon" style="width:46px;height:46px"><span style="width:19px;height:19px;display:flex">{{ i.bell }}</span></button>
+<button class="btn btn-primary" onClick="{{ openUpload }}" style="height:46px;padding:0 22px;font-size:15px"><span style="width:18px;height:18px;display:flex">{{ i.upload }}</span>Upload receipt</button>
+</header>
+<div style="flex:1;min-height:0;overflow-y:auto;padding:16px 34px 34px;scrollbar-width:thin">
+
+<sc-if value="{{ p.dashboard }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:20px">
+<div style="display:grid;grid-template-columns:1.35fr 1fr 1fr;grid-template-rows:auto auto;gap:16px">
+<div style="grid-row:span 2;position:relative;padding-top:16px">
+<div style="position:absolute;left:28px;right:28px;top:0;height:60px;border-radius:30px;background:var(--color-accent-2-400)"></div>
+<div style="position:absolute;left:14px;right:14px;top:8px;height:60px;border-radius:32px;background:var(--color-accent-300)"></div>
+<div style="position:relative;height:100%;box-sizing:border-box;border-radius:36px;background:var(--color-bg);padding:28px;overflow:hidden;box-shadow:var(--shadow-md);display:flex;flex-direction:column">
+<div style="position:absolute;width:260px;height:260px;border-radius:50%;right:-70px;bottom:-100px;background:var(--color-accent-2-200)"></div>
+<div style="position:absolute;width:74px;height:74px;border-radius:50%;right:110px;bottom:70px;background:var(--color-accent-300)"></div>
+<div style="position:relative;display:flex;align-items:center;gap:4px;font-size:14px;font-weight:700;color:var(--color-neutral-700)">September 2026<span style="width:16px;height:16px;display:flex">{{ i.down }}</span></div>
+<div style="position:relative;font-family:var(--font-heading);font-size:64px;line-height:1.05;margin-top:12px">$4,285.70</div>
+<div style="position:relative;font-size:15px;color:var(--color-neutral-700)">Total expenses · up 26% on August</div>
+<div style="flex:1;min-height:20px"></div>
+<div style="position:relative;display:flex;gap:10px"><button class="btn" onClick="{{ openUpload }}" style="height:48px;padding:0 22px;background:var(--color-text);color:var(--color-bg);font-size:15px" style-hover="background:var(--color-neutral-800)">Upload receipt<span style="width:16px;height:16px;display:flex">{{ i.arrowRight }}</span></button><button class="btn btn-secondary" onClick="{{ toReports }}" style="height:48px;padding:0 20px;font-size:15px;background:var(--color-bg)">Monthly report</button></div>
+</div>
+</div>
+<div style="position:relative;overflow:hidden;padding:20px;border-radius:30px;background:var(--color-accent-2-300);color:var(--color-accent-2-900);display:flex;flex-direction:column;gap:22px"><div style="position:absolute;width:100px;height:100px;border-radius:50%;right:-30px;top:-30px;background:var(--color-accent-2-400)"></div><span style="position:relative;font-weight:700">GST claimable</span><div style="position:relative"><div style="font-family:var(--font-heading);font-size:34px;line-height:1">$558.35</div><div style="font-size:13px;margin-top:4px">From 41 GST receipts</div></div></div>
+<div style="position:relative;overflow:hidden;padding:20px;border-radius:30px;background:var(--color-accent-200);color:var(--color-accent-900);display:flex;flex-direction:column;gap:22px"><div style="position:absolute;width:100px;height:100px;border-radius:50%;right:-30px;top:-30px;background:var(--color-accent-300)"></div><span style="position:relative;font-weight:700">Receipts</span><div style="position:relative"><div style="font-family:var(--font-heading);font-size:34px;line-height:1">47</div><div style="font-size:13px;margin-top:4px">Average $91.19</div></div></div>
+<div style="padding:20px;border-radius:30px;background:var(--color-bg);display:flex;align-items:center;gap:16px"><div style="width:62px;height:62px;flex:none;border-radius:50%;background:conic-gradient(var(--color-accent-2-600) 0 72%, var(--color-accent-2-200) 0);display:grid;place-items:center"><div style="width:42px;height:42px;border-radius:50%;background:var(--color-bg)"></div></div><div><div style="font-weight:700">Business</div><div style="font-family:var(--font-heading);font-size:26px;line-height:1.1">72%</div><div style="font-size:13px;color:var(--color-neutral-700)">$3,086.00</div></div></div>
+<div style="padding:20px;border-radius:30px;background:var(--color-bg);display:flex;align-items:center;gap:16px"><div style="width:62px;height:62px;flex:none;border-radius:50%;background:conic-gradient(var(--color-accent-500) 0 28%, var(--color-accent-200) 0);display:grid;place-items:center"><div style="width:42px;height:42px;border-radius:50%;background:var(--color-bg)"></div></div><div><div style="font-weight:700">Personal</div><div style="font-family:var(--font-heading);font-size:26px;line-height:1.1">28%</div><div style="font-size:13px;color:var(--color-neutral-700)">$1,199.70</div></div></div>
+</div>
+
+<div style="display:grid;grid-template-columns:1.35fr 1fr;gap:16px">
+<div style="padding:24px;border-radius:32px;background:var(--color-bg);display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><h4 style="margin:0">Expenses by month</h4><span style="font-size:13px;color:var(--color-neutral-700)">Last 6 months</span></div>
+<div style="display:flex;align-items:flex-end;gap:18px;height:190px">
+<sc-for list="{{ months }}" as="m" hint-placeholder-count="6">
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end"><span style="font-size:12px;font-weight:700;color:var(--color-neutral-700)">{{ m.label }}</span><div style="width:100%;max-width:64px;height:{{ m.h }};border-radius:999px;background:{{ m.bg }}"></div><span style="font-size:13px;font-weight:600">{{ m.m }}</span></div>
+</sc-for>
+</div>
+</div>
+<div style="padding:24px;border-radius:32px;background:var(--color-bg);display:flex;flex-direction:column;gap:14px">
+<h4 style="margin:0">By category</h4>
+<sc-for list="{{ catBars }}" as="c" hint-placeholder-count="5">
+<div style="display:flex;align-items:center;gap:12px"><span style="width:130px;font-size:14px;font-weight:600">{{ c.name }}</span><div style="flex:1;height:14px;border-radius:999px;background:var(--color-neutral-200)"><div style="height:100%;width:{{ c.w }};border-radius:999px;background:{{ c.bg }}"></div></div><span style="width:84px;text-align:right;font-size:14px;font-variant-numeric:tabular-nums">{{ c.amt }}</span></div>
+</sc-for>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1.35fr 1fr;gap:16px">
+<div style="padding:24px 16px 12px;border-radius:32px;background:var(--color-bg)">
+<div style="display:flex;justify-content:space-between;align-items:baseline;padding:0 8px 8px"><h4 style="margin:0">Recent receipts</h4><button class="btn btn-ghost" onClick="{{ toReceipts }}" style="font-size:14px">See all</button></div>
+<sc-for list="{{ recent }}" as="r" hint-placeholder-count="5">
+<div onClick="{{ r.onClick }}" style="display:grid;grid-template-columns:44px 1fr 120px 90px;align-items:center;gap:14px;padding:9px 8px;border-radius:22px;cursor:pointer" style-hover="background:var(--color-surface)"><div style="width:44px;height:44px;border-radius:50%;background:{{ r.bg }};color:{{ r.fg }};display:grid;place-items:center"><span style="width:19px;height:19px;display:flex">{{ r.ic }}</span></div><div><div style="font-weight:700">{{ r.vendor }}</div><div style="font-size:13px;color:var(--color-neutral-700)">{{ r.cat }}</div></div><span style="font-size:13px;color:var(--color-neutral-700)">{{ r.date }}</span><span style="text-align:right;font-weight:700;font-variant-numeric:tabular-nums">{{ r.amt }}</span></div>
+</sc-for>
+</div>
+<div style="padding:24px;border-radius:32px;background:var(--color-bg);display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><h4 style="margin:0">Receipt days</h4><div style="display:flex;gap:12px;font-size:12px;color:var(--color-neutral-700)"><span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:var(--color-accent-2-400)"></span>Business</span><span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:var(--color-accent-400)"></span>Personal</span></div></div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;justify-items:center">
+<sc-for list="{{ wk }}" as="w" hint-placeholder-count="7"><span style="font-size:12px;color:var(--color-neutral-700)">{{ w }}</span></sc-for>
+<sc-for list="{{ cal }}" as="c" hint-placeholder-count="31"><span style="width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:600;background:{{ c.bg }};color:{{ c.fg }};box-shadow:inset 0 0 0 1px {{ c.bd }}">{{ c.d }}</span></sc-for>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ p.receipts }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+<sc-for list="{{ chips }}" as="c" hint-placeholder-count="4"><button class="btn" onClick="{{ c.onClick }}" style="height:40px;padding:0 18px;font-family:var(--font-body);font-weight:700;font-size:13.5px;background:{{ c.bg }};color:{{ c.fg }};border:1px solid {{ c.bd }}">{{ c.label }}</button></sc-for>
+<span style="flex:1"></span>
+<span style="font-size:14px;color:var(--color-neutral-700)">{{ countLabel }} · {{ sumLabel }}</span>
+<button class="btn btn-secondary" onClick="{{ manual }}" style="height:40px;padding:0 18px;background:var(--color-bg)"><span style="width:16px;height:16px;display:flex">{{ i.plus }}</span>Add manually</button>
+</div>
+<div style="padding:10px 14px;border-radius:32px;background:var(--color-bg)">
+<div style="display:grid;grid-template-columns:44px 1.4fr 1.2fr 110px 110px 100px 110px;gap:14px;padding:10px 8px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-700)"><span></span><span>Vendor</span><span>Category</span><span>Date</span><span>Type</span><span style="text-align:right">GST</span><span style="text-align:right">Total</span></div>
+<sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+<div onClick="{{ r.onClick }}" style="display:grid;grid-template-columns:44px 1.4fr 1.2fr 110px 110px 100px 110px;align-items:center;gap:14px;padding:8px;border-radius:22px;cursor:pointer;background:{{ r.sel }}" style-hover="background:var(--color-surface)"><div style="width:44px;height:44px;border-radius:50%;background:{{ r.bg }};color:{{ r.fg }};display:grid;place-items:center"><span style="width:19px;height:19px;display:flex">{{ r.ic }}</span></div><div><div style="font-weight:700">{{ r.vendor }}</div><div style="font-size:12.5px;color:var(--color-neutral-700)">#{{ r.num }}</div></div><span style="font-size:14px">{{ r.cat }}</span><span style="font-size:14px;color:var(--color-neutral-700)">{{ r.date }}</span><span><span class="tag" style="background:{{ r.tBg }};color:{{ r.tFg }};font-weight:700">{{ r.typeLabel }}</span></span><span style="text-align:right;font-size:14px;font-variant-numeric:tabular-nums">{{ r.gst }}</span><span style="text-align:right;font-weight:700;font-variant-numeric:tabular-nums">{{ r.amt }}</span></div>
+</sc-for>
+<sc-if value="{{ noRows }}"><div style="padding:40px;text-align:center;color:var(--color-neutral-700)">No receipts match these filters.</div></sc-if>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ p.reports }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start">
+<div style="display:flex;flex-direction:column;gap:20px;padding:24px;border-radius:32px;background:var(--color-bg)">
+<div style="display:flex;flex-direction:column;gap:8px"><span style="font-weight:700;font-size:14px">Period</span><div style="display:flex;padding:4px;border-radius:999px;background:var(--color-surface)"><sc-for list="{{ periods }}" as="pp" hint-placeholder-count="3"><button class="btn" onClick="{{ pp.onClick }}" style="flex:1;height:38px;font-family:var(--font-body);font-weight:700;font-size:13.5px;background:{{ pp.bg }};color:{{ pp.fg }};box-shadow:{{ pp.sh }}">{{ pp.label }}</button></sc-for></div></div>
+<div style="display:flex;flex-direction:column;gap:8px"><span style="font-weight:700;font-size:14px">Categories</span><div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ catChips }}" as="c" hint-placeholder-count="5"><button class="btn" onClick="{{ c.onClick }}" style="height:34px;padding:0 14px;font-family:var(--font-body);font-weight:600;font-size:13px;background:{{ c.bg }};color:{{ c.fg }};border:1px solid {{ c.bd }}">{{ c.label }}</button></sc-for></div></div>
+<div style="display:flex;flex-direction:column;gap:8px"><span style="font-weight:700;font-size:14px">Type</span><div style="display:flex;gap:6px"><span class="tag" style="padding:8px 14px;background:var(--color-text);color:var(--color-bg);font-weight:700">All</span><span class="tag tag-neutral" style="padding:8px 14px;font-weight:700">Business</span><span class="tag tag-neutral" style="padding:8px 14px;font-weight:700">Personal</span></div></div>
+<div style="display:flex;flex-direction:column;gap:8px"><span style="font-weight:700;font-size:14px">Currency</span><div style="display:flex;align-items:center;justify-content:space-between;height:44px;padding:0 18px;border-radius:999px;background:var(--color-surface);font-size:14px">NZD · New Zealand dollar<span style="width:16px;height:16px;display:flex">{{ i.down }}</span></div></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="padding:30px;border-radius:32px;background:var(--color-bg);display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700);font-weight:700">Expense summary</div><h3 style="margin:6px 0 2px">Kōwhai Build Ltd</h3><div style="font-size:14px;color:var(--color-neutral-700)">{{ rep.range }}</div></div><span class="tag tag-accent-2" style="font-weight:700">Totals match 47 receipts</span></div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+<div style="padding:18px;border-radius:26px;background:var(--color-accent-2-300);color:var(--color-accent-2-900)"><div style="font-size:13px;font-weight:700">Total expenses</div><div style="font-family:var(--font-heading);font-size:30px;margin-top:6px">{{ rep.total }}</div></div>
+<div style="padding:18px;border-radius:26px;background:var(--color-accent-200);color:var(--color-accent-900)"><div style="font-size:13px;font-weight:700">GST</div><div style="font-family:var(--font-heading);font-size:30px;margin-top:6px">{{ rep.gst }}</div></div>
+<div style="padding:18px;border-radius:26px;background:var(--color-surface)"><div style="font-size:13px;font-weight:700">Receipts</div><div style="font-family:var(--font-heading);font-size:30px;margin-top:6px">{{ rep.count }}</div></div>
+</div>
+<table class="table"><thead><tr><th>Category</th><th>Receipts</th><th style="text-align:right">GST</th><th style="text-align:right">Total</th></tr></thead><tbody>
+<sc-for list="{{ repRows }}" as="r" hint-placeholder-count="5"><tr><td style="font-weight:600">{{ r.name }}</td><td>{{ r.n }}</td><td style="text-align:right;font-variant-numeric:tabular-nums">{{ r.gst }}</td><td style="text-align:right;font-weight:700;font-variant-numeric:tabular-nums">{{ r.amt }}</td></tr></sc-for>
+</tbody></table>
+</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+<sc-for list="{{ exportsList }}" as="e" hint-placeholder-count="4">
+<button onClick="{{ e.onClick }}" style="all:unset;cursor:pointer;display:flex;align-items:center;gap:12px;padding:16px;border-radius:26px;background:{{ e.bg }};color:{{ e.fg }}" style-hover="filter:brightness(.97)"><span style="width:42px;height:42px;flex:none;border-radius:50%;background:var(--color-bg);display:grid;place-items:center"><span style="width:18px;height:18px;display:flex">{{ e.ic }}</span></span><span><span style="display:block;font-weight:700;font-size:15px">{{ e.label }}</span><span style="display:block;font-size:12px;opacity:.85">{{ e.sub }}</span></span></button>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ p.settings }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+<div style="position:relative;overflow:hidden;padding:26px;border-radius:34px;background:var(--color-accent-200);color:var(--color-accent-900);display:flex;flex-direction:column;gap:6px">
+<div style="position:absolute;width:180px;height:180px;border-radius:50%;right:-50px;bottom:-70px;background:var(--color-accent-300)"></div>
+<div style="position:relative;display:flex;justify-content:space-between"><span style="font-weight:700">Subscription</span><span class="tag" style="background:var(--color-bg);color:var(--color-accent-800);font-weight:700">Trialing · ends 8 Oct 2026</span></div>
+<div style="position:relative;font-family:var(--font-heading);font-size:34px">Annual</div>
+<div style="position:relative;font-size:15px">$69.90 / year · Visa •••• 4242 · next billing 8 Oct 2026</div>
+<div style="position:relative;display:flex;gap:8px;margin-top:14px"><button class="btn" style="height:42px;padding:0 18px;background:var(--color-text);color:var(--color-bg)">Manage billing</button><button class="btn btn-secondary" style="height:42px;padding:0 18px;background:var(--color-bg)">Change plan</button><button class="btn btn-ghost" style="height:42px;color:var(--color-accent-800)">Cancel</button></div>
+</div>
+<div style="padding:26px;border-radius:34px;background:var(--color-bg);display:flex;flex-direction:column;gap:14px">
+<span style="font-weight:700">Account & business</span>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div class="field"><label>Name</label><input class="input" value="Aroha Ngata" style="height:44px"></div>
+<div class="field"><label>Email</label><input class="input" value="aroha@kowhaibuild.co.nz" style="height:44px"></div>
+<div class="field"><label>Business name</label><input class="input" value="Kōwhai Build Ltd" style="height:44px"></div>
+<div class="field"><label>GST number</label><input class="input" value="123-456-789" style="height:44px"></div>
+</div>
+</div>
+<div style="padding:26px;border-radius:34px;background:var(--color-bg);display:flex;flex-direction:column;gap:14px">
+<span style="font-weight:700">Integrations</span>
+<div style="display:flex;align-items:center;gap:14px"><span style="width:46px;height:46px;border-radius:50%;background:var(--color-accent-2-200);color:var(--color-accent-2-800);display:grid;place-items:center"><span style="width:20px;height:20px;display:flex">{{ i.sheet }}</span></span><div style="flex:1"><div style="font-weight:700">Google Sheets</div><div style="font-size:13px;color:var(--color-neutral-700)">Receipt Tracker 2026 · aroha@gmail.com</div></div><span class="tag tag-accent-2" style="font-weight:700">Connected</span></div>
+<div onClick="{{ toggleAuto }}" style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-radius:24px;background:var(--color-surface);cursor:pointer"><div><div style="font-weight:600">Auto-sync new receipts</div><div style="font-size:13px;color:var(--color-neutral-700)">Each saved receipt becomes a new row</div></div><span style="width:48px;height:28px;border-radius:999px;background:{{ autoBg }};position:relative;transition:background .2s;flex:none"><span style="position:absolute;top:3px;left:{{ autoX }};width:22px;height:22px;border-radius:50%;background:var(--color-bg);box-shadow:var(--shadow-sm);transition:left .2s"></span></span></div>
+</div>
+<div style="padding:26px;border-radius:34px;background:var(--color-accent-2-100);color:var(--color-accent-2-900);display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;gap:8px;font-weight:700"><span style="width:18px;height:18px;display:flex">{{ i.shield }}</span>Privacy</div>
+<div style="font-size:14px;line-height:1.5">Receipt photos are never stored. We extract the details, then delete the image — no public links, no copies in logs or analytics.</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"><button class="btn btn-secondary" style="height:40px;padding:0 16px;background:var(--color-bg)">Export all data</button><button class="btn btn-secondary" style="height:40px;padding:0 16px;background:var(--color-bg);color:var(--color-accent-700)">Delete all receipt data</button><button class="btn btn-ghost" style="height:40px;color:var(--color-accent-700)">Delete account</button></div>
+</div>
+</div>
+</sc-if>
+
+</div>
+</div>
+</main>
+
+<sc-if value="{{ drawer }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeDrawer }}" style="position:absolute;inset:0;background:color-mix(in srgb, var(--color-neutral-900) 30%, transparent)"></div>
+<div style="position:absolute;top:12px;right:12px;bottom:12px;width:430px;border-radius:36px;background:var(--color-bg);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:24px 24px 8px"><span class="tag tag-accent-2" style="display:flex;gap:5px;font-weight:700"><span style="width:13px;height:13px;display:flex">{{ i.sync }}</span>{{ drawerTag }}</span><button class="btn btn-secondary btn-icon" onClick="{{ closeDrawer }}" style="width:42px;height:42px"><span style="width:18px;height:18px;display:flex">{{ i.x }}</span></button></div>
+<div style="flex:1;overflow-y:auto;padding:8px 24px 16px;display:flex;flex-direction:column;gap:12px">
+<h3 style="margin:0">{{ drawerTitle }}</h3>
+<sc-if value="{{ hasFlags }}"><div style="display:flex;gap:10px;padding:12px 16px;border-radius:22px;background:var(--color-accent-100);color:var(--color-accent-800);font-size:13.5px"><span style="width:18px;height:18px;flex:none;display:flex">{{ i.alert }}</span>We found most of the receipt information. Please check the highlighted fields.</div></sc-if>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<sc-for list="{{ fields }}" as="f" hint-placeholder-count="8">
+<div class="field" style="grid-column:{{ f.span }}"><label style="display:flex;justify-content:space-between">{{ f.label }}<span style="color:{{ f.noteC }};font-weight:700">{{ f.note }}</span></label><input class="input" value="{{ f.value }}" onChange="{{ f.onChange }}" style="height:44px;font-weight:600;background:{{ f.bg }};border-color:{{ f.bd }}"></div>
+</sc-for>
+</div>
+<div style="display:flex;gap:8px"><sc-for list="{{ typeOpts }}" as="t" hint-placeholder-count="2"><button class="btn" onClick="{{ t.onClick }}" style="flex:1;height:44px;background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</button></sc-for></div>
+</div>
+<div style="display:flex;gap:8px;padding:16px 24px 24px"><button class="btn btn-secondary" onClick="{{ drawerAlt }}" style="height:50px;padding:0 20px;color:{{ altColor }}">{{ altLabel }}</button><button class="btn btn-primary" onClick="{{ save }}" style="flex:1;height:50px;font-size:16px">Save receipt</button></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ uploading }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;display:grid;place-items:center;background:color-mix(in srgb, var(--color-neutral-900) 45%, transparent)">
+<div style="width:520px;padding:30px;border-radius:40px;background:var(--color-bg);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">{{ upTitle }}</h3><button class="btn btn-secondary btn-icon" onClick="{{ closeUpload }}" style="width:42px;height:42px"><span style="width:18px;height:18px;display:flex">{{ i.x }}</span></button></div>
+<sc-if value="{{ upDrop }}">
+<button onClick="{{ startProcess }}" style="all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:12px;padding:44px 20px;border-radius:32px;border:2px dashed var(--color-accent-400);background:var(--color-accent-100);text-align:center" style-hover="background:var(--color-accent-200)"><span style="width:68px;height:68px;border-radius:50%;background:var(--color-bg);color:var(--color-accent);display:grid;place-items:center"><span style="width:28px;height:28px;display:flex">{{ i.upload }}</span></span><span style="font-family:var(--font-heading);font-size:20px">Drop a receipt photo</span><span style="font-size:14px;color:var(--color-neutral-700)">or click to browse · JPG, PNG, HEIC up to 10 MB</span></button>
+</sc-if>
+<sc-if value="{{ upProc }}">
+<div style="display:flex;flex-direction:column;gap:14px;padding:6px 0">
+<sc-for list="{{ steps }}" as="st" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:12px;font-size:15px;font-weight:600;color:{{ st.color }}"><span style="width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;background:{{ st.bg }};color:var(--color-accent-2-900)">{{ st.mark }}</span>{{ st.label }}</div></sc-for>
+</div>
+</sc-if>
+<div style="display:flex;gap:10px;padding:14px 16px;border-radius:22px;background:var(--color-accent-2-100);color:var(--color-accent-2-800);font-size:13px"><span style="width:18px;height:18px;flex:none;display:flex">{{ i.shield }}</span>Your photo is used only to extract the information. It is not stored after processing.</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:50%;bottom:34px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;padding:14px 22px;border-radius:999px;background:var(--color-text);color:var(--color-bg);font-size:14px;font-weight:600;box-shadow:var(--shadow-lg)"><span style="width:22px;height:22px;border-radius:50%;background:var(--color-accent-2-400);color:var(--color-accent-2-900);display:grid;place-items:center"><span style="width:12px;height:12px;display:flex">{{ i.check }}</span></span>{{ toast }}</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900},&quot;start&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dashboard&quot;,&quot;receipts&quot;,&quot;reports&quot;,&quot;settings&quot;],&quot;default&quot;:&quot;dashboard&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { page:null, filter:'All', q:'', toast:null, list:null, draft:null, editId:null, drawer:false, touched:{}, up:null, step:0, period:'Month', cats:{}, auto:true, ready:!!window.TR };
+  timers=[];
+  componentDidMount(){ if(!window.TR){ this.iv=setInterval(()=>{ if(window.TR){ clearInterval(this.iv); this.setState({ready:true}); } },50); } }
+  componentWillUnmount(){ clearInterval(this.iv); clearTimeout(this.tt); this.timers.forEach(clearTimeout); }
+  pg(){ return this.state.page || this.props.start || 'dashboard'; }
+  flashMsg(m){ this.setState({toast:m}); clearTimeout(this.tt); this.tt=setTimeout(()=>this.setState({toast:null}),2400); }
+  list(){ return this.state.list || window.TR.receipts; }
+  edit(r){ const [y,m,d]=r.date.split('-'); this.setState({drawer:true,editId:r.id,touched:{},draft:{vendor:r.vendor,date:d+'/'+m+'/'+y,num:r.num,subtotal:r.subtotal.toFixed(2),gst:r.gst.toFixed(2),total:r.total.toFixed(2),pay:r.pay,cat:r.cat,type:r.type,deductible:r.deductible}}); }
+  process(){
+    this.setState({up:'proc',step:0});
+    [650,1350,2050].forEach((ms,i)=>this.timers.push(setTimeout(()=>this.setState({step:i+1}),ms)));
+    this.timers.push(setTimeout(()=>this.setState({up:null,drawer:true,editId:null,touched:{},draft:{...window.TR.scanDraft,deductible:true}}),2700));
+  }
+  save(){
+    const d=this.state.draft; const [dd,mm,yy]=(d.date||'').split('/');
+    const rec={id:this.state.editId||('n'+Date.now()),vendor:d.vendor||'Untitled',cat:window.TR.cats[d.cat]?d.cat:'Office',date:(yy||'2026')+'-'+(mm||'10')+'-'+(dd||'01'),subtotal:+d.subtotal||0,gst:+d.gst||0,total:+d.total||0,type:d.type,pay:d.pay,num:d.num||'—',deductible:d.deductible};
+    const L=this.list();
+    this.setState({list:this.state.editId?L.map(r=>r.id===rec.id?rec:r):[rec,...L],drawer:false,page:'receipts'});
+    this.flashMsg(this.state.editId?'Saved · synced to iPhone and Pixel':'Receipt saved · photo deleted');
+  }
+  renderVals(){
+    const TR=window.TR; if(!TR) return {p:{},i:{}};
+    const I=this.I||(this.I=TR.mkIcons(React));
+    const st=this.state, pg=this.pg();
+    const L=this.list(), q=st.q.trim().toLowerCase();
+    const row=r=>{const c=TR.cats[r.cat]||TR.cats['Office'];const b=r.type==='business';return {vendor:r.vendor,num:r.num,cat:r.cat,date:TR.dlabel(r.date)+' 2026',amt:TR.money(r.total),gst:TR.money(r.gst),ic:I[c.icon],bg:c.bg,fg:c.fg,typeLabel:b?'Business':'Personal',tBg:b?'var(--color-accent-2-100)':'var(--color-accent-100)',tFg:b?'var(--color-accent-2-800)':'var(--color-accent-800)',sel:st.drawer&&st.editId===r.id?'var(--color-surface)':'transparent',onClick:()=>this.edit(r)};};
+    const filtered=L.filter(r=>(st.filter==='All'||(st.filter==='Business'&&r.type==='business')||(st.filter==='Personal'&&r.type==='personal')||(st.filter==='Tax deductible'&&r.deductible))&&(!q||(r.vendor+' '+r.cat+' '+r.num+' '+r.total.toFixed(2)).toLowerCase().includes(q)));
+    const NAV=[['dashboard','Dashboard','home'],['receipts','Receipts','receipt'],['reports','Reports','chart'],['settings','Settings','settings']];
+    const T={dashboard:['Kia ora, Aroha','Here’s where September’s money went.'],receipts:['Receipts',filtered.length+' receipts across all your devices'],reports:['Reports','Build a summary, then export it for your accountant.'],settings:['Settings','Account, subscription, integrations and privacy.']};
+    const maxM=Math.max(...TR.months.map(m=>m.v));
+    const max=TR.categoryTotals[0].amt;
+    const barC=['var(--color-accent-2-500)','var(--color-accent-500)','var(--color-accent-2-400)','var(--color-accent-400)','var(--color-neutral-500)'];
+    const P={Month:{range:'1 – 30 September 2026',total:'$4,285.70',count:'47',gst:'$558.35'},Quarter:{range:'1 July – 30 September 2026',total:'$11,565.70',count:'131',gst:'$1,508.57'},Year:{range:'1 April 2026 – 31 March 2027',total:'$15,205.70',count:'176',gst:'$1,983.35'}};
+    const d=st.draft||{};
+    const fdefs=[['vendor','Vendor','1 / -1'],['date','Date'],['num','Receipt #'],['subtotal','Subtotal'],['gst','GST 15%'],['total','Total'],['pay','Payment'],['cat','Category','1 / -1']];
+    const flagsNew={gst:true,total:true};
+    const fields=fdefs.map(([k,label,span])=>{const flag=!st.editId&&flagsNew[k]&&!st.touched[k];return {label,span:span||'auto',value:d[k]??'',note:flag?'Review':(st.editId?'':'High confidence'),noteC:flag?'var(--color-accent-700)':'var(--color-accent-2-700)',bg:flag?'var(--color-accent-100)':'var(--color-surface)',bd:flag?'var(--color-accent-400)':'var(--color-divider)',onChange:e=>{const v=e.target.value;this.setState(p=>({draft:{...p.draft,[k]:v},touched:{...p.touched,[k]:true}}));}};});
+    const exp=(label,sub,ic,bg,fg)=>({label,sub,ic:I[ic],bg,fg,onClick:()=>this.flashMsg(label==='Google Sheets'?'Exported to Receipt Tracker 2026':label+' downloaded')});
+    const stepsP=['Uploading securely','Extracting vendor, totals & GST','Deleting your photo'].map((label,k)=>{const done=st.step>k,act=st.step===k;return {label,color:done||act?'var(--color-text)':'var(--color-neutral-500)',bg:done?'var(--color-accent-2-300)':'var(--color-neutral-200)',mark:done?React.createElement('span',{style:{width:14,height:14,display:'flex'}},I.check):act?React.createElement('div',{style:{width:16,height:16,borderRadius:'50%',border:'2.5px solid var(--color-accent-300)',borderTopColor:'var(--color-accent)',animation:'trspin .8s linear infinite'}}):null};});
+    return {
+      p:{[pg]:true},i:I,
+      nav:NAV.map(([id,label,ic])=>{const a=pg===id;return {label,ic:I[ic],bg:a?'var(--color-text)':'transparent',fg:a?'var(--color-bg)':'var(--color-text)',onClick:()=>this.setState({page:id,drawer:false})};}),
+      title:T[pg][0],subtitle:T[pg][1],
+      q:st.q,onQ:e=>this.setState({q:e.target.value,page:'receipts'}),
+      openUpload:()=>this.setState({up:'drop'}),closeUpload:()=>{this.timers.forEach(clearTimeout);this.setState({up:null});},
+      uploading:!!st.up,upDrop:st.up==='drop',upProc:st.up==='proc',upTitle:st.up==='proc'?'Reading your receipt…':'Upload a receipt',
+      startProcess:()=>this.process(),steps:stepsP,
+      toReports:()=>this.setState({page:'reports'}),toReceipts:()=>this.setState({page:'receipts'}),
+      months:TR.months.map((m,k)=>({m:m.m,label:'$'+(m.v/1000).toFixed(1)+'k',h:Math.round(m.v/maxM*130)+'px',bg:k===5?'var(--color-accent)':'var(--color-accent-2-300)'})),
+      catBars:TR.categoryTotals.map((c,k)=>({name:c.name,amt:TR.money(c.amt),w:Math.round(c.amt/max*100)+'%',bg:barC[k]})),
+      recent:L.slice(0,5).map(row),wk:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],cal:TR.calendar(),
+      chips:['All','Business','Personal','Tax deductible'].map(label=>{const a=st.filter===label;return {label,bg:a?'var(--color-text)':'var(--color-bg)',fg:a?'var(--color-bg)':'var(--color-text)',bd:a?'var(--color-text)':'var(--color-divider)',onClick:()=>this.setState({filter:label})};}),
+      rows:filtered.map(row),noRows:filtered.length===0,countLabel:filtered.length+' receipts',sumLabel:TR.money(filtered.reduce((a,r)=>a+r.total,0)),
+      manual:()=>this.setState({drawer:true,editId:null,touched:{gst:1,total:1},draft:{vendor:'',date:'01/10/2026',num:'',subtotal:'',gst:'',total:'',pay:'Visa',cat:'Office',type:'business',deductible:true}}),
+      periods:['Month','Quarter','Year'].map(label=>{const a=st.period===label;return {label,bg:a?'var(--color-bg)':'transparent',fg:a?'var(--color-text)':'var(--color-neutral-700)',sh:a?'var(--shadow-sm)':'none',onClick:()=>this.setState({period:label})};}),
+      catChips:TR.categoryTotals.map(c=>{const off=st.cats[c.name];return {label:c.name,bg:off?'transparent':'var(--color-accent-2-200)',fg:off?'var(--color-neutral-700)':'var(--color-accent-2-900)',bd:off?'var(--color-divider)':'transparent',onClick:()=>this.setState(p=>({cats:{...p.cats,[c.name]:!p.cats[c.name]}}))};}),
+      rep:P[st.period],
+      repRows:TR.categoryTotals.filter(c=>!st.cats[c.name]).map((c,k)=>({name:c.name,n:[11,6,10,9,11][k],amt:TR.money(c.amt),gst:TR.money(c.amt*3/23)})),
+      exportsList:[exp('CSV','Raw rows','file','var(--color-neutral-200)','var(--color-text)'),exp('Excel','.xlsx · 3 sheets','sheet','var(--color-accent-2-200)','var(--color-accent-2-900)'),exp('PDF','Accountant report','file','var(--color-accent-200)','var(--color-accent-900)'),exp('Google Sheets','Receipt Tracker 2026','sheet','var(--color-accent-2-300)','var(--color-accent-2-900)')],
+      autoBg:st.auto?'var(--color-accent-2-600)':'var(--color-neutral-400)',autoX:st.auto?'23px':'3px',toggleAuto:()=>this.setState({auto:!st.auto}),
+      drawer:st.drawer,closeDrawer:()=>this.setState({drawer:false}),
+      drawerTitle:st.editId?d.vendor:(d.vendor?'Receipt found':'New receipt'),drawerTag:st.editId?'Synced across devices':'Photo deleted after extraction',
+      hasFlags:fields.some(f=>f.note==='Review'),fields,
+      typeOpts:[['business','Business'],['personal','Personal']].map(([id,label])=>{const a=d.type===id;return {label,bg:a?'var(--color-text)':'var(--color-surface)',fg:a?'var(--color-bg)':'var(--color-text)',onClick:()=>this.setState(p=>({draft:{...p.draft,type:id}}))};}),
+      save:()=>this.save(),
+      altLabel:st.editId?'Delete':'Cancel',altColor:st.editId?'var(--color-accent-700)':'var(--color-text)',
+      drawerAlt:()=>{if(st.editId){this.setState({list:L.filter(r=>r.id!==st.editId),drawer:false});this.flashMsg('Receipt deleted everywhere');}else this.setState({drawer:false});},
+      toast:st.toast
+    };
+  }
+}
+</script>
+</body>
+</html>
