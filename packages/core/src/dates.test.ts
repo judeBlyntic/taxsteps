@@ -59,3 +59,14 @@ describe('parsing and formatting', () => {
     expect(parseUserDate(formatDate('2026-10-05', 'en-US'), 'en-US')).toBe('2026-10-05')
   })
 })
+
+describe('formatShortDate / formatMonth', () => {
+  it('formats compact display dates in the locale', async () => {
+    const { formatShortDate, formatMonth } = await import('./dates.ts')
+    expect(formatShortDate('2026-10-05', 'en-NZ')).toBe('5 Oct')
+    expect(formatShortDate('2026-10-05', 'en-US')).toBe('Oct 5')
+    expect(formatShortDate('2025-10-05', 'en-NZ', '2026-10-05')).toBe('5 Oct 2025')
+    expect(formatMonth(2026, 9, 'en-NZ')).toBe('September 2026')
+    expect(formatMonth(2026, 10, 'en-NZ', 'short')).toBe('Oct')
+  })
+})

@@ -117,3 +117,17 @@ export function formatTimestamp(isoTimestamp: string, timeZone: string, locale: 
     return new Intl.DateTimeFormat(locale, { ...opts, timeZone: FALLBACK_TZ }).format(new Date(isoTimestamp))
   }
 }
+
+/** "5 Oct" (adds the year when it differs from `today`'s year). */
+export function formatShortDate(d: ISODate, locale: string = DEFAULT_LOCALE, today?: ISODate): string {
+  const [y, m, day] = parts(d)
+  const withYear = today !== undefined && today.slice(0, 4) !== d.slice(0, 4)
+  return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', ...(withYear ? { year: 'numeric' } : {}), timeZone: 'UTC' })
+    .format(new Date(Date.UTC(y, m - 1, day)))
+}
+
+/** "September 2026", or just "Sep" with style 'short'. */
+export function formatMonth(year: number, month: number, locale: string = DEFAULT_LOCALE, style: 'long' | 'short' = 'long'): string {
+  const opts: Intl.DateTimeFormatOptions = style === 'long' ? { month: 'long', year: 'numeric', timeZone: 'UTC' } : { month: 'short', timeZone: 'UTC' }
+  return new Intl.DateTimeFormat(locale, opts).format(new Date(Date.UTC(year, month - 1, 1)))
+}
