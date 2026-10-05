@@ -58,7 +58,7 @@ export default function ReportsPage() {
           <div className="stack" style={{ gap: 8 }}>
             <span style={{ fontWeight: 700, fontSize: 14 }}>Period</span>
             <div className="segmented" role="group" aria-label="Period">
-              {([['month', 'Month'], ['year', 'Year'], ['fy', 'Fin. year'], ['custom', 'Custom']] as const).map(([k, l]) => (
+              {([['month', 'Month'], ['year', 'Year'], ['fy', 'FY'], ['custom', 'Custom']] as const).map(([k, l]) => (
                 <button key={k} type="button" aria-pressed={kind === k} onClick={() => setKind(k)}>{l}</button>
               ))}
             </div>

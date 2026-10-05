@@ -19,8 +19,9 @@ export async function buildPdf(
 ): Promise<Uint8Array> {
   const pdf = await PDFDocument.create()
   pdf.registerFontkit(fontkit)
-  const regular = await pdf.embedFont(fonts.regular, { subset: true })
-  const bold = await pdf.embedFont(fonts.bold, { subset: true })
+  // Full embed: pdf-lib's font subsetting drops glyphs from Noto Sans when the PDF is rendered.
+  const regular = await pdf.embedFont(fonts.regular, { subset: false })
+  const bold = await pdf.embedFont(fonts.bold, { subset: false })
   const glyphs = new Set(regular.getCharacterSet())
   // Characters the font can't draw (CJK, emoji…) become "?" instead of crashing the export.
   const safe = (s: string) => Array.from(s, (ch) => (glyphs.has(ch.codePointAt(0)!) ? ch : '?')).join('')
