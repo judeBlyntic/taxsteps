@@ -7,7 +7,9 @@ max_rows = 1000
 
 [auth]
 site_url = "http://localhost:3000"
-additional_redirect_urls = ["http://localhost:3000/**", "taxsteps://**", "exp://**"]
+# Auth emails (confirm, reset) always land on the web app — never on custom schemes or Expo dev
+# URLs, which an attacker could register to capture tokens. Add the production web origin here.
+additional_redirect_urls = ["http://localhost:3000/**"]
 minimum_password_length = 8
 enable_signup = true
 
