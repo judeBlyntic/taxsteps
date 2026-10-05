@@ -61,3 +61,27 @@ export async function exportDocuments(c: TaxStepsClient, req: ExportRequest): Pr
 export async function deleteAccount(c: TaxStepsClient): Promise<void> {
   await invokeFunction<{ ok: true }>(c, 'delete-account', { confirm: 'DELETE' })
 }
+
+// ── Google Sheets (mirrors SheetsRequestSchema in supabase/functions/google-sheets/handler.ts) ──
+export type SheetsRequest =
+  | { action: 'status' }
+  | { action: 'start'; returnTo: string }
+  | { action: 'list-spreadsheets' }
+  | { action: 'create-spreadsheet'; title: string }
+  | { action: 'list-worksheets'; spreadsheetId: string }
+  | { action: 'create-worksheet'; spreadsheetId: string; title: string }
+  | { action: 'export'; spreadsheetId: string; sheet: string; filter: import('@taxsteps/core').DocumentFilter }
+  | { action: 'disconnect' }
+
+export type SheetsStatus = {
+  configured: boolean
+  connected: boolean
+  email: string | null
+  defaultSpreadsheetId: string | null
+  defaultSheet: string | null
+}
+export type SheetsExportResult = { updatedRows: number; documents: number; spreadsheetUrl: string }
+
+export function sheets<T>(c: TaxStepsClient, req: SheetsRequest): Promise<T> {
+  return invokeFunction<T>(c, 'google-sheets', req)
+}
