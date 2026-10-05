@@ -1,5 +1,5 @@
-// @deno-types="https://cdn.sheetjs.com/xlsx-0.20.3/package/types/index.d.ts"
-import * as XLSX from 'xlsx'
+// @deno-types="./vendor/xlsx.d.ts"
+import * as XLSX from './vendor/xlsx.mjs'
 import { EXPORT_HEADERS, exportRow, fromCents, guardCell, type ExportDoc } from '../_shared/core.ts'
 import { aggregate } from './aggregate.ts'
 import type { ExportContext } from './context.ts'

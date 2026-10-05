@@ -1,6 +1,6 @@
 import { assertEquals } from '@std/assert'
-// @deno-types="https://cdn.sheetjs.com/xlsx-0.20.3/package/types/index.d.ts"
-import * as XLSX from 'xlsx'
+// @deno-types="./vendor/xlsx.d.ts"
+import * as XLSX from './vendor/xlsx.mjs'
 import { buildXlsx } from './xlsx.ts'
 import { CTX, DOCS } from './test-fixtures.ts'
 
