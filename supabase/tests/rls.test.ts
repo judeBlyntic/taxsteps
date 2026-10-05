@@ -34,6 +34,10 @@ describe('row level security', () => {
     await expect(saveDocument(B.client, input({ id: docA.id, merchant_name: 'Hijack' }))).rejects.toThrow()
     await expect(saveDocument(B.client, input({ category_id: categoryA }))).rejects.toThrow()
   })
+  it('rejects a save pinned to another user (offline-queue owner guard)', async () => {
+    await expect(saveDocument(B.client, input(), A.userId)).rejects.toThrow()
+    expect((await A.client.from('documents').select('id')).data).toHaveLength(1)
+  })
   it('prevents inserting rows owned by someone else', async () => {
     const res = await B.client.from('documents').insert({ ...input(), user_id: A.userId })
     expect(res.error).not.toBeNull()

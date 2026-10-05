@@ -37,12 +37,16 @@ export async function getDocument(c: TaxStepsClient, id: string): Promise<Docume
   return data ? asDocumentRow(data) : null
 }
 
-/** Insert-or-update by id. Idempotent: saving the same draft twice leaves one row. */
-export async function saveDocument(c: TaxStepsClient, input: DocumentInput): Promise<DocumentRow> {
+/**
+ * Insert-or-update by id. Idempotent: saving the same draft twice leaves one row.
+ * Pass `ownerId` to pin the row to a specific user: RLS then rejects the write if the
+ * client's session belongs to anyone else (used by the mobile offline queue).
+ */
+export async function saveDocument(c: TaxStepsClient, input: DocumentInput, ownerId?: string): Promise<DocumentRow> {
   const clean = DocumentInputSchema.parse(input)
   const { data, error } = await c
     .from('documents')
-    .upsert({ ...clean, metadata: clean.metadata as Json }, { onConflict: 'id' })
+    .upsert({ ...clean, metadata: clean.metadata as Json, ...(ownerId ? { user_id: ownerId } : {}) }, { onConflict: 'id' })
     .select('*')
     .single()
   if (error || !data) throw dbError('SAVE_FAILED', error)

@@ -34,7 +34,7 @@ export function OfflineQueueProvider({ children }: { children: ReactNode }) {
     // The Supabase client is shared: if a different user signs in mid-flush, stop so this
     // user's queued expenses are never saved into their account.
     const stillOwner = async () => (await client.auth.getSession()).data.session?.user.id === userId
-    const { saved } = await queue.flush((input) => saveDocument(client, input), stillOwner)
+    const { saved } = await queue.flush((input) => saveDocument(client, input, userId), stillOwner)
     if (saved) invalidateDocuments(qc)
     await refresh()
   }, [queue, userId, client, qc, refresh])
@@ -53,7 +53,7 @@ export function OfflineQueueProvider({ children }: { children: ReactNode }) {
   const saveOrQueue = useCallback(async (input: DocumentInput): Promise<'saved' | 'queued'> => {
     if (isOnline) {
       try {
-        await saveDocument(client, input)
+        await saveDocument(client, input, userId ?? undefined)
         invalidateDocuments(qc)
         return 'saved'
       } catch (e) {
@@ -64,7 +64,7 @@ export function OfflineQueueProvider({ children }: { children: ReactNode }) {
     await queue.enqueue(input)
     await refresh()
     return 'queued'
-  }, [queue, client, qc, isOnline, refresh])
+  }, [queue, userId, client, qc, isOnline, refresh])
 
   const api = useMemo<Api>(() => ({
     pending, isOnline, saveOrQueue, retry,
