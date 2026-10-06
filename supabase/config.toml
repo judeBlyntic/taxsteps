@@ -9,7 +9,9 @@ max_rows = 1000
 site_url = "http://localhost:3000"
 # Auth emails (confirm, reset) always land on the web app — never on custom schemes or Expo dev
 # URLs, which an attacker could register to capture tokens. Add the production web origin here.
-additional_redirect_urls = ["http://localhost:3000/**", "https://taxsteps.vercel.app/**", "https://taxsteps-*-jude-blyntic.vercel.app/**"]
+# Exact origins only: a wildcard like taxsteps-*-team.vercel.app can be claimed by anyone on Vercel,
+# and an allowed redirect receives the sign-in from password-reset and magic-link emails.
+additional_redirect_urls = ["http://localhost:3000/**", "https://taxsteps.vercel.app/**"]
 minimum_password_length = 8
 enable_signup = true
 
