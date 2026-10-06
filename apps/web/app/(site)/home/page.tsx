@@ -7,7 +7,7 @@ import {
 import { COPY, TAX_REGIONS } from '@taxsteps/core'
 import { Logo } from '@/components/ui/Logo'
 import { ICON } from '@/components/ui/icons'
-import './site.css'
+import '../site.css'
 
 // The public website. Signed-out visitors to / see this page (proxy.ts rewrites to /home); it always shows the Fresh theme.
 
@@ -247,6 +247,7 @@ export default function HomePage() {
           <Logo href="/" />
           <nav className="row" aria-label="Footer" style={{ flexWrap: 'wrap', gap: 18 }}>
             <a href="#how">How it works</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a>
+            <Link href="/terms">Terms</Link><Link href="/privacy">Privacy</Link>
             <Link href="/sign-in">Sign in</Link><Link href="/sign-up">Create an account</Link>
           </nav>
         </div>

@@ -136,6 +136,8 @@ export type Profile = {
   fy_start_month: number
   fy_start_day: number
   theme: ThemeName
+  terms_version: string | null
+  terms_accepted_at: string | null
   created_at: string
   updated_at: string
 }

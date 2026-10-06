@@ -87,17 +87,17 @@ export type Database = {
         Row: {
           business_name: string | null; country: string | null; created_at: string; currency: string
           full_name: string | null; fy_start_day: number; fy_start_month: number; id: string; locale: string
-          tax_number: string | null; theme: 'fresh' | 'classic'; timezone: string; updated_at: string
+          tax_number: string | null; terms_accepted_at: string | null; terms_version: string | null; theme: 'fresh' | 'classic'; timezone: string; updated_at: string
         }
         Insert: {
           business_name?: string | null; country?: string | null; created_at?: string; currency?: string
           full_name?: string | null; fy_start_day?: number; fy_start_month?: number; id: string; locale?: string
-          tax_number?: string | null; theme?: 'fresh' | 'classic'; timezone?: string; updated_at?: string
+          tax_number?: string | null; terms_accepted_at?: string | null; terms_version?: string | null; theme?: 'fresh' | 'classic'; timezone?: string; updated_at?: string
         }
         Update: {
           business_name?: string | null; country?: string | null; created_at?: string; currency?: string
           full_name?: string | null; fy_start_day?: number; fy_start_month?: number; id?: string; locale?: string
-          tax_number?: string | null; theme?: 'fresh' | 'classic'; timezone?: string; updated_at?: string
+          tax_number?: string | null; terms_accepted_at?: string | null; terms_version?: string | null; theme?: 'fresh' | 'classic'; timezone?: string; updated_at?: string
         }
         Relationships: []
       }

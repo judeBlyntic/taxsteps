@@ -219,6 +219,9 @@ textarea.input { border-radius: 22px; padding: 12px 14px; }
 .auth-card h2 { margin: 0; }
 .btn-google { gap: 12px; background: var(--color-neutral-100); border-color: var(--color-divider); color: var(--color-text); }
 .btn-google:hover { border-color: var(--color-neutral-500); }
+.terms-check { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 22px; background: var(--color-surface); font-size: 14px; line-height: 1.45; cursor: pointer; }
+.terms-check input { width: 20px; height: 20px; margin: 1px 0 0; flex: none; accent-color: var(--color-accent-700); cursor: pointer; }
+.terms-note { margin: -6px 0 0; font-size: 12.5px; text-align: center; }
 .auth-or { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--color-neutral-700); }
 .auth-or::before, .auth-or::after { content: ''; flex: 1; height: 1px; background: var(--color-divider); }
 @media (max-width: 900px) {

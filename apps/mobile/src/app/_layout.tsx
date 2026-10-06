@@ -71,6 +71,7 @@ function RootNavigator() {
           <Stack.Screen name="categories" />
           <Stack.Screen name="sheets" />
         </Stack.Protected>
+        <Stack.Screen name="legal" />
       </Stack>
     </>
   )

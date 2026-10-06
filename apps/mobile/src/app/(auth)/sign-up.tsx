@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Pressable, View } from 'react-native'
-import { Link } from 'expo-router'
-import { MailCheck } from 'lucide-react-native'
-import { FALLBACK_REGION, TAX_REGIONS, regionFor, toUserMessage } from '@taxsteps/core'
+import { Link, useRouter } from 'expo-router'
+import { Check, MailCheck } from 'lucide-react-native'
+import { FALLBACK_REGION, TAX_REGIONS, TERMS_VERSION, regionFor, toUserMessage } from '@taxsteps/core'
 import { Banner, Button, Chip, H, Muted, Screen, T, TextField } from '@/components/ui'
 import { WEB_URL, supabase } from '@/lib/supabase'
 import { colors } from '@/lib/theme'
@@ -25,9 +25,12 @@ export default function SignUp() {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [sent, setSent] = useState(false)
+  const [agreed, setAgreed] = useState(false)
+  const router = useRouter()
   const region = regionFor(country)
 
   async function submit() {
+    if (!agreed) return setError('Please agree to the Terms of Service and Privacy Policy to continue.')
     if (password.length < 8) return setError('Please choose a password with at least 8 characters.')
     setBusy(true)
     setError(null)
@@ -42,6 +45,7 @@ export default function SignUp() {
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           locale: country === FALLBACK_REGION.country ? Intl.DateTimeFormat().resolvedOptions().locale : region.locale,
           fy_start_month: region.fyStartMonth, fy_start_day: region.fyStartDay,
+          terms_version: TERMS_VERSION, // the server records when it was accepted
         },
       },
     })
@@ -85,8 +89,23 @@ export default function SignUp() {
         )}
         <Muted>Currency {region.currency} · tax year starts {region.fyStartDay} {monthName(region.fyStartMonth)} · you can change these later.</Muted>
       </View>
+      <Pressable role="checkbox" aria-checked={agreed}
+        accessibilityLabel="I agree to the Terms of Service and Privacy Policy" onPress={() => { setAgreed((v) => !v); setError(null) }}
+        style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start', padding: 14, borderRadius: 22, backgroundColor: colors.surface }}>
+        <View style={{ width: 24, height: 24, borderRadius: 7, borderWidth: 2, alignItems: 'center', justifyContent: 'center',
+          borderColor: agreed ? colors.accentRamp[700] : colors.neutral[500], backgroundColor: agreed ? colors.accentRamp[700] : 'transparent' }}>
+          {agreed && <Check size={15} color={colors.neutral[100]} strokeWidth={3} />}
+        </View>
+        <T size={14} style={{ flex: 1 }}>
+          I agree to the{' '}
+          <T size={14} color={colors.accentRamp[700]} onPress={() => router.push({ pathname: '/legal', params: { doc: 'terms' } })}>Terms of Service</T>
+          {' '}and{' '}
+          <T size={14} color={colors.accentRamp[700]} onPress={() => router.push({ pathname: '/legal', params: { doc: 'privacy' } })}>Privacy Policy</T>
+          . Tax Steps never sells or shares my business information.
+        </T>
+      </Pressable>
       {error && <Banner>{error}</Banner>}
-      <Button label={busy ? 'Creating account…' : 'Create account'} onPress={submit} loading={busy} disabled={!email || !password} />
+      <Button label={busy ? 'Creating account…' : 'Create account'} onPress={submit} loading={busy} disabled={!agreed || !email || !password} />
       <Link href="/sign-in"><T weight="semibold" color={colors.accentRamp[700]}>I already have an account</T></Link>
     </Screen>
   )

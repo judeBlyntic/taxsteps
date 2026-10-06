@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
-import { toUserMessage } from '@taxsteps/core'
+import Link from 'next/link'
+import { TERMS_VERSION, toUserMessage } from '@taxsteps/core'
 import { createClient } from '@/lib/supabase/client'
 
 /** Google's four-colour "G" (brand guidelines require the official mark, unaltered). */
@@ -27,7 +28,8 @@ async function googleEnabled(): Promise<boolean> {
   }
 }
 
-export function GoogleButton() {
+/** `disabled` until the terms box is ticked (sign-up); `consentNote` shows the click-to-agree line (sign-in). */
+export function GoogleButton({ disabled = false, consentNote = false }: { disabled?: boolean; consentNote?: boolean }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -38,10 +40,10 @@ export function GoogleButton() {
       setBusy(false)
       return setError("Google sign-in isn't switched on yet. Please use your email for now.")
     }
-    // Comes back through /auth/confirm, which finishes the sign-in in this browser (PKCE).
+    // Comes back through /auth/confirm, which finishes the sign-in in this browser (PKCE) and records the terms accepted here.
     const { error: err } = await createClient().auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/confirm?via=google` },
+      options: { redirectTo: `${window.location.origin}/auth/confirm?via=google&terms=${TERMS_VERSION}` },
     })
     if (err) {
       setBusy(false)
@@ -51,9 +53,15 @@ export function GoogleButton() {
 
   return (
     <>
-      <button type="button" className="btn btn-xl btn-google" onClick={() => void start()} disabled={busy}>
+      <button type="button" className="btn btn-xl btn-google" onClick={() => void start()} disabled={busy || disabled}>
         <GoogleMark />{busy ? 'Opening Google…' : 'Continue with Google'}
       </button>
+      {consentNote && (
+        <p className="muted terms-note">
+          By continuing with Google you agree to the <Link className="link" href="/terms" target="_blank">Terms of Service</Link> and{' '}
+          <Link className="link" href="/privacy" target="_blank">Privacy Policy</Link>.
+        </p>
+      )}
       {error && <div className="banner banner-warn" role="alert">{error}</div>}
       <div className="auth-or" role="separator"><span>or use your email</span></div>
     </>

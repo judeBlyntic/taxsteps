@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Pressable, View } from 'react-native'
-import { useRouter, type Href } from 'expo-router'
+import { Link, useRouter, type Href } from 'expo-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { Building, ChevronRight, Globe2, LogOut, Sheet, ShieldCheck, Tag, type LucideIcon } from 'lucide-react-native'
 import { COPY, THEME_OPTIONS, regionFor, toUserMessage, type ThemeName } from '@taxsteps/core'
@@ -136,6 +136,10 @@ export default function SettingsScreen() {
         <Button label="Delete account" variant="ghost" size="md" onPress={() => setConfirm('account')} />
       </View>
       <Muted size={12}>{COPY.disclaimer}</Muted>
+      <View style={{ flexDirection: 'row', gap: 16 }}>
+        <Link href={{ pathname: '/legal', params: { doc: 'terms' } }}><T size={13} color={colors.accentRamp[700]}>Terms of Service</T></Link>
+        <Link href={{ pathname: '/legal', params: { doc: 'privacy' } }}><T size={13} color={colors.accentRamp[700]}>Privacy Policy</T></Link>
+      </View>
       <Button label="Sign out" variant="secondary" icon={LogOut} onPress={() => { qc.clear(); void client.auth.signOut() }} />
       {confirm && (
         <ConfirmDelete busy={busy} onCancel={() => setConfirm(null)} onConfirm={() => void doDelete()}

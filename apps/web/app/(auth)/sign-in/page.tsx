@@ -39,7 +39,7 @@ export default function SignInPage() {
       <h2>Welcome back</h2>
       <p className="muted" style={{ margin: 0 }}>Sign in to see your expenses on any device.</p>
       <Suspense><Notice /></Suspense>
-      <GoogleButton />
+      <GoogleButton consentNote />
       <TextField label="Email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
       <TextField label="Password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
       {error && <div className="banner banner-warn" role="alert">{error}</div>}

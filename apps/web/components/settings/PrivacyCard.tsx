@@ -49,6 +49,7 @@ export function PrivacyCard() {
       <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5 }}>{COPY.privacyPanel}</p>
       <p style={{ margin: 0, fontSize: 13, lineHeight: 1.5 }}>{COPY.providerNote}</p>
       <p style={{ margin: 0, fontSize: 13, lineHeight: 1.5 }}>{COPY.disclaimer}</p>
+      <p style={{ margin: 0, fontSize: 13 }}><Link className="link" href="/terms">Terms of Service</Link> · <Link className="link" href="/privacy">Privacy Policy</Link></p>
       <div className="row" style={{ flexWrap: 'wrap', marginTop: 6 }}>
         <Link className="btn btn-secondary btn-paper" href="/export?range=all">Export all data</Link>
         <button type="button" className="btn btn-secondary btn-paper btn-danger" onClick={() => setPending('documents')}>Delete all documents</button>

@@ -26,6 +26,26 @@ describe('signup trigger', () => {
     expect((await updateProfile(u.client, { timezone: 'Pacific/Auckland' })).timezone).toBe('Pacific/Auckland')
   })
 
+  it('records the accepted terms version with a server timestamp that clients cannot backdate', async () => {
+    const before = Date.now()
+    const u = await createTestUser({ terms_version: '2026-10-07' })
+    users.push(u)
+    const p = await getProfile(u.client) as Record<string, unknown>
+    expect(p.terms_version).toBe('2026-10-07')
+    const stamped = Date.parse(String(p.terms_accepted_at))
+    expect(stamped).toBeGreaterThan(before - 60_000)
+
+    await u.client.from('profiles').update({ terms_accepted_at: '2000-01-01T00:00:00Z' } as never).eq('id', u.userId)
+    expect(Date.parse(String((await getProfile(u.client) as Record<string, unknown>).terms_accepted_at))).toBe(stamped)
+
+    const { error } = await u.client.from('profiles').update({ terms_version: 'v2' } as never).eq('id', u.userId)
+    expect(error?.code).toBe('23514')
+  })
+
+  it('leaves terms unaccepted when signup metadata has none', async () => {
+    expect(await getProfile(users[0]!.client)).toMatchObject({ terms_version: null, terms_accepted_at: null })
+  })
+
   it('starts on the fresh theme, saves a switch and rejects unknown themes', async () => {
     const u = users[0]!
     expect((await getProfile(u.client)).theme).toBe('fresh')

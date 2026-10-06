@@ -11,4 +11,5 @@ export * from './copy.ts'
 export * from './filters.ts'
 export * from './csv.ts'
 export * from './reports.ts'
+export * from './legal.ts'
 export type { Database, Json } from "./database.types.ts"
