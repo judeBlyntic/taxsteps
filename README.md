@@ -77,7 +77,7 @@ node scripts/smoke-extract.mjs         # live extraction smoke test against Open
 
 - [ ] OpenAI API key in `supabase/functions/.env` → `npx supabase secrets set …`
 - [ ] Custom SMTP in Supabase Auth (the default sender only emails project members and is rate-limited)
-- [ ] Production web domain added to `supabase/config.toml` redirect URLs, `APP_WEB_URL`, `APP_ALLOWED_ORIGINS`
+- [x] Production web domain added to `supabase/config.toml` redirect URLs, `APP_WEB_URL`, `APP_ALLOWED_ORIGINS` (https://taxsteps.vercel.app, live on Vercel from `main`)
 - [ ] Google Cloud OAuth client for Sheets (optional)
 - [ ] App icons / splash artwork in `apps/mobile/assets` (currently Expo defaults)
 - [ ] Apple Developer + Google Play accounts and `eas build` / `eas submit`
