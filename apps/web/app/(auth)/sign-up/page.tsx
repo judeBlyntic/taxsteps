@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { MailCheck } from 'lucide-react'
 import { CURRENCIES, FALLBACK_REGION, TAX_REGIONS, regionFor, toUserMessage } from '@taxsteps/core'
 import { createClient } from '@/lib/supabase/client'
+import { GoogleButton } from '@/components/auth/GoogleButton'
 import { SelectField, TextField } from '@/components/ui/Field'
 import { ICON } from '@/components/ui/icons'
 
@@ -71,6 +72,7 @@ export default function SignUpPage() {
   return (
     <form className="auth-card" onSubmit={submit} noValidate>
       <h2>Create your account</h2>
+      <GoogleButton />
       <TextField label="Your name" autoComplete="name" value={form.fullName} onChange={(e) => set('fullName', e.target.value)} />
       <TextField label="Email" type="email" autoComplete="email" required value={form.email} onChange={(e) => set('email', e.target.value)} />
       <TextField label="Password" type="password" autoComplete="new-password" required minLength={8} value={form.password}

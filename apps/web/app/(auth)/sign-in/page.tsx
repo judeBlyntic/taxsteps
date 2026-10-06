@@ -4,12 +4,14 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { toUserMessage } from '@taxsteps/core'
 import { createClient } from '@/lib/supabase/client'
+import { GoogleButton } from '@/components/auth/GoogleButton'
 import { TextField } from '@/components/ui/Field'
 
 function Notice() {
   const params = useSearchParams()
   if (params.get('deleted')) return <div className="banner banner-ok">Your account and data have been deleted.</div>
   if (params.get('confirmed')) return <div className="banner banner-ok">Email confirmed — please sign in.</div>
+  if (params.get('error') === 'google') return <div className="banner banner-warn">Google sign-in didn&apos;t finish. Please try again, or use your email and password.</div>
   if (params.get('error')) return <div className="banner banner-warn">That link has expired or was already used. Please try again.</div>
   return null
 }
@@ -37,6 +39,7 @@ export default function SignInPage() {
       <h2>Welcome back</h2>
       <p className="muted" style={{ margin: 0 }}>Sign in to see your expenses on any device.</p>
       <Suspense><Notice /></Suspense>
+      <GoogleButton />
       <TextField label="Email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
       <TextField label="Password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
       {error && <div className="banner banner-warn" role="alert">{error}</div>}
