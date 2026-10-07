@@ -3,19 +3,22 @@ import { COPY } from './copy.ts'
 // Terms of Service and Privacy Policy, shared by the website (/terms, /privacy) and the phone app.
 // Bump TERMS_VERSION (a date) whenever either document changes in substance: accounts record the
 // version they agreed to (profiles.terms_version), so a new version can be offered for re-acceptance.
-export const TERMS_VERSION = '2026-10-07'
+export const TERMS_VERSION = '2026-10-08'
 
 export const OPERATOR = {
   name: 'Blyntic Ltd',
   country: 'New Zealand',
   email: 'jude@blyntic.co.nz',
-  updated: '7 October 2026',
+  updated: '8 October 2026',
 } as const
 
 /** The one promise the sign-up tick box points to. Keep it true: see SERVICE_PROVIDERS. */
 export const DATA_PROMISE =
   'Your business information belongs to you. Tax Steps does not own it, never sells it, and never shares it with anyone for their own purposes. ' +
   'The only companies that handle it are the service providers that run Tax Steps for us, and they may use it for that job alone.'
+
+/** Advertising measurement on the public website only, loaded only after the visitor accepts. Never inside the app. */
+export const AD_PARTNER = { name: 'Meta', tool: 'Meta Pixel', location: 'United States' } as const
 
 /** Everyone outside Blyntic Ltd who handles user data. Every new integration must be added here. */
 export const SERVICE_PROVIDERS: { name: string; role: string; location: string }[] = [
@@ -66,7 +69,7 @@ export const PRIVACY: LegalDoc = {
       heading: 'How we use it',
       body: [
         'To run Tax Steps for you, and nothing else: showing your records, building reports and exports, keeping your devices in sync, keeping your account secure, and contacting you about your account or changes to these documents.',
-        'We do not use your information for advertising, we do not build profiles of you, and we do not let anyone train AI models on it.',
+        'We never use your business information or expense records for advertising, we do not build profiles of you, and we do not let anyone train AI models on it.',
       ],
     },
     {
@@ -82,8 +85,11 @@ export const PRIVACY: LegalDoc = {
       body: ['Your records are stored in Sydney, Australia. The website and receipt reading run in the United States. We only use providers that protect information to a standard comparable to New Zealand’s Privacy Act 2020.'],
     },
     {
-      heading: 'Cookies',
-      body: ['Tax Steps uses a cookie only to keep you signed in, and your device remembers your chosen theme. There are no advertising or analytics trackers.'],
+      heading: 'Cookies and advertising',
+      body: [
+        'Inside the app, Tax Steps uses a cookie only to keep you signed in, and your device remembers your chosen theme. There are no advertising or analytics trackers in the app, or on the sign-in and sign-up pages.',
+        `On our public website only (the home page, these Terms and this Privacy Policy), we ask before using ${AD_PARTNER.name}'s advertising cookie (the ${AD_PARTNER.tool}). If you accept, ${AD_PARTNER.name} learns which website pages you visit, whether you click “Start free”, and basic details about your browser and device, so we can see which of our ads work. ${AD_PARTNER.name} handles this under its own terms and privacy policy, in the ${AD_PARTNER.location}. It never receives your account, business information or expense records. If you decline, it never loads. You can change your choice any time with “Cookie choices” at the bottom of the website.`,
+      ],
     },
     {
       heading: 'How long we keep it',

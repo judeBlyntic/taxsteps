@@ -15,6 +15,14 @@ describe('legal documents', () => {
     expect(text(PRIVACY)).toContain('never sell')
   })
 
+  it('disclose the website-only, consent-first advertising cookie', () => {
+    const cookies = PRIVACY.sections.find((s) => s.heading === 'Cookies and advertising')
+    expect(cookies).toBeDefined()
+    const said = JSON.stringify(cookies)
+    for (const fact of ['Meta Pixel', 'we ask before', 'If you decline, it never loads', 'never receives your account, business information or expense records', 'Cookie choices'])
+      expect(said, fact).toContain(fact)
+  })
+
   it('name the operator and a contact in both documents, with no empty sections', () => {
     for (const doc of Object.values(LEGAL_DOCS)) {
       expect(text(doc)).toContain(OPERATOR.name)

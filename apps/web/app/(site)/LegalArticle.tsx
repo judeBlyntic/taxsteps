@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { OPERATOR, SERVICE_PROVIDERS, TERMS_VERSION, type LegalBlock, type LegalDoc } from '@taxsteps/core'
+import { CookieChoicesButton } from '@/components/site/MetaPixel'
 import { Logo } from '@/components/ui/Logo'
 import './site.css'
 
@@ -28,7 +29,7 @@ export function LegalArticle({ doc }: { doc: LegalDoc }) {
         <div className="w-wrap w-nav-inner">
           <Logo href="/" />
           <Link className="w-link-btn" href={other.href}>{other.label}</Link>
-          <Link className="w-btn w-btn-primary" href="/sign-up">Start free</Link>
+          <a className="w-btn w-btn-primary" href="/sign-up">Start free</a>
         </div>
       </header>
       <main className="w-wrap w-legal">
@@ -44,6 +45,7 @@ export function LegalArticle({ doc }: { doc: LegalDoc }) {
       </main>
       <footer className="w-footer w-wrap">
         <p className="w-small">{OPERATOR.name} · {OPERATOR.country} · <a href={`mailto:${OPERATOR.email}`}>{OPERATOR.email}</a></p>
+        <CookieChoicesButton />
       </footer>
     </div>
   )

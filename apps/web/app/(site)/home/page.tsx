@@ -5,6 +5,7 @@ import {
   Sparkles, Tags, Table, WifiOff, Wrench, type LucideIcon,
 } from 'lucide-react'
 import { COPY, TAX_REGIONS } from '@taxsteps/core'
+import { CookieChoicesButton } from '@/components/site/MetaPixel'
 import { Logo } from '@/components/ui/Logo'
 import { ICON } from '@/components/ui/icons'
 import '../site.css'
@@ -105,8 +106,8 @@ export default function HomePage() {
             <a href="#faq">FAQ</a>
           </nav>
           <div className="row">
-            <Link className="w-link-btn" href="/sign-in">Sign in</Link>
-            <Link className="w-btn w-btn-primary" href="/sign-up">Start free</Link>
+            <a className="w-link-btn" href="/sign-in">Sign in</a>
+            <a className="w-btn w-btn-primary" href="/sign-up">Start free</a>
           </div>
         </div>
       </header>
@@ -118,7 +119,7 @@ export default function HomePage() {
             <h1>Every receipt, sorted.</h1>
             <p className="w-lead">Snap a receipt and Tax Steps reads it, sorts it and keeps it ready for tax time, on your phone and on the web.</p>
             <div className="w-cta-row">
-              <Link className="w-btn w-btn-primary w-btn-lg" href="/sign-up">Start free<ArrowRight {...ICON} /></Link>
+              <a className="w-btn w-btn-primary w-btn-lg" href="/sign-up">Start free<ArrowRight {...ICON} /></a>
               <a className="w-btn w-btn-ghost w-btn-lg" href="#how">See how it works</a>
             </div>
             <p className="w-fine">Free during early access · No card needed</p>
@@ -207,7 +208,7 @@ export default function HomePage() {
               <p className="w-price"><span className="num">$7.99</span><span className="w-small"> / month</span></p>
               <p className="w-small">Flexible, cancel anytime</p>
               <PlanList />
-              <Link className="w-btn w-btn-ghost w-btn-lg" href="/sign-up">Start free</Link>
+              <a className="w-btn w-btn-ghost w-btn-lg" href="/sign-up">Start free</a>
             </article>
             <article className="w-plan w-plan-best w-reveal">
               <span className="w-best">Best value · save $25.98</span>
@@ -215,7 +216,7 @@ export default function HomePage() {
               <p className="w-price"><span className="num">$69.90</span><span className="w-small"> / year</span></p>
               <p className="w-small">Works out at $5.83 a month</p>
               <PlanList />
-              <Link className="w-btn w-btn-primary w-btn-lg" href="/sign-up">Start free</Link>
+              <a className="w-btn w-btn-primary w-btn-lg" href="/sign-up">Start free</a>
             </article>
           </div>
           <p className="w-fine w-center">Both plans include a 7-day free trial once billing starts.</p>
@@ -237,7 +238,7 @@ export default function HomePage() {
             <span className="w-blob w-final-blob" aria-hidden />
             <h2>Make this the last tax time you dread.</h2>
             <p>Start with your next receipt. It takes about ten seconds.</p>
-            <Link className="w-btn w-btn-light w-btn-lg" href="/sign-up">Start free<ArrowRight {...ICON} /></Link>
+            <a className="w-btn w-btn-light w-btn-lg" href="/sign-up">Start free<ArrowRight {...ICON} /></a>
           </div>
         </section>
       </main>
@@ -247,8 +248,8 @@ export default function HomePage() {
           <Logo href="/" />
           <nav className="row" aria-label="Footer" style={{ flexWrap: 'wrap', gap: 18 }}>
             <a href="#how">How it works</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a>
-            <Link href="/terms">Terms</Link><Link href="/privacy">Privacy</Link>
-            <Link href="/sign-in">Sign in</Link><Link href="/sign-up">Create an account</Link>
+            <Link href="/terms">Terms</Link><Link href="/privacy">Privacy</Link><CookieChoicesButton />
+            <a href="/sign-in">Sign in</a><a href="/sign-up">Create an account</a>
           </nav>
         </div>
         <p className="w-small">{COPY.disclaimer}</p>
