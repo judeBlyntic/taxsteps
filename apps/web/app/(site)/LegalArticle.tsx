@@ -27,7 +27,7 @@ export function LegalArticle({ doc }: { doc: LegalDoc }) {
     <div className="site theme-fresh">
       <header className="w-nav">
         <div className="w-wrap w-nav-inner">
-          <Logo href="/" />
+          <Logo href="/" reload />
           <Link className="w-link-btn" href={other.href}>{other.label}</Link>
           <a className="w-btn w-btn-primary" href="/sign-up">Start free</a>
         </div>

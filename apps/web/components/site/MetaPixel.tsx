@@ -14,10 +14,15 @@ type Choice = 'granted' | 'denied'
 type Fbq = ((...args: unknown[]) => void) & { callMethod?: (...args: unknown[]) => void; queue: unknown[][]; push: Fbq; loaded: boolean; version: string; disablePushState?: boolean }
 declare global { interface Window { fbq?: Fbq; _fbq?: Fbq } }
 
+// Supabase keeps the session in a script-readable cookie. A browser that holds one never gets third-party code:
+// signed-in customers aren't ad audiences, and Meta's script must never run beside their session or records.
+const hasSession = () => /(?:^|;\s*)sb-[^=;]+-auth-token/.test(document.cookie)
+
 // The visitor's choice, kept in localStorage (or in memory for this visit if storage is blocked).
 let memoryChoice: Choice | null = null
 const listeners = new Set<() => void>()
-function readChoice(): Choice | null {
+function readChoice(): Choice | 'signed-in' | null {
+  if (hasSession()) return 'signed-in'
   try {
     const v = localStorage.getItem(KEY)
     return v === 'granted' || v === 'denied' ? v : null
@@ -58,7 +63,7 @@ export function MetaPixel() {
 
   // Active only while a website page is mounted and the visitor has accepted.
   useEffect(() => {
-    if (!PIXEL_ID || choice !== 'granted') return
+    if (!PIXEL_ID || choice !== 'granted' || hasSession()) return
     installPixel(PIXEL_ID)
     window.fbq!('consent', 'grant')
     const lead = (e: MouseEvent) => {

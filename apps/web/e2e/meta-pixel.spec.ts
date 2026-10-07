@@ -81,6 +81,18 @@ test.describe('with a Pixel ID', () => {
     expect(hits).toEqual([])
   })
 
+  test('a signed-in browser never gets the banner or the Pixel, even after an earlier Accept', async ({ page, context, baseURL }) => {
+    const hits = await watchMeta(page)
+    await context.addCookies([{ name: 'sb-test-auth-token', value: 'session', url: baseURL! }])
+    await page.addInitScript(() => localStorage.setItem('taxsteps.ad-consent', 'granted'))
+    await page.goto('/terms')
+    await expect(page.getByRole('heading', { level: 1, name: 'Terms of Service' })).toBeVisible()
+    await page.waitForTimeout(1000)
+    await expect(page.getByRole('region', { name: 'Cookie choices' })).toHaveCount(0)
+    expect(await page.evaluate(() => 'fbq' in window)).toBe(false)
+    expect(hits).toEqual([])
+  })
+
   test('Cookie choices in the footer reopens the banner', async ({ page }) => {
     await watchMeta(page)
     await page.goto('/')

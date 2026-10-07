@@ -98,7 +98,7 @@ export default function HomePage() {
       <a className="w-skip" href="#main">Skip to content</a>
       <header className="w-nav">
         <div className="w-wrap w-nav-inner">
-          <Logo href="/" />
+          <Logo href="/" reload />
           <nav className="w-nav-links" aria-label="Website">
             <a href="#how">How it works</a>
             <a href="#features">Features</a>
@@ -245,7 +245,7 @@ export default function HomePage() {
 
       <footer className="w-footer w-wrap">
         <div className="w-footer-top">
-          <Logo href="/" />
+          <Logo href="/" reload />
           <nav className="row" aria-label="Footer" style={{ flexWrap: 'wrap', gap: 18 }}>
             <a href="#how">How it works</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a>
             <Link href="/terms">Terms</Link><Link href="/privacy">Privacy</Link><CookieChoicesButton />
