@@ -16,15 +16,19 @@ function GoogleMark() {
   )
 }
 
-/** Google is switched on in the Supabase dashboard, not in code, so check before handing the browser over. */
-async function googleEnabled(): Promise<boolean> {
+/**
+ * Google is switched on in the Supabase dashboard, not in code, so check before handing the browser over.
+ * null = Supabase can't be reached (offline, or the project is paused): never send the browser to a dead page.
+ */
+async function googleEnabled(): Promise<boolean | null> {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/settings`, {
       headers: { apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! },
     })
+    if (!res.ok) return null
     return Boolean((await res.json())?.external?.google)
   } catch {
-    return true // can't tell: let Supabase answer
+    return null
   }
 }
 
@@ -36,7 +40,12 @@ export function GoogleButton({ disabled = false, consentNote = false }: { disabl
   async function start() {
     setBusy(true)
     setError(null)
-    if (!(await googleEnabled())) {
+    const enabled = await googleEnabled()
+    if (enabled === null) {
+      setBusy(false)
+      return setError("We can't reach the sign-in service right now. Please check your connection and try again in a moment.")
+    }
+    if (!enabled) {
       setBusy(false)
       return setError("Google sign-in isn't switched on yet. Please use your email for now.")
     }

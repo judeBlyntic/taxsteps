@@ -11,7 +11,7 @@ site_url = "http://localhost:3000"
 # URLs, which an attacker could register to capture tokens. Add the production web origin here.
 # Exact origins only: a wildcard like taxsteps-*-team.vercel.app can be claimed by anyone on Vercel,
 # and an allowed redirect receives the sign-in from password-reset and magic-link emails.
-additional_redirect_urls = ["http://localhost:3000/**", "https://taxsteps.vercel.app/**"]
+additional_redirect_urls = ["http://localhost:3000/**", "https://taxsteps.pro/**", "https://www.taxsteps.pro/**", "https://taxsteps.vercel.app/**"]
 minimum_password_length = 8
 enable_signup = true
 
