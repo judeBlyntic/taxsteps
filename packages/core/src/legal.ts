@@ -3,13 +3,13 @@ import { COPY } from './copy.ts'
 // Terms of Service and Privacy Policy, shared by the website (/terms, /privacy) and the phone app.
 // Bump TERMS_VERSION (a date) whenever either document changes in substance: accounts record the
 // version they agreed to (profiles.terms_version), so a new version can be offered for re-acceptance.
-export const TERMS_VERSION = '2026-10-08'
+export const TERMS_VERSION = '2026-11-19'
 
 export const OPERATOR = {
   name: 'Blyntic Ltd',
   country: 'New Zealand',
   email: 'jude@blyntic.co.nz',
-  updated: '8 October 2026',
+  updated: '19 November 2026',
 } as const
 
 /** The one promise the sign-up tick box points to. Keep it true: see SERVICE_PROVIDERS. */
@@ -23,7 +23,7 @@ export const AD_PARTNER = { name: 'Meta', tool: 'Meta Pixel', location: 'United 
 /** Everyone outside Blyntic Ltd who handles user data. Every new integration must be added here. */
 export const SERVICE_PROVIDERS: { name: string; role: string; location: string }[] = [
   { name: 'Supabase', role: 'Stores your account and expense records, and sends sign-in emails.', location: 'Sydney, Australia' },
-  { name: 'Vercel', role: 'Hosts the Tax Steps website and web app.', location: 'United States' },
+  { name: 'Vercel', role: 'Hosts the Tax Steps website and web app, and provides cookieless visit statistics (Vercel Web Analytics).', location: 'United States' },
   {
     name: 'OpenAI',
     role: 'Reads each receipt photo you scan so the details can be filled in for you. Storage is switched off; OpenAI may keep the request for up to 30 days to check for abuse, then deletes it. It does not use it to train its models.',
@@ -87,7 +87,8 @@ export const PRIVACY: LegalDoc = {
     {
       heading: 'Cookies and advertising',
       body: [
-        'Inside the app, Tax Steps uses a cookie only to keep you signed in, and your device remembers your chosen theme. There are no advertising or analytics trackers in the app, or on the sign-in and sign-up pages.',
+        'Inside the app, Tax Steps uses a cookie only to keep you signed in, and your device remembers your chosen theme. There is no advertising tracker in the app, or on the sign-in and sign-up pages.',
+        'To see how the website and web app are used (for example, how many people sign in from a PC or a Mac), we count visits with Vercel Web Analytics. It uses no cookies. For each page view it records only the page address, with any search text, filters or links removed, plus the referring website and your browser, operating system, device type and country. It never receives your name, email, business information or expense records, and it counts visitors with a code that is discarded after 24 hours and can’t be linked back to you. The phone app does not use it.',
         `On our public website only (the home page, these Terms and this Privacy Policy), we ask before using ${AD_PARTNER.name}'s advertising cookie (the ${AD_PARTNER.tool}). If you accept, ${AD_PARTNER.name} learns which website pages you visit, whether you click “Start free”, and basic details about your browser and device, so we can see which of our ads work. ${AD_PARTNER.name} handles this under its own terms and privacy policy, in the ${AD_PARTNER.location}. It never receives your account, business information or expense records. If you decline, it never loads. You can change your choice any time with “Cookie choices” at the bottom of the website.`,
       ],
     },

@@ -23,6 +23,14 @@ describe('legal documents', () => {
       expect(said, fact).toContain(fact)
   })
 
+  it('disclose the cookieless visit statistics, and no longer claim the app has no analytics', () => {
+    const said = JSON.stringify(PRIVACY.sections.find((s) => s.heading === 'Cookies and advertising'))
+    for (const fact of ['Vercel Web Analytics', 'uses no cookies', 'never receives your name, email, business information or expense records', 'search text'])
+      expect(said, fact).toContain(fact)
+    expect(said).not.toContain('no advertising or analytics trackers in the app')
+    expect(SERVICE_PROVIDERS.find((p) => p.name === 'Vercel')?.role).toMatch(/visit statistics/)
+  })
+
   it('name the operator and a contact in both documents, with no empty sections', () => {
     for (const doc of Object.values(LEGAL_DOCS)) {
       expect(text(doc)).toContain(OPERATOR.name)
