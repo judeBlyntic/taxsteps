@@ -14,7 +14,7 @@ const TABS: Record<string, { label: string; icon: LucideIcon }> = {
 }
 
 /** Home · Documents · [Scan] · Reports · Settings — the Scan button is always the obvious action. */
-export function TabBar({ state, navigation }: BottomTabBarProps) {
+export function TabBar({ state, navigateToTab }: BottomTabBarProps) {
   const router = useRouter()
   const insets = useSafeAreaInsets()
   const routes = state.routes.filter((r) => TABS[r.name])
@@ -25,7 +25,7 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
     const { label, icon: Icon } = TABS[name]!
     return (
       <Pressable key={name} accessibilityRole="tab" accessibilityState={{ selected: focused }} accessibilityLabel={label}
-        onPress={() => navigation.navigate(route.name)} style={{ flex: 1, alignItems: 'center', gap: 3 }}>
+        onPress={() => navigateToTab(route.key)} style={{ flex: 1, alignItems: 'center', gap: 3 }}>
         <View style={{ width: 54, height: 30, borderRadius: 999, alignItems: 'center', justifyContent: 'center', backgroundColor: focused ? colors.accent2Ramp[200] : 'transparent' }}>
           <Icon size={22} color={focused ? colors.text : colors.neutral[600]} strokeWidth={2.75} />
         </View>

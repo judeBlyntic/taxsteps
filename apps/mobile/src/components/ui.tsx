@@ -1,5 +1,5 @@
 // Organic design-system primitives for React Native.
-import { forwardRef, type ReactNode } from 'react'
+import { forwardRef, type ComponentRef, type ReactNode } from 'react'
 import {
   ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextInputProps,
   type TextProps, type TextStyle, type ViewStyle,
@@ -68,7 +68,7 @@ export function Button({ label, onPress, variant = 'primary', size = 'lg', icon:
   )
 }
 
-export const TextField = forwardRef<TextInput, TextInputProps & { label: string; error?: string | null; flagged?: boolean; note?: string }>(
+export const TextField = forwardRef<ComponentRef<typeof TextInput>, TextInputProps & { label: string; error?: string | null; flagged?: boolean; note?: string }>(
   function TextField({ label, error, flagged, note, style, ...input }, ref) {
     return (
       <View style={{ gap: 6 }}>

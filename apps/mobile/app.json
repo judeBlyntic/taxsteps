@@ -50,7 +50,9 @@
       ],
       "expo-secure-store",
       "expo-sharing",
-      "expo-font"
+      "expo-font",
+      "expo-status-bar",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": false,

@@ -110,7 +110,7 @@ export default function DocumentsScreen() {
         onEndReachedThreshold={0.4}
         refreshing={docs.isRefetching}
         onRefresh={() => { void docs.refetch(); void retry() }}
-        ListFooterComponent={docs.isFetchingNextPage ? <ActivityIndicator color={colors.accent} /> : null}
+        ListFooterComponent={docs.isFetchingNextPage ? <ActivityIndicator color={colors.accent} /> : undefined}
       />
     </View>
   )
