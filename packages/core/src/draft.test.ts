@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { draftFromExtraction, draftFromRow, draftToInput, emptyDraft, type DraftContext } from './draft.ts'
+import { draftChanged, draftFromExtraction, draftFromRow, draftToInput, emptyDraft, type DraftContext } from './draft.ts'
 import { CATEGORIES, CATEGORY_IDS, DOC_ID, SAVED_ROW, extractionResponse } from './fixtures.ts'
 
 const ctx: DraftContext = {
@@ -72,5 +72,20 @@ describe('empty and saved drafts', () => {
   it('keeps a previous manual status override when editing', () => {
     const overridden = { ...SAVED_ROW, tax_amount: null, status: 'complete' as const }
     expect(draftFromRow(overridden, ctx).statusOverride).toBe('complete')
+  })
+})
+
+describe('unsaved changes', () => {
+  const saved = draftFromRow(SAVED_ROW, ctx)
+  it('ignores an untouched draft', () => {
+    expect(draftChanged(saved, draftFromRow(SAVED_ROW, ctx))).toBe(false)
+  })
+  it('sees edited fields, expense type and status', () => {
+    expect(draftChanged(saved, { ...saved, values: { ...saved.values, merchant_name: 'Bunnings' } })).toBe(true)
+    expect(draftChanged(saved, { ...saved, expense_type: 'personal' })).toBe(true)
+    expect(draftChanged(saved, { ...saved, statusOverride: 'needs_review' })).toBe(true)
+  })
+  it('ignores review flags cleared without changing a value', () => {
+    expect(draftChanged({ ...saved, flags: ['amount'] }, saved)).toBe(false)
   })
 })

@@ -19,6 +19,7 @@ export function DocumentForm({ draft, errors, categories, region, locale, onChan
   const listId = useId()
   return (
     <div className="field-grid">
+      <p className="muted full" style={{ margin: 0, fontSize: 12.5 }}>* required</p>
       {EXTRACTION_FIELDS.map((def) => (
         <FieldControl key={def.key} def={def} label={fieldLabel(def, region)} value={draft.values[def.key]}
           flagged={draft.flags.includes(def.key)} error={errors[def.key]}
@@ -36,7 +37,10 @@ function FieldControl({ def, label, value, flagged, error, warning, categories, 
 }) {
   const id = useId()
   const cls = `input ${flagged ? 'flagged' : ''}`
-  const common = { id, className: cls, 'aria-invalid': error ? true : undefined, 'aria-describedby': error || warning ? `${id}-msg` : undefined }
+  const common = {
+    id, className: cls, 'aria-required': def.required || undefined, 'aria-invalid': error ? true : undefined,
+    'aria-describedby': error || warning ? `${id}-msg` : undefined,
+  }
   let control
   switch (def.kind) {
     case 'textarea':

@@ -1,5 +1,5 @@
 'use client'
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { Draft, DocumentRow } from '@taxsteps/core'
 import { DocumentDrawer } from './DocumentDrawer'
 
@@ -10,10 +10,26 @@ const DrawerContext = createContext<DrawerApi | null>(null)
 
 export function DrawerProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<DrawerState>(null)
-  const openNew = useCallback((draft?: Draft) => setState({ kind: 'new', draft }), [])
-  const openExisting = useCallback((row: DocumentRow) => setState({ kind: 'edit', row }), [])
+  const opener = useRef<Element | null>(null) // gets focus back when the drawer closes
+  const open = useCallback((next: NonNullable<DrawerState>) => {
+    opener.current ??= document.activeElement
+    setState(next)
+  }, [])
+  const openNew = useCallback((draft?: Draft) => open({ kind: 'new', draft }), [open])
+  const openExisting = useCallback((row: DocumentRow) => open({ kind: 'edit', row }), [open])
   const close = useCallback(() => setState(null), [])
   const api = useMemo(() => ({ openNew, openExisting, close }), [openNew, openExisting, close])
+
+  useEffect(() => {
+    const el = opener.current
+    if (state || !el) return
+    opener.current = null
+    const target = el instanceof HTMLElement && el !== document.body ? el : null
+    target?.focus()
+    // No opener, or it's gone or hidden (e.g. the scan screen swaps its button for progress): use the page heading.
+    if (!target || document.activeElement !== target) document.querySelector<HTMLElement>('h1')?.focus()
+  }, [state])
+
   return (
     <DrawerContext.Provider value={api}>
       {children}

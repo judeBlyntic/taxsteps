@@ -11,7 +11,8 @@ import { useSession } from './session'
 type Api = {
   pending: QueueItem[]
   isOnline: boolean
-  saveOrQueue: (input: DocumentInput) => Promise<'saved' | 'queued'>
+  /** `expectedUpdatedAt`: guard an online edit of an existing document (see saveDocument). Offline, it's queued unguarded. */
+  saveOrQueue: (input: DocumentInput, expectedUpdatedAt?: string) => Promise<'saved' | 'queued'>
   retry: () => Promise<void>
   discard: (id: string) => Promise<void>
   clear: () => Promise<void>
@@ -50,10 +51,10 @@ export function OfflineQueueProvider({ children }: { children: ReactNode }) {
     return () => { unsubNet(); sub.remove() }
   }, [refresh, retry])
 
-  const saveOrQueue = useCallback(async (input: DocumentInput): Promise<'saved' | 'queued'> => {
+  const saveOrQueue = useCallback(async (input: DocumentInput, expectedUpdatedAt?: string): Promise<'saved' | 'queued'> => {
     if (isOnline) {
       try {
-        await saveDocument(client, input, userId ?? undefined)
+        await saveDocument(client, input, userId ?? undefined, expectedUpdatedAt)
         invalidateDocuments(qc)
         return 'saved'
       } catch (e) {

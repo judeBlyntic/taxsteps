@@ -15,7 +15,7 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
   return (
     <header className="page-header">
       <div className="grow">
-        <h1 className="page-title">{title}</h1>
+        <h1 className="page-title" tabIndex={-1} style={{ outline: 'none' }}>{title}</h1>
         {subtitle && <div className="page-sub">{subtitle}</div>}
       </div>
       <form role="search" className="search-pill" onSubmit={search}>

@@ -1,5 +1,5 @@
 import {
-  applyCursor, applyDocumentFilter, DocumentInputSchema, type Cursor, type DocumentFilter, type DocumentInput,
+  AppError, applyCursor, applyDocumentFilter, DocumentInputSchema, type Cursor, type DocumentFilter, type DocumentInput,
   type DocumentRow, type Database, type Json,
 } from '@taxsteps/core'
 import { currentUserId, dbError, type TaxStepsClient } from './client.ts'
@@ -37,19 +37,33 @@ export async function getDocument(c: TaxStepsClient, id: string): Promise<Docume
   return data ? asDocumentRow(data) : null
 }
 
+/** A guarded save was refused because the document changed (`latest`) or was deleted (`latest` is null)
+ *  on another device since it was opened. Nothing was written. */
+export class SaveConflictError extends AppError {
+  readonly latest: DocumentRow | null
+  constructor(latest: DocumentRow | null) {
+    super(latest ? 'EDIT_CONFLICT' : 'DOCUMENT_DELETED')
+    this.latest = latest
+  }
+}
+
 /**
  * Insert-or-update by id. Idempotent: saving the same draft twice leaves one row.
  * Pass `ownerId` to pin the row to a specific user: RLS then rejects the write if the
  * client's session belongs to anyone else (used by the mobile offline queue).
+ * Pass `expectedUpdatedAt` (the row's `updated_at` when it was opened) when editing an existing
+ * document: it is then only updated if nobody changed or deleted it since, else SaveConflictError.
  */
-export async function saveDocument(c: TaxStepsClient, input: DocumentInput, ownerId?: string): Promise<DocumentRow> {
+export async function saveDocument(
+  c: TaxStepsClient, input: DocumentInput, ownerId?: string, expectedUpdatedAt?: string,
+): Promise<DocumentRow> {
   const clean = DocumentInputSchema.parse(input)
-  const { data, error, status } = await c
-    .from('documents')
-    .upsert({ ...clean, metadata: clean.metadata as Json, ...(ownerId ? { user_id: ownerId } : {}) }, { onConflict: 'id' })
-    .select('*')
-    .single()
-  if (error || !data) throw dbError('SAVE_FAILED', error, status)
+  const row = { ...clean, metadata: clean.metadata as Json, ...(ownerId ? { user_id: ownerId } : {}) }
+  const { data, error, status } = expectedUpdatedAt
+    ? await c.from('documents').update(row).eq('id', clean.id).eq('updated_at', expectedUpdatedAt).select('*').maybeSingle()
+    : await c.from('documents').upsert(row, { onConflict: 'id' }).select('*').single()
+  if (error) throw dbError('SAVE_FAILED', error, status)
+  if (!data) throw new SaveConflictError(await getDocument(c, clean.id))
   return asDocumentRow(data)
 }
 
