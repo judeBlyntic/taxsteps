@@ -17,7 +17,7 @@ export async function shareExport(file: ExportFile): Promise<void> {
   const f = new File(Paths.cache, file.filename)
   if (f.exists) f.delete()
   f.create()
-  f.write(new Uint8Array(file.bytes))
+  await f.write(new Uint8Array(file.bytes)) // async since SDK 58: sharing before it finishes sends an empty file
   try {
     await Sharing.shareAsync(f.uri, { mimeType: file.contentType, dialogTitle: file.filename })
   } finally {

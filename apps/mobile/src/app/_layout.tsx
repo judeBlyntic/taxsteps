@@ -59,10 +59,11 @@ function RootNavigator() {
     <>
       {signedIn && <ProfileThemeSync />}
       <Stack key={theme} screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
-        <Stack.Protected guard={!signedIn}>
+        {/* SDK 58 needs explicit targets: the default fallback is '/(auth)', which has no index route. */}
+        <Stack.Protected guard={!signedIn} redirectTo="/">
           <Stack.Screen name="(auth)" />
         </Stack.Protected>
-        <Stack.Protected guard={signedIn}>
+        <Stack.Protected guard={signedIn} redirectTo="/onboarding">
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="scan" options={{ presentation: 'fullScreenModal', animation: 'fade' }} />
           <Stack.Screen name="review" />
