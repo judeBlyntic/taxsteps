@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { deleteAllDocuments, deleteDocument, getDocument, listCategories, listDocuments, saveDocument } from '@taxsteps/data/api'
-import { adminClient, createTestUser, deleteTestUser, input, type TestUser } from './helpers.ts'
+import { adminClient, createTestUser, deleteTestUser, input, signInAgain, type TestUser } from './helpers.ts'
 
 let A: TestUser
 beforeAll(async () => { A = await createTestUser({ country: 'NZ', currency: 'NZD' }) })
@@ -35,6 +35,25 @@ describe('documents CRUD', () => {
     expect(updated.created_at).toBe(row.created_at)
     await deleteDocument(A.client, row.id)
     expect(await getDocument(A.client, row.id)).toBeNull()
+  })
+
+  it('saves an edit only if the document is unchanged since it was opened', async () => {
+    const opened = await saveDocument(A.client, input())
+    const phone = await signInAgain(A)
+    const fromPhone = await saveDocument(phone, { ...input({ id: opened.id }), merchant_name: 'Changed on phone' }, undefined, opened.updated_at)
+    await expect(saveDocument(A.client, { ...input({ id: opened.id }), merchant_name: 'Stale web form' }, undefined, opened.updated_at))
+      .rejects.toMatchObject({ code: 'EDIT_CONFLICT', latest: { merchant_name: 'Changed on phone', updated_at: fromPhone.updated_at } })
+    expect((await getDocument(A.client, opened.id))?.merchant_name).toBe('Changed on phone')
+    const retried = await saveDocument(A.client, { ...input({ id: opened.id }), merchant_name: 'Web, after reload' }, undefined, fromPhone.updated_at)
+    expect(retried.merchant_name).toBe('Web, after reload')
+  })
+
+  it('never resurrects a document deleted on another device', async () => {
+    const opened = await saveDocument(A.client, input())
+    await deleteDocument(await signInAgain(A), opened.id)
+    await expect(saveDocument(A.client, { ...input({ id: opened.id }), title: 'Edited' }, undefined, opened.updated_at))
+      .rejects.toMatchObject({ code: 'DOCUMENT_DELETED' })
+    expect(await getDocument(A.client, opened.id)).toBeNull()
   })
 
   it('sets category to null when the category is deleted', async () => {

@@ -105,6 +105,12 @@ export function draftFromRow(row: DocumentRow, ctx: DraftContext): Draft {
   }
 }
 
+/** True when `next` holds edits the user would lose by closing the form. */
+export function draftChanged(base: Draft, next: Draft): boolean {
+  return base.expense_type !== next.expense_type || base.statusOverride !== next.statusOverride
+    || FIELD_KEYS.some((k) => base.values[k] !== next.values[k])
+}
+
 const opt = (s: string) => (s.trim() ? s.trim() : null)
 
 export function draftToInput(draft: Draft, ctx: DraftContext): DraftResult {

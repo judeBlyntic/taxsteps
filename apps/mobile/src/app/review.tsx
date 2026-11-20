@@ -7,7 +7,7 @@ import {
   ERROR_MESSAGES, draftFromRow, draftToInput, emptyDraft, formatDate, regionFor, toUserMessage, type Draft, type DraftContext,
   type FieldKey,
 } from '@taxsteps/core'
-import { getDocument, useCategories, useClient, useDeleteDocument } from '@taxsteps/data'
+import { SaveConflictError, getDocument, useCategories, useClient, useDeleteDocument } from '@taxsteps/data'
 import { DocumentForm } from '@/components/DocumentForm'
 import { useToast } from '@/components/Toast'
 import { Banner, Button, H, Screen, Segmented, T } from '@/components/ui'
@@ -30,6 +30,7 @@ export default function ReviewScreen() {
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [loadError, setLoadError] = useState(false)
+  const [openedAt, setOpenedAt] = useState<string>() // the version an edit applies to
 
   const ctx = useMemo<DraftContext | null>(() => profile && categories
     ? { profile, categories, today, newId: () => randomUUID() } : null, [profile, categories, today])
@@ -38,7 +39,11 @@ export default function ReviewScreen() {
   useEffect(() => {
     if (!ctx || draft) return
     if (id) {
-      void getDocument(client, id).then((row) => (row ? setDraft(draftFromRow(row, ctx)) : setLoadError(true))).catch(() => setLoadError(true))
+      void getDocument(client, id).then((row) => {
+        if (!row) return setLoadError(true)
+        setDraft(draftFromRow(row, ctx))
+        setOpenedAt(row.updated_at)
+      }).catch(() => setLoadError(true))
     } else {
       setDraft(takePendingDraft() ?? emptyDraft(ctx)) // the draft id is created once → saving twice is idempotent
     }
@@ -62,12 +67,21 @@ export default function ReviewScreen() {
     if (!result.ok) return setErrors(result.errors)
     setSaving(true)
     try {
-      const outcome = await saveOrQueue(result.input)
+      const outcome = await saveOrQueue(result.input, openedAt)
       toast.show(outcome === 'queued' ? 'Saved on this phone · will sync when online'
         : isEdit ? 'Changes synced to all devices' : fromScan ? 'Expense saved · photo discarded' : 'Expense saved')
       if (isEdit) router.back()
       else router.replace('/')
     } catch (e) {
+      if (e instanceof SaveConflictError) {
+        if (!e.latest) {
+          toast.show(e.message, 'error')
+          return router.back()
+        }
+        setDraft(draftFromRow(e.latest, ctx)) // changed on another device: show the latest version
+        setOpenedAt(e.latest.updated_at)
+        setErrors({})
+      }
       const msg = toUserMessage(e)
       setSaveError(msg === ERROR_MESSAGES.INTERNAL ? ERROR_MESSAGES.SAVE_FAILED : msg)
     } finally {

@@ -3,7 +3,7 @@
 export type ErrorCode =
   | 'UNREADABLE' | 'NOT_A_DOCUMENT' | 'NETWORK' | 'SAVE_FAILED' | 'RATE_LIMITED'
   | 'FILE_TOO_LARGE' | 'UNSUPPORTED_FILE' | 'EXPORT_FAILED' | 'SHEETS_NOT_CONNECTED' | 'SHEETS_AUTH_EXPIRED'
-  | 'UNAUTHORIZED' | 'VALIDATION' | 'INTERNAL' | 'DELETE_FAILED'
+  | 'UNAUTHORIZED' | 'VALIDATION' | 'INTERNAL' | 'DELETE_FAILED' | 'EDIT_CONFLICT' | 'DOCUMENT_DELETED'
   | 'INVALID_CREDENTIALS' | 'EMAIL_NOT_CONFIRMED' | 'WEAK_PASSWORD'
 
 const UNREADABLE_COPY = "We couldn't read this receipt clearly. Please try again or enter the information manually."
@@ -23,6 +23,8 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   VALIDATION: "Some details aren't valid. Please check and try again.",
   INTERNAL: 'Something went wrong. Please try again.',
   DELETE_FAILED: "We couldn't delete that. Please try again.",
+  EDIT_CONFLICT: "This document was changed on another device, so your edit wasn't saved. We've loaded the latest version — please check it and save again.",
+  DOCUMENT_DELETED: 'This document was deleted on another device.',
   INVALID_CREDENTIALS: 'Incorrect email or password.',
   EMAIL_NOT_CONFIRMED: 'Please confirm your email address — check your inbox for the link.',
   WEAK_PASSWORD: 'Please choose a stronger password (at least 8 characters).',
