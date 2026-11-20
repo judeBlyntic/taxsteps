@@ -32,9 +32,10 @@ export function AppShell({ userId, email, children }: { userId: string; email: s
   return (
     <DrawerProvider>
     <div className="shell">
-      <aside className="sidebar" aria-label="Main navigation">
+      <a className="w-skip" href="#main">Skip to content</a>
+      <aside className="sidebar">
         <Logo />
-        <nav className="stack" style={{ gap: 6 }}>
+        <nav className="stack" style={{ gap: 6 }} aria-label="Main navigation">
           {NAV.map(({ href, label, icon: Icon }) => (
             <Link key={href} href={href} className="nav-item" aria-current={isActive(pathname, href) ? 'page' : undefined}>
               <Icon {...ICON} />{label}
@@ -57,14 +58,16 @@ export function AppShell({ userId, email, children }: { userId: string; email: s
 
       <div className="main">
         <div className="panel">
-          <div className="topbar">
+          <header className="topbar">
             <Logo />
             <span className="grow" />
-            <span className="sync-dot" aria-label={copy.title} title={copy.title}
+            <span className="sync-dot" role="img" aria-label={copy.title} title={copy.title}
               style={{ width: 10, height: 10, borderRadius: '50%', background: sync === 'live' ? 'var(--color-accent-2-600)' : 'var(--color-accent-500)' }} />
-            <Link href="/settings" className="avatar" aria-label="Settings" style={{ textDecoration: 'none' }}>{initials(profile?.full_name, email)}</Link>
-          </div>
-          {children}
+            <Link href="/settings" className="avatar" style={{ textDecoration: 'none' }}>
+              {initials(profile?.full_name, email)}<span className="sr-only">Settings</span>
+            </Link>
+          </header>
+          <main id="main">{children}</main>
         </div>
       </div>
 

@@ -22,9 +22,17 @@ export default function SignInPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [tried, setTried] = useState(false) // field errors show after the first submit and clear as fields are filled
+  const emailError = tried && !email.trim() ? 'Enter your email address.' : null
+  const passwordError = tried && !password ? 'Enter your password.' : null
 
-  async function submit(e: FormEvent) {
+  async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    setTried(true)
+    if (!email.trim() || !password) {
+      e.currentTarget.querySelector<HTMLInputElement>(!email.trim() ? 'input[type=email]' : 'input[type=password]')?.focus()
+      return
+    }
     setBusy(true)
     setError(null)
     const { error: err } = await createClient().auth.signInWithPassword({ email: email.trim(), password })
@@ -40,10 +48,10 @@ export default function SignInPage() {
       <p className="muted" style={{ margin: 0 }}>Sign in to see your expenses on any device.</p>
       <Suspense><Notice /></Suspense>
       <GoogleButton consentNote />
-      <TextField label="Email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-      <TextField label="Password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+      <TextField label="Email" type="email" autoComplete="email" required error={emailError} value={email} onChange={(e) => setEmail(e.target.value)} />
+      <TextField label="Password" type="password" autoComplete="current-password" required error={passwordError} value={password} onChange={(e) => setPassword(e.target.value)} />
       {error && <div className="banner banner-warn" role="alert">{error}</div>}
-      <button className="btn btn-primary btn-xl" disabled={busy || !email || !password}>{busy ? 'Signing in…' : 'Sign in'}</button>
+      <button className="btn btn-primary btn-xl" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
       <div className="row" style={{ justifyContent: 'space-between', fontSize: 14 }}>
         <Link className="link" href="/forgot-password">Forgot password?</Link>
         <span>New here? <Link className="link" href="/sign-up">Create an account</Link></span>

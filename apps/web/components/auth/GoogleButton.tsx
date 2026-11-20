@@ -72,7 +72,7 @@ export function GoogleButton({ disabled = false, consentNote = false }: { disabl
         </p>
       )}
       {error && <div className="banner banner-warn" role="alert">{error}</div>}
-      <div className="auth-or" role="separator"><span>or use your email</span></div>
+      <div className="auth-or"><span>or use your email</span></div>
     </>
   )
 }

@@ -21,7 +21,7 @@ export function DocumentTable({ rows, categories, locale, today, selected, onTog
         <thead>
           <tr>
             <th style={{ width: 36 }}><span className="sr-only">Select</span></th>
-            <th style={{ width: 52 }} />
+            <th style={{ width: 52 }}><span className="sr-only">Category icon</span></th>
             <th>Merchant</th><th>Category</th><th>Date</th><th>Type</th><th>Status</th>
             <th className="right">Tax</th><th className="right">Total</th>
           </tr>

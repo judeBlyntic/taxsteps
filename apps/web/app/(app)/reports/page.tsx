@@ -100,7 +100,7 @@ export default function ReportsPage() {
             <div className="row" style={{ justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap' }}>
               <div>
                 <div className="kicker">Expense summary</div>
-                <h3 style={{ margin: '6px 0 2px' }}>{profile?.business_name || profile?.full_name || 'Your expenses'}</h3>
+                <h2 style={{ margin: '6px 0 2px', fontSize: 25 }}>{profile?.business_name || profile?.full_name || 'Your expenses'}</h2>
                 <div className="muted" style={{ fontSize: 14 }}>{label}{range && ` · ${range.from} to ${range.to}`}</div>
               </div>
               {s && <span className="tag tag-accent-2" style={{ fontWeight: 700 }}>{s.currencies.reduce((n, c) => n + c.count, 0)} documents</span>}
@@ -122,6 +122,8 @@ export default function ReportsPage() {
                 </div>
               </div>
             ))}
+            {/* Scrolls on its own on narrow phones instead of widening the page; focusable so keyboards can scroll it. */}
+            <div role="region" aria-label="Totals by category" tabIndex={0} style={{ overflowX: 'auto' }}>
             <table className="table">
               <thead><tr><th>Category</th>{multiCurrency && <th>Currency</th>}<th>Documents</th><th style={{ textAlign: 'right' }}>{taxLabel}</th><th style={{ textAlign: 'right' }}>Total</th></tr></thead>
               <tbody>
@@ -135,6 +137,7 @@ export default function ReportsPage() {
                 {s && s.byCategory.length === 0 && <tr><td colSpan={5} className="muted">No documents in this period.</td></tr>}
               </tbody>
             </table>
+            </div>
             {(kind === 'year' || kind === 'fy') && s && s.byMonth.length > 0 && (
               <table className="table">
                 <thead><tr><th>Month</th>{multiCurrency && <th>Currency</th>}<th style={{ textAlign: 'right' }}>Total</th></tr></thead>

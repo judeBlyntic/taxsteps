@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useState, type DragEvent } from 'react'
+import { useEffect, useRef, useState, type DragEvent } from 'react'
 import { Camera, Check, PencilLine, ShieldCheck, Upload } from 'lucide-react'
 import { COPY, draftFromExtraction, toUserMessage, type DraftContext } from '@taxsteps/core'
 import { useQueryClient } from '@tanstack/react-query'
@@ -22,6 +22,9 @@ export function ScanPanel() {
   const [over, setOver] = useState(false)
   const fileInput = useRef<HTMLInputElement>(null)
   const cameraInput = useRef<HTMLInputElement>(null)
+  const heading = useRef<HTMLHeadingElement>(null)
+  // The drop zone that had focus unmounts when work starts; keep keyboard users on the progress.
+  useEffect(() => { if (phase.kind === 'working') heading.current?.focus() }, [phase.kind])
   async function handle(file: File | undefined, source: 'scan' | 'upload') {
     if (!file) return
     setPhase({ kind: 'working', step: 0 })
@@ -58,10 +61,13 @@ export function ScanPanel() {
   }
 
   return (
+    <>
+    {/* Always mounted (and outside .tile, which repositions its children), so screen readers hear each step. */}
+    <span className="sr-only" role="status">{phase.kind === 'working' ? STEPS[phase.step] : ''}</span>
     <div className="tile stack" style={{ maxWidth: 620, gap: 18, padding: 28 }}>
       {phase.kind === 'working' ? (
-        <div className="stack" style={{ gap: 14 }} aria-live="polite">
-          <h3 style={{ margin: 0 }}>Reading your receipt…</h3>
+        <div className="stack" style={{ gap: 14 }}>
+          <h2 ref={heading} tabIndex={-1} style={{ margin: 0, fontSize: 25 }}>Reading your receipt…</h2>
           {STEPS.map((label, i) => {
             const state = phase.step > i ? 'done' : phase.step === i ? 'active' : 'todo'
             return (
@@ -106,5 +112,6 @@ export function ScanPanel() {
       <input ref={cameraInput} type="file" hidden accept="image/*" capture="environment"
         onChange={(e) => void handle(e.target.files?.[0], 'scan')} />
     </div>
+    </>
   )
 }

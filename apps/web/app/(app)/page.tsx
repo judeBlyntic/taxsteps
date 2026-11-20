@@ -61,7 +61,7 @@ export default function DashboardPage() {
               <label className="row" style={{ position: 'relative', gap: 4, fontSize: 14, fontWeight: 700, color: 'var(--color-neutral-700)' }}>
                 <span className="sr-only">Month</span>
                 <select value={key(sel.year, sel.month)} onChange={(e) => setPicked(`${e.target.value}-01`)}
-                  style={{ all: 'unset', cursor: 'pointer', fontWeight: 700 }} aria-label="Choose month">
+                  style={{ appearance: 'none', border: 0, padding: 0, background: 'transparent', color: 'inherit', font: 'inherit', cursor: 'pointer', fontWeight: 700 }} aria-label="Choose month">
                   {pickerMonths.map((m) => <option key={key(m.year, m.month)} value={key(m.year, m.month)}>{formatMonth(m.year, m.month, locale)}</option>)}
                 </select>
                 <span aria-hidden>⌄</span>
@@ -95,7 +95,7 @@ export default function DashboardPage() {
         <div className="dash-2">
           <section className="tile stack" style={{ gap: 18 }} aria-labelledby="by-month">
             <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <h4 id="by-month">Expenses by month</h4><span className="muted" style={{ fontSize: 13 }}>Last 6 months · {currency}</span>
+              <h2 id="by-month">Expenses by month</h2><span className="muted" style={{ fontSize: 13 }}>Last 6 months · {currency}</span>
             </div>
             <MonthBars currency={currency} locale={locale} items={months.map((m) => ({
               label: formatMonth(m.year, m.month, locale, 'short'),
@@ -104,7 +104,7 @@ export default function DashboardPage() {
             }))} />
           </section>
           <section className="tile stack" style={{ gap: 14 }} aria-labelledby="by-cat">
-            <h4 id="by-cat">By category</h4>
+            <h2 id="by-cat">By category</h2>
             <CategoryBars currency={currency} locale={locale}
               items={(s?.byCategory ?? []).filter((c) => c.currency === currency).slice(0, 5).map((c) => ({ name: c.name, cents: c.totalCents }))} />
           </section>
@@ -113,7 +113,7 @@ export default function DashboardPage() {
         <div className="dash-2">
           <section className="tile" style={{ padding: '24px 16px 12px' }} aria-labelledby="recent">
             <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline', padding: '0 8px 8px' }}>
-              <h4 id="recent">Recent documents</h4>
+              <h2 id="recent">Recent documents</h2>
               <Link href="/documents" className="btn btn-ghost" style={{ fontSize: 14 }}>See all</Link>
             </div>
             {recent.isError
@@ -122,8 +122,8 @@ export default function DashboardPage() {
           </section>
           <section className="tile stack" style={{ gap: 12 }} aria-labelledby="days">
             <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' }}>
-              <h4 id="days">Receipt days</h4>
-              <div className="legend"><span><i style={{ background: 'var(--color-accent-2-400)' }} />Business</span><span><i style={{ background: 'var(--color-accent-400)' }} />Personal</span></div>
+              <h2 id="days">Receipt days</h2>
+              <div className="legend"><span><i style={{ background: 'var(--color-accent-2-400)' }} />Business</span><span><i data-kind="personal" style={{ background: 'var(--color-accent-400)' }} />Personal</span></div>
             </div>
             <ReceiptDays year={sel.year} month={sel.month} days={s?.byDay ?? []} locale={locale} />
           </section>

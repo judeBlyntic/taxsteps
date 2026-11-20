@@ -5,7 +5,8 @@ import type { DocumentFilter } from '@taxsteps/core'
 import { ICON } from '@/components/ui/icons'
 import { useFileExport } from '@/lib/download'
 
-const tile = { all: 'unset', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12, padding: 16, borderRadius: 26, boxSizing: 'border-box' } as const
+// Explicit resets rather than `all: unset`, which also wiped the :focus-visible ring.
+const tile = { border: 0, margin: 0, font: 'inherit', textAlign: 'left', textDecoration: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12, padding: 16, borderRadius: 26, boxSizing: 'border-box' } as const
 const disc = { width: 42, height: 42, flex: 'none', borderRadius: '50%', background: 'var(--color-bg)', display: 'grid', placeItems: 'center' } as const
 
 export function ExportTiles({ filter, label, sheetsHref }: { filter: DocumentFilter; label: string; sheetsHref: string }) {

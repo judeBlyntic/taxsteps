@@ -50,7 +50,7 @@ function DocumentsView() {
   return (
     <>
       <PageHeader title="Documents" subtitle="Every receipt and invoice across your devices." actions={
-        <button type="button" className="btn btn-primary btn-lg" onClick={() => drawer.openNew()}><Plus {...ICON} /><span className="hide-mobile">Add manually</span></button>
+        <button type="button" className="btn btn-primary btn-lg" aria-label="Add manually" onClick={() => drawer.openNew()}><Plus {...ICON} /><span className="hide-mobile">Add manually</span></button>
       } />
       <div className="page-body stack">
         <div className="row" style={{ flexWrap: 'wrap', gap: 8 }}>
