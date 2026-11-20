@@ -4,7 +4,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type QueryClie
 import type { CategoryInput, Cursor, DateRange, DocumentFilter, DocumentInput, ProfileUpdate } from '@taxsteps/core'
 import { useClient } from './context.tsx'
 import { listCategories, upsertCategory } from './categories.ts'
-import { deleteDocument, listDocuments, saveDocument } from './documents.ts'
+import { deleteDocument, getDocument, listDocuments, saveDocument } from './documents.ts'
 import { getProfile, updateProfile } from './profile.ts'
 import { resyncOnReconnect, subscribeToUserChanges, type SyncState } from './realtime.ts'
 import { getSummary } from './summary.ts'
@@ -15,6 +15,7 @@ export const qk = {
   categories: ['categories'] as const,
   documentsRoot: ['documents'] as const,
   documents: (f: DocumentFilter) => ['documents', f] as const,
+  document: (id: string | null) => ['documents', 'one', id] as const,
   summaryRoot: ['summary'] as const,
   summary: (r: DateRange | null, f: DocumentFilter) => ['summary', r, f] as const,
   sheetsStatus: ['sheets-status'] as const,
@@ -50,10 +51,21 @@ export function useSummary(range: DateRange | null, filter: DocumentFilter = {})
   return useQuery({ queryKey: qk.summary(range, filter), queryFn: () => getSummary(c, range, filter) })
 }
 
+/** One document, refetched whenever any device changes documents; `null` once it's deleted. */
+export function useDocument(id: string | null) {
+  const c = useClient()
+  return useQuery({ queryKey: qk.document(id), queryFn: () => getDocument(c, id!), enabled: id !== null })
+}
+
+/** Pass `expectedUpdatedAt` when editing an existing document (see saveDocument). */
 export function useSaveDocument() {
   const c = useClient()
   const qc = useQueryClient()
-  return useMutation({ mutationFn: (input: DocumentInput) => saveDocument(c, input), onSuccess: () => invalidateDocuments(qc) })
+  return useMutation({
+    mutationFn: ({ input, expectedUpdatedAt }: { input: DocumentInput; expectedUpdatedAt?: string }) =>
+      saveDocument(c, input, undefined, expectedUpdatedAt),
+    onSettled: () => invalidateDocuments(qc), // a refused save means the list is stale too
+  })
 }
 
 export function useDeleteDocument() {
