@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { Link, useRouter } from 'expo-router'
 import { Check, MailCheck } from 'lucide-react-native'
-import { FALLBACK_REGION, TAX_REGIONS, TERMS_VERSION, regionFor, toUserMessage } from '@taxsteps/core'
+import { ERROR_MESSAGES, FALLBACK_REGION, TAX_REGIONS, TERMS_VERSION, looksLikeEmail, regionFor, toUserMessage } from '@taxsteps/core'
 import { Banner, Button, Chip, H, Muted, Screen, T, TextField } from '@/components/ui'
 import { WEB_URL, supabase } from '@/lib/supabase'
 import { colors } from '@/lib/theme'
@@ -31,6 +31,7 @@ export default function SignUp() {
 
   async function submit() {
     if (!agreed) return setError('Please agree to the Terms of Service and Privacy Policy to continue.')
+    if (!looksLikeEmail(email.trim())) return setError(ERROR_MESSAGES.INVALID_EMAIL)
     if (password.length < 8) return setError('Please choose a password with at least 8 characters.')
     setBusy(true)
     setError(null)

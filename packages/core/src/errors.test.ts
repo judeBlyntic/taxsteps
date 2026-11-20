@@ -16,6 +16,11 @@ describe('toUserMessage', () => {
     expect(toUserMessage({ name: 'AuthApiError', code: 'invalid_credentials', message: 'Invalid login credentials' })).toBe('Incorrect email or password.')
     expect(toUserMessage({ code: 'email_not_confirmed' })).toMatch(/confirm your email/)
   })
+  it('explains a mistyped email instead of a generic failure', () => {
+    const msg = "That email address doesn't look right. Please check it and try again."
+    expect(toUserMessage({ name: 'AuthApiError', code: 'validation_failed', message: 'Unable to validate email address: invalid format' })).toBe(msg)
+    expect(toUserMessage({ name: 'AuthApiError', code: 'email_address_invalid' })).toBe(msg)
+  })
   it('falls back to a generic message', () => {
     expect(toUserMessage(new Error('boom'))).toBe('Something went wrong. Please try again.')
     expect(toUserMessage(undefined)).toBe('Something went wrong. Please try again.')

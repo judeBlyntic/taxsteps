@@ -4,7 +4,7 @@ export type ErrorCode =
   | 'UNREADABLE' | 'NOT_A_DOCUMENT' | 'NETWORK' | 'SAVE_FAILED' | 'RATE_LIMITED'
   | 'FILE_TOO_LARGE' | 'UNSUPPORTED_FILE' | 'EXPORT_FAILED' | 'SHEETS_NOT_CONNECTED' | 'SHEETS_AUTH_EXPIRED'
   | 'UNAUTHORIZED' | 'VALIDATION' | 'INTERNAL' | 'DELETE_FAILED'
-  | 'INVALID_CREDENTIALS' | 'EMAIL_NOT_CONFIRMED' | 'WEAK_PASSWORD'
+  | 'INVALID_CREDENTIALS' | 'EMAIL_NOT_CONFIRMED' | 'WEAK_PASSWORD' | 'INVALID_EMAIL'
 
 const UNREADABLE_COPY = "We couldn't read this receipt clearly. Please try again or enter the information manually."
 
@@ -26,12 +26,13 @@ export const ERROR_MESSAGES: Record<ErrorCode, string> = {
   INVALID_CREDENTIALS: 'Incorrect email or password.',
   EMAIL_NOT_CONFIRMED: 'Please confirm your email address — check your inbox for the link.',
   WEAK_PASSWORD: 'Please choose a stronger password (at least 8 characters).',
+  INVALID_EMAIL: "That email address doesn't look right. Please check it and try again.",
 }
 
 const STATUS: Partial<Record<ErrorCode, number>> = {
   UNAUTHORIZED: 401, VALIDATION: 400, RATE_LIMITED: 429, FILE_TOO_LARGE: 413, UNSUPPORTED_FILE: 415,
   NOT_A_DOCUMENT: 422, UNREADABLE: 422, SHEETS_NOT_CONNECTED: 409, SHEETS_AUTH_EXPIRED: 409,
-  INVALID_CREDENTIALS: 400, EMAIL_NOT_CONFIRMED: 400, WEAK_PASSWORD: 400,
+  INVALID_CREDENTIALS: 400, EMAIL_NOT_CONFIRMED: 400, WEAK_PASSWORD: 400, INVALID_EMAIL: 400,
 }
 
 export class AppError extends Error {
@@ -54,6 +55,8 @@ const AUTH_CODES: Record<string, ErrorCode> = {
   invalid_credentials: 'INVALID_CREDENTIALS',
   email_not_confirmed: 'EMAIL_NOT_CONFIRMED',
   weak_password: 'WEAK_PASSWORD',
+  validation_failed: 'INVALID_EMAIL', // what sign-up reports for a badly formed email
+  email_address_invalid: 'INVALID_EMAIL',
   over_request_rate_limit: 'RATE_LIMITED',
   over_email_send_rate_limit: 'RATE_LIMITED',
 }

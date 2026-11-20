@@ -181,3 +181,6 @@ export const CategoryInputSchema = z.object({
   archived: z.boolean().optional(),
 })
 export type CategoryInput = z.infer<typeof CategoryInputSchema>
+
+/** Catches obvious typos before sign-up (no @, no dot in the domain, spaces). Supabase Auth does the real check. */
+export const looksLikeEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)
