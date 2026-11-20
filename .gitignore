@@ -21,3 +21,6 @@ supabase/.access-token
 
 # Vercel project link (vercel link)
 .vercel
+
+# Claude Code agent worktrees
+.claude/worktrees/
