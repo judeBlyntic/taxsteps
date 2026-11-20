@@ -77,8 +77,8 @@ export function useUpsertCategory() {
   return useMutation({
     mutationFn: (input: CategoryInput) => upsertCategory(c, input),
     onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: qk.categories })
       invalidateDocuments(qc)
+      return qc.invalidateQueries({ queryKey: qk.categories }) // mutateAsync resolves once the new names are loaded
     },
   })
 }
