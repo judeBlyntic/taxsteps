@@ -54,6 +54,6 @@ export async function handleExtract(req: Request, deps: ExtractDeps): Promise<Re
     const file: ExtractionFile = { base64, mimeType: body.mimeType, filename: body.filename ?? 'document' }
     return json(await deps.service.extract(file, body.hints, timeZone), { origin })
   } catch (e) {
-    return errorResponse(e, origin, 'extract-document')
+    return errorResponse(e, req, 'extract-document')
   }
 }

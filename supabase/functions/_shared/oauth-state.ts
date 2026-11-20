@@ -33,6 +33,6 @@ export async function verifyState(token: string, secret: string, now: number = D
  * explicitly enabled for local development.
  */
 export function isAllowedReturn(ret: string, env: { webUrl: string; mobileScheme: string; allowExpoGo?: boolean }): boolean {
-  const web = env.webUrl.replace(/\/+$/, '')
-  return ret === web || ret.startsWith(`${web}/`) || ret.startsWith(`${env.mobileScheme}://`) || (env.allowExpoGo === true && ret.startsWith('exp://'))
+  const webs = env.webUrl.split(',').map((s) => s.trim().replace(/\/+$/, '')).filter(Boolean) // APP_WEB_URL lists every production domain
+  return webs.some((web) => ret === web || ret.startsWith(`${web}/`)) ||ret.startsWith(`${env.mobileScheme}://`) || (env.allowExpoGo === true && ret.startsWith('exp://'))
 }

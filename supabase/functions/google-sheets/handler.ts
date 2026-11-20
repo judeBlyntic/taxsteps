@@ -61,7 +61,7 @@ const withParam = (url: string, value: 'connected' | 'error') => `${url}${url.in
 async function callback(req: Request, deps: SheetsDeps): Promise<Response> {
   const { env } = deps
   const params = new URL(req.url).searchParams
-  const fallback = `${env.webUrl.replace(/\/+$/, '')}/settings`
+  const fallback = `${env.webUrl.split(',')[0]!.trim().replace(/\/+$/, '')}/settings`
   try {
     const stateToken = params.get('state') ?? ''
     const state = await verifyState(stateToken, env.stateSecret, deps.now?.())
@@ -158,6 +158,6 @@ export async function handleSheets(req: Request, deps: SheetsDeps): Promise<Resp
       }
     }
   } catch (e) {
-    return errorResponse(e, origin, 'google-sheets')
+    return errorResponse(e, req, 'google-sheets')
   }
 }

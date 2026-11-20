@@ -24,7 +24,14 @@ export function json(data: unknown, init: { status?: number; origin?: string | n
 
 const isZodError = (e: unknown) => typeof e === 'object' && e !== null && (e as { name?: string }).name === 'ZodError'
 
-export function errorResponse(e: unknown, origin: string | null, fn = 'function'): Response {
+/** Releases an upload we won't read, so the gateway can answer at once instead of holding the request open. */
+function discardBody(req: Request): void {
+  if (req.body && !req.bodyUsed) req.body.cancel().catch(() => {})
+}
+
+export function errorResponse(e: unknown, req: Request, fn = 'function'): Response {
+  discardBody(req)
+  const origin = req.headers.get('origin')
   if (e instanceof AppError) {
     if (e.status >= 500) console.error(JSON.stringify({ fn, code: e.code }))
     return json({ error: { code: e.code, message: e.message } }, { status: e.status, origin })
@@ -46,7 +53,10 @@ export function requirePost(req: Request): void {
 
 /** Reads a JSON body with a size cap (checked on the header and the actual text). */
 export async function readJson(req: Request, maxBytes: number): Promise<unknown> {
-  if (Number(req.headers.get('content-length') ?? 0) > maxBytes) throw new AppError('FILE_TOO_LARGE')
+  if (Number(req.headers.get('content-length') ?? 0) > maxBytes) {
+    discardBody(req)
+    throw new AppError('FILE_TOO_LARGE')
+  }
   const text = await req.text()
   if (text.length > maxBytes) throw new AppError('FILE_TOO_LARGE')
   return JSON.parse(text)

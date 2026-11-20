@@ -29,3 +29,11 @@ Deno.test('state: only our own return targets are allowed', () => {
   assertEquals(isAllowedReturn('http://localhost:3000.evil.com/x', env), false)
   assertEquals(isAllowedReturn('javascript:alert(1)', env), false)
 })
+
+Deno.test('state: every production web address may receive the user back', () => {
+  const prod = { webUrl: 'https://taxsteps.pro, https://www.taxsteps.pro,https://taxsteps.vercel.app', mobileScheme: 'taxsteps' }
+  for (const ret of ['https://taxsteps.pro/settings', 'https://www.taxsteps.pro/settings', 'https://taxsteps.vercel.app/settings'])
+    assertEquals(isAllowedReturn(ret, prod), true, ret)
+  assertEquals(isAllowedReturn('https://taxsteps.pro.evil.com/settings', prod), false)
+  assertEquals(isAllowedReturn('https://evil.com/?https://taxsteps.pro', prod), false)
+})

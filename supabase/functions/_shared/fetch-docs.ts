@@ -27,7 +27,20 @@ function toExportDoc(r: Row): ExportDoc {
   }
 }
 
+// PostgREST echoes the query string in a response header; ~400 ids overflow it, so long selections go in batches.
+const ID_BATCH = 200
+const byDateThenId = (a: ExportDoc, b: ExportDoc) =>
+  a.transaction_date < b.transaction_date ? -1 : a.transaction_date > b.transaction_date ? 1 : a.id < b.id ? -1 : a.id > b.id ? 1 : 0
+
 export async function fetchExportDocs(client: SupabaseClient, filter: DocumentFilter): Promise<ExportDoc[]> {
+  const ids = filter.ids
+  if (!ids || ids.length <= ID_BATCH) return fetchPages(client, filter)
+  const out: ExportDoc[] = []
+  for (let i = 0; i < ids.length; i += ID_BATCH) out.push(...await fetchPages(client, { ...filter, ids: ids.slice(i, i + ID_BATCH) }))
+  return out.sort(byDateThenId)
+}
+
+async function fetchPages(client: SupabaseClient, filter: DocumentFilter): Promise<ExportDoc[]> {
   const out: ExportDoc[] = []
   for (let from = 0; ; from += PAGE) {
     const base = client.from('documents').select('*, categories(name)') as unknown as DocsQuery

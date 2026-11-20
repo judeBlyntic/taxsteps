@@ -29,6 +29,6 @@ export async function handleDeleteAccount(req: Request, deps: DeleteDeps): Promi
     if (error) throw new AppError('DELETE_FAILED')
     return json({ ok: true }, { origin })
   } catch (e) {
-    return errorResponse(e, origin, 'delete-account')
+    return errorResponse(e, req, 'delete-account')
   }
 }

@@ -54,6 +54,6 @@ export async function handleExport(req: Request, deps: ExportDeps): Promise<Resp
 
     return json({ filename: `tax-steps-${slug(body.label)}.${body.format}`, contentType: TYPES[body.format], base64: encodeBase64(bytes) }, { origin })
   } catch (e) {
-    return errorResponse(e, origin, 'export-documents')
+    return errorResponse(e, req, 'export-documents')
   }
 }
