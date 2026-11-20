@@ -61,6 +61,7 @@ export function periodLabel(p: PeriodSpec, fy: FyStart, locale: string = 'en-US'
     case 'year': return String(p.year)
     case 'fy': return fyLabel(financialYearRange(p.date, fy.fyStartMonth, fy.fyStartDay))
     case 'custom': {
+      if (!isISODate(p.from) || !isISODate(p.to)) return 'Custom range' // dates still being typed
       const fmt = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
       return `${fmt.format(utc(p.from))} – ${fmt.format(utc(p.to))}`
     }

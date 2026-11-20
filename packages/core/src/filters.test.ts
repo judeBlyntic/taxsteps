@@ -60,6 +60,10 @@ describe('periods', () => {
     expect(periodLabel({ kind: 'custom', from: '2026-10-05', to: '2026-11-01' }, nzFy, 'en-NZ')).toBe('5 Oct 2026 – 1 Nov 2026')
     expect(periodLabel({ kind: 'all' }, nzFy)).toBe('All time')
   })
+  it('labels a custom range that is still being typed instead of throwing', () => {
+    expect(periodLabel({ kind: 'custom', from: '', to: '' }, nzFy, 'en-NZ')).toBe('Custom range')
+    expect(periodLabel({ kind: 'custom', from: '2026-10-05', to: '2026-1' }, nzFy, 'en-NZ')).toBe('Custom range')
+  })
 })
 
 describe('schemas and helpers', () => {
