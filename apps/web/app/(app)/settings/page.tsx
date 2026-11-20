@@ -22,7 +22,7 @@ export default function SettingsPage() {
   useEffect(() => { void client.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? '')) }, [client])
 
   async function signOut() {
-    await client.auth.signOut()
+    await client.auth.signOut({ scope: 'local' }) // this browser only; the phone stays signed in
     qc.clear()
     router.replace('/sign-in')
     router.refresh()

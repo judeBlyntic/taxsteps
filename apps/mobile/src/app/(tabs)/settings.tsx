@@ -140,7 +140,7 @@ export default function SettingsScreen() {
         <Link href={{ pathname: '/legal', params: { doc: 'terms' } }}><T size={13} color={colors.accentRamp[700]}>Terms of Service</T></Link>
         <Link href={{ pathname: '/legal', params: { doc: 'privacy' } }}><T size={13} color={colors.accentRamp[700]}>Privacy Policy</T></Link>
       </View>
-      <Button label="Sign out" variant="secondary" icon={LogOut} onPress={() => { qc.clear(); void client.auth.signOut() }} />
+      <Button label="Sign out" variant="secondary" icon={LogOut} onPress={() => { qc.clear(); void client.auth.signOut({ scope: 'local' }) }} />
       {confirm && (
         <ConfirmDelete busy={busy} onCancel={() => setConfirm(null)} onConfirm={() => void doDelete()}
           title={confirm === 'account' ? 'Delete your account?' : 'Delete all documents?'}
