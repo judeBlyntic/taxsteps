@@ -3,6 +3,7 @@ import { useState, type FormEvent, type ReactNode } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ScanLine, Search } from 'lucide-react'
+import { FILTER_TEXT_MAX } from '@taxsteps/core'
 import { ICON } from '@/components/ui/icons'
 
 export function PageHeader({ title, subtitle, actions }: { title: string; subtitle?: ReactNode; actions?: ReactNode }) {
@@ -20,7 +21,7 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
       </div>
       <form role="search" className="search-pill" onSubmit={search}>
         <Search {...ICON} />
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search documents" aria-label="Search documents" />
+        <input value={q} onChange={(e) => setQ(e.target.value)} maxLength={FILTER_TEXT_MAX.search} placeholder="Search documents" aria-label="Search documents" />
       </form>
       {actions ?? (
         <Link href="/scan" className="btn btn-primary btn-lg hide-mobile"><ScanLine {...ICON} />Scan receipt</Link>

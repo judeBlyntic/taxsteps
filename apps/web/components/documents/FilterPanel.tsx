@@ -1,5 +1,5 @@
 'use client'
-import { DOCUMENT_TYPES, fromCents, parseAmount, financialYearRange, formatMonth, lastNMonths, monthRange, yearRange, type Category, type DocumentFilter, type PeriodSpec } from '@taxsteps/core'
+import { DOCUMENT_TYPES, FILTER_TEXT_MAX, dateRangeError, fromCents, parseAmount, financialYearRange, formatMonth, lastNMonths, monthRange, yearRange, type Category, type DocumentFilter, type PeriodSpec } from '@taxsteps/core'
 import { SelectField, TextField } from '@/components/ui/Field'
 
 type Fy = { fyStartMonth: number; fyStartDay: number }
@@ -23,17 +23,13 @@ export function quickPeriods(today: string, fy: Fy): QuickPeriod[] {
 
 
 export function FilterPanel({ filter, onChange, categories, today, locale }: {
-  filter: DocumentFilter; onChange: (f: DocumentFilter) => void; categories: Category[]; today: string; locale: string
+  filter: DocumentFilter; onChange: (patch: Partial<DocumentFilter>) => void; categories: Category[]; today: string; locale: string
 }) {
   const num = (v: string) => {
     const cents = v.trim() ? parseAmount(v, locale) : null
     return cents === null ? undefined : fromCents(cents)
   }
-  const set = (patch: Partial<DocumentFilter>) => {
-    const next = { ...filter, ...patch }
-    for (const k of Object.keys(next) as (keyof DocumentFilter)[]) if (next[k] === undefined || next[k] === '') delete next[k]
-    onChange(next)
-  }
+  const set = onChange // only the change: the page applies it to the latest filter, never to this possibly stale render
   const months = lastNMonths(today, 36).reverse()
   const monthValue = filter.from && filter.to && filter.from.endsWith('-01') && monthRange(Number(filter.from.slice(0, 4)), Number(filter.from.slice(5, 7))).to === filter.to
     ? filter.from.slice(0, 7) : ''
@@ -43,7 +39,7 @@ export function FilterPanel({ filter, onChange, categories, today, locale }: {
     <div className="tile stack" style={{ gap: 14 }}>
       <div className="field-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))' }}>
         <TextField label="From" type="date" value={filter.from ?? ''} onChange={(e) => set({ from: e.target.value || undefined })} />
-        <TextField label="To" type="date" value={filter.to ?? ''} onChange={(e) => set({ to: e.target.value || undefined })} />
+        <TextField label="To" type="date" value={filter.to ?? ''} onChange={(e) => set({ to: e.target.value || undefined })} error={dateRangeError(filter.from, filter.to)} />
         <SelectField label="Month" value={monthValue} onChange={(e) => {
           if (!e.target.value) return set({ from: undefined, to: undefined })
           const [y, m] = e.target.value.split('-').map(Number)
@@ -57,7 +53,7 @@ export function FilterPanel({ filter, onChange, categories, today, locale }: {
           <option value="">Any year</option>
           {years.map((y) => <option key={y} value={y}>{y}</option>)}
         </SelectField>
-        <TextField label="Merchant" defaultValue={filter.merchant ?? ''} onBlur={(e) => set({ merchant: e.target.value.trim() || undefined })}
+        <TextField label="Merchant" maxLength={FILTER_TEXT_MAX.merchant} defaultValue={filter.merchant ?? ''} onBlur={(e) => set({ merchant: e.target.value.trim() || undefined })}
           onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur() }} />
         <SelectField label="Category" value={filter.categoryIds?.[0] ?? ''} onChange={(e) => set({ categoryIds: e.target.value ? [e.target.value] : undefined })}>
           <option value="">All categories</option>
