@@ -9,7 +9,7 @@ import { CATEGORY_COLORS, CATEGORY_ICONS, CategoryIcon, ICON, categoryColors } f
 function CategoryRow({ category }: { category: Category }) {
   const upsert = useUpsertCategory()
   const toast = useToast()
-  const [name, setName] = useState(category.name)
+  const [draft, setDraft] = useState<string | null>(null) // typed name; null shows the saved one, so renames elsewhere show up
   const [editing, setEditing] = useState(false)
 
   async function save(patch: Partial<Category>) {
@@ -17,8 +17,8 @@ function CategoryRow({ category }: { category: Category }) {
       await upsert.mutateAsync({ id: category.id, name: category.name, icon: category.icon, color: category.color, ...patch })
     } catch (e) {
       toast.show(toUserMessage(e), 'error')
-      setName(category.name)
     }
+    setDraft(null)
   }
 
   return (
@@ -27,8 +27,8 @@ function CategoryRow({ category }: { category: Category }) {
         aria-label={`Change ${category.name} colour`} onClick={() => setEditing((v) => !v)}>
         <CategoryIcon icon={category.icon} />
       </button>
-      <input className="input grow" aria-label="Category name" value={name} maxLength={60} onChange={(e) => setName(e.target.value)}
-        onBlur={() => { if (name.trim() && name.trim() !== category.name) void save({ name: name.trim() }) }} />
+      <input className="input grow" aria-label="Category name" value={draft ?? category.name} maxLength={60} onChange={(e) => setDraft(e.target.value)}
+        onBlur={() => { const name = draft?.trim(); if (name && name !== category.name) void save({ name }); else setDraft(null) }} />
       <button type="button" className="btn btn-ghost" onClick={() => void save({ archived: !category.archived })}
         aria-label={category.archived ? `Restore ${category.name}` : `Archive ${category.name}`}>
         {category.archived ? <ArchiveRestore {...ICON} /> : <Archive {...ICON} />}

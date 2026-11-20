@@ -2,7 +2,7 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import Link from 'next/link'
 import { MailCheck } from 'lucide-react'
-import { CURRENCIES, FALLBACK_REGION, TAX_REGIONS, TERMS_VERSION, regionFor, toUserMessage } from '@taxsteps/core'
+import { CURRENCIES, ERROR_MESSAGES, FALLBACK_REGION, TAX_REGIONS, TERMS_VERSION, looksLikeEmail, regionFor, toUserMessage } from '@taxsteps/core'
 import { createClient } from '@/lib/supabase/client'
 import { GoogleButton } from '@/components/auth/GoogleButton'
 import { SelectField, TextField } from '@/components/ui/Field'
@@ -10,6 +10,7 @@ import { ICON } from '@/components/ui/icons'
 
 const MONTHS = Array.from({ length: 12 }, (_, i) => new Intl.DateTimeFormat('en', { month: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(2026, i, 1))))
 const REGIONS = Object.values(TAX_REGIONS).sort((a, b) => a.name.localeCompare(b.name))
+const SHORT_PASSWORD = 'Please choose a password with at least 8 characters.'
 
 function guessCountry(): string {
   if (typeof navigator === 'undefined') return 'NZ'
@@ -28,6 +29,8 @@ export default function SignUpPage() {
   const [sent, setSent] = useState(false)
   const [agreed, setAgreed] = useState(false)
   const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) => setForm((f) => ({ ...f, [k]: v }))
+  // Points the field at the alert below when the error is about it.
+  const errorFor = (msg: string) => (error === msg ? { 'aria-invalid': true, 'aria-describedby': 'sign-up-error' } : {})
 
   function chooseCountry(code: string) {
     const r = regionFor(code)
@@ -37,7 +40,8 @@ export default function SignUpPage() {
   async function submit(e: FormEvent) {
     e.preventDefault()
     if (!agreed) return setError('Please agree to the Terms of Service and Privacy Policy to continue.')
-    if (form.password.length < 8) return setError('Please choose a password with at least 8 characters.')
+    if (!looksLikeEmail(form.email.trim())) return setError(ERROR_MESSAGES.INVALID_EMAIL)
+    if (form.password.length < 8) return setError(SHORT_PASSWORD)
     setBusy(true)
     setError(null)
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -84,9 +88,10 @@ export default function SignUpPage() {
       </label>
       <GoogleButton disabled={!agreed} />
       <TextField label="Your name" autoComplete="name" value={form.fullName} onChange={(e) => set('fullName', e.target.value)} />
-      <TextField label="Email" type="email" autoComplete="email" required value={form.email} onChange={(e) => set('email', e.target.value)} />
+      <TextField label="Email" type="email" autoComplete="email" required value={form.email} onChange={(e) => set('email', e.target.value)}
+        {...errorFor(ERROR_MESSAGES.INVALID_EMAIL)} />
       <TextField label="Password" type="password" autoComplete="new-password" required minLength={8} value={form.password}
-        onChange={(e) => set('password', e.target.value)} note={<span className="muted">At least 8 characters</span>} />
+        onChange={(e) => set('password', e.target.value)} note={<span className="muted">At least 8 characters</span>} {...errorFor(SHORT_PASSWORD)} />
       <div className="field-grid">
         <SelectField label="Country" value={form.country} onChange={(e) => chooseCountry(e.target.value)}>
           {REGIONS.map((r) => <option key={r.country} value={r.country}>{r.name}</option>)}
@@ -105,7 +110,7 @@ export default function SignUpPage() {
       <p className="muted" style={{ margin: 0, fontSize: 13 }}>
         We prefill your tax year from your country — check it matches your balance date. You can change all of this later.
       </p>
-      {error && <div className="banner banner-warn" role="alert">{error}</div>}
+      {error && <div id="sign-up-error" className="banner banner-warn" role="alert">{error}</div>}
       <button className="btn btn-primary btn-xl" disabled={busy || !agreed || !form.email || !form.password}>{busy ? 'Creating account…' : 'Create account'}</button>
       <p style={{ margin: 0, fontSize: 14 }}>Already have an account? <Link className="link" href="/sign-in">Sign in</Link></p>
     </form>

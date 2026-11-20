@@ -22,7 +22,7 @@ export default function SettingsPage() {
   useEffect(() => { void client.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? '')) }, [client])
 
   async function signOut() {
-    await client.auth.signOut()
+    await client.auth.signOut({ scope: 'local' }) // this browser only; the phone stays signed in
     qc.clear()
     router.replace('/sign-in')
     router.refresh()
@@ -37,8 +37,8 @@ export default function SettingsPage() {
         {!profile || !categories ? <div className="empty"><span className="spinner" style={{ display: 'inline-block' }} /></div> : (
           <div className="dash-2" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', alignItems: 'start' }}>
             <div className="stack">
-              <ProfileCard key={profile.updated_at} profile={profile} email={email} />
-              <RegionCard key={`r${profile.updated_at}`} profile={profile} />
+              <ProfileCard profile={profile} email={email} />
+              <RegionCard profile={profile} />
               <SheetsCard />
             </div>
             <div className="stack">
