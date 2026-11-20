@@ -29,7 +29,7 @@ export function ProfileCard({ profile, email }: { profile: Profile; email: strin
 
   return (
     <form className="tile stack" style={{ gap: 14 }} onSubmit={save}>
-      <h4>Account &amp; business</h4>
+      <h2>Account &amp; business</h2>
       <div className="field-grid">
         <TextField label="Name" value={form.full_name} maxLength={120} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
         <TextField label="Email" value={email} readOnly />
@@ -71,7 +71,7 @@ export function RegionCard({ profile }: { profile: Profile }) {
 
   return (
     <form className="tile stack" style={{ gap: 14 }} onSubmit={save}>
-      <h4>Region &amp; tax year</h4>
+      <h2>Region &amp; tax year</h2>
       <div className="field-grid">
         <SelectField label="Country" value={form.country} onChange={(e) => chooseCountry(e.target.value)}>
           {REGIONS.map((r) => <option key={r.country} value={r.country}>{r.name}</option>)}

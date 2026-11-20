@@ -18,6 +18,10 @@ button { font-family: inherit; }
 .kicker { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--color-accent-700); font-weight: 700; }
 .big { font-family: var(--font-heading); line-height: 1.05; }
 .link { color: var(--color-accent-700); font-weight: 600; }
+/* Skip link, shared by the website (w- prefix) and the app shell. */
+.w-skip { position: absolute; left: 16px; top: -60px; z-index: 60; padding: 10px 16px; border-radius: 999px; background: var(--color-text); color: var(--color-bg) !important; }
+.w-skip:focus { top: 12px; }
+@media (forced-colors: active) { [aria-pressed='true'], [aria-current='page'] { outline: 2px solid Highlight; outline-offset: -2px; } }
 
 /* Buttons (extends .btn from organic.css) */
 .btn { font-family: var(--font-body); font-weight: 700; }
@@ -88,7 +92,8 @@ button { font-family: inherit; }
 
 /* ── Tiles & dashboard ─────────────────────────────────────────────────── */
 .tile { position: relative; overflow: hidden; border-radius: 32px; background: var(--color-bg); padding: 24px; }
-.tile h4 { margin: 0; }
+.tile h2, .tile h4 { margin: 0; }
+.tile h2 { font-size: 20px; } /* card titles are h2 for the outline but keep the h4 size */
 .tile-sage { background: var(--color-accent-2-300); color: var(--color-accent-2-900); }
 .tile-terra { background: var(--color-accent-200); color: var(--color-accent-900); }
 .tile-surface { background: var(--color-surface); }
@@ -112,7 +117,9 @@ button { font-family: inherit; }
 .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; justify-items: center; }
 .cal-day { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 600; box-shadow: inset 0 0 0 1px var(--color-neutral-300); background: var(--color-neutral-100); }
 .cal-day[data-kind='business'] { background: var(--color-accent-2-400); box-shadow: none; }
-.cal-day[data-kind='personal'] { background: var(--color-accent-400); box-shadow: none; }
+.cal-day[data-kind='personal'] { background: var(--color-accent-400); }
+/* A ring marks personal days (and their legend dot) so the two kinds differ by more than colour. */
+.cal-day[data-kind='personal'], .legend i[data-kind='personal'] { box-shadow: inset 0 0 0 2px var(--color-text); }
 .legend { display: flex; gap: 12px; font-size: 12px; color: var(--color-neutral-700); }
 .legend span { display: flex; align-items: center; gap: 5px; }
 .legend i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
@@ -152,7 +159,7 @@ button { font-family: inherit; }
 .chip-sage[aria-pressed='true'] { background: var(--color-accent-2-200); color: var(--color-accent-2-900); border-color: transparent; }
 .chips { display: flex; gap: 8px; flex-wrap: wrap; }
 .segmented { display: flex; padding: 4px; border-radius: 999px; background: var(--color-surface); }
-.segmented button { flex: 1; height: 38px; border: 0; border-radius: 999px; background: transparent; font-weight: 700; font-size: 13.5px; color: var(--color-neutral-700); cursor: pointer; padding: 0 12px; }
+.segmented button { flex: 1; height: 38px; border: 0; border-radius: 999px; background: transparent; font-weight: 700; font-size: 13.5px; color: var(--color-neutral-700); cursor: pointer; padding: 0 8px; min-width: 0; }
 .segmented button[aria-pressed='true'] { background: var(--color-bg); color: var(--color-text); box-shadow: var(--shadow-sm); }
 .switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-radius: 24px; background: var(--color-surface); cursor: pointer; border: 0; width: 100%; text-align: left; color: inherit; }
 .switch-track { width: 48px; height: 28px; border-radius: 999px; background: var(--color-neutral-400); position: relative; flex: none; transition: background .2s; }
@@ -207,6 +214,9 @@ textarea.input { border-radius: 22px; padding: 12px 14px; }
 .toast .tick { width: 22px; height: 22px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--color-accent-2-400); color: var(--color-accent-2-900); }
 .toast[data-kind='error'] .tick { background: var(--color-accent-400); color: var(--color-accent-900); }
 .toast .tick svg { width: 12px; height: 12px; }
+.toast-region > div { display: flex; flex-direction: column; gap: 8px; } /* the status and alert live regions */
+.toast-close { width: 28px; height: 28px; margin-right: -10px; flex: none; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: inherit; cursor: pointer; }
+.toast-close svg { width: 14px; height: 14px; }
 @media (max-width: 1023px) { .toast-region { bottom: 110px; } }
 
 /* ── Auth ──────────────────────────────────────────────────────────────── */
@@ -232,4 +242,4 @@ textarea.input { border-radius: 22px; padding: 12px 14px; }
 
 /* ── Reports ───────────────────────────────────────────────────────────── */
 .reports-grid { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 20px; align-items: start; }
-@media (max-width: 1023px) { .reports-grid { grid-template-columns: 1fr; } }
+@media (max-width: 1023px) { .reports-grid { grid-template-columns: minmax(0, 1fr); } }

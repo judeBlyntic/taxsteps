@@ -48,9 +48,9 @@ function ExportView() {
         <section className="tile stack" style={{ gap: 18 }}>
           <div className="stack" style={{ gap: 8 }}>
             <span style={{ fontWeight: 700 }}>Format</span>
-            <div className="segmented" role="radiogroup" aria-label="Format">
+            <div className="segmented" role="group" aria-label="Format">
               {([['csv', 'CSV'], ['xlsx', 'Excel'], ['pdf', 'PDF'], ['sheets', 'Google Sheets']] as const).map(([f, l]) => (
-                <button key={f} type="button" role="radio" aria-checked={format === f} aria-pressed={format === f} onClick={() => setFormat(f)}>{l}</button>
+                <button key={f} type="button" aria-pressed={format === f} onClick={() => setFormat(f)}>{l}</button>
               ))}
             </div>
           </div>

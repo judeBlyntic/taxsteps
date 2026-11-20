@@ -76,7 +76,7 @@ export function SheetsCard() {
   return (
     <section className="tile stack" style={{ gap: 12 }}>
       <Suspense><ReturnHandler /></Suspense>
-      <h4>Integrations</h4>
+      <h2>Integrations</h2>
       <div className="row" style={{ gap: 14, flexWrap: 'wrap' }}>
         <span className="cat-dot" style={{ background: 'var(--color-accent-2-200)', color: 'var(--color-accent-2-800)' }}><Sheet {...ICON} /></span>
         <div className="grow"><b>Google Sheets</b><div className="muted" style={{ fontSize: 13 }}>{sub}</div></div>

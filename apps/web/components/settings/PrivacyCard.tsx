@@ -45,7 +45,7 @@ export function PrivacyCard() {
 
   return (
     <section className="tile stack" style={{ gap: 10, background: 'var(--color-accent-2-100)', color: 'var(--color-accent-2-900)' }}>
-      <h4 className="row" style={{ gap: 8 }}><ShieldCheck {...ICON} />Privacy</h4>
+      <h2 className="row" style={{ gap: 8 }}><ShieldCheck {...ICON} />Privacy</h2>
       <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5 }}>{COPY.privacyPanel}</p>
       <p style={{ margin: 0, fontSize: 13, lineHeight: 1.5 }}>{COPY.providerNote}</p>
       <p style={{ margin: 0, fontSize: 13, lineHeight: 1.5 }}>{COPY.disclaimer}</p>

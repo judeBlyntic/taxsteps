@@ -35,7 +35,7 @@ export default function SettingsPage() {
       } />
       <div className="page-body">
         {!profile || !categories ? <div className="empty"><span className="spinner" style={{ display: 'inline-block' }} /></div> : (
-          <div className="dash-2" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', alignItems: 'start' }}>
+          <div className="dash-2" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))', alignItems: 'start' }}>
             <div className="stack">
               <ProfileCard key={profile.updated_at} profile={profile} email={email} />
               <RegionCard key={`r${profile.updated_at}`} profile={profile} />

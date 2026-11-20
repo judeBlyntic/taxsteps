@@ -12,7 +12,7 @@ export default function ConfirmedPage() {
       <div className="auth-card" style={{ alignItems: 'flex-start' }}>
         <Logo href="/sign-in" />
         <span className="brand-mark" style={{ width: 56, height: 56, background: 'var(--color-accent-2-600)' }}><CheckCircle2 {...ICON} /></span>
-        <h2>Email confirmed</h2>
+        <h1 style={{ margin: 0, fontSize: 32 }}>Email confirmed</h1>
         <p className="muted" style={{ margin: 0 }}>Your account is ready. Sign in on the web or in the Tax Steps app on your phone.</p>
         <Link className="btn btn-primary btn-xl" href="/sign-in">Sign in</Link>
       </div>

@@ -113,8 +113,11 @@ export function ReceiptDays({ year, month, days, locale }: { year: number; month
       {Array.from({ length: count }, (_, i) => {
         const d = byDay.get(i + 1)
         const kind = d ? (d.business >= d.personal ? 'business' : 'personal') : undefined
+        const n = d ? d.business + d.personal : 0
         return (
-          <span key={i} className="cal-day" data-kind={kind} title={d ? `${d.business + d.personal} documents` : undefined}>{i + 1}</span>
+          <span key={i} className="cal-day" data-kind={kind} title={d ? `${n} documents` : undefined}>
+            {i + 1}{d && <span className="sr-only">, {n} {n === 1 ? 'document' : 'documents'}, {kind}</span>}
+          </span>
         )
       })}
     </div>

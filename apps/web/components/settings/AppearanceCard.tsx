@@ -19,7 +19,7 @@ export function AppearanceCard({ profile }: { profile: Profile }) {
 
   return (
     <section className="tile stack" style={{ gap: 14 }}>
-      <h4>Appearance</h4>
+      <h2>Appearance</h2>
       <div className="chips" role="group" aria-label="App theme">
         {THEME_OPTIONS.map((t) => (
           <button key={t.value} type="button" className="chip" aria-pressed={current === t.value}

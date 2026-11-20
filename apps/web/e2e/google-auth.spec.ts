@@ -19,7 +19,7 @@ for (const path of ['/sign-in', '/sign-up']) {
     await page.goto(path)
     const google = page.getByRole('button', { name: 'Continue with Google' })
     await expect(google).toBeVisible()
-    await expect(page.getByRole('separator')).toHaveText('or use your email')
+    await expect(page.getByText('or use your email')).toBeVisible() // plain text: a separator role hid it from screen readers
     const [g, email] = await Promise.all([google.boundingBox(), page.getByLabel('Email').boundingBox()])
     expect(g!.y).toBeLessThan(email!.y)
   })

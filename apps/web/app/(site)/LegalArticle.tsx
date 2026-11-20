@@ -25,6 +25,7 @@ export function LegalArticle({ doc }: { doc: LegalDoc }) {
   const other = doc.slug === 'terms' ? { href: '/privacy', label: 'Privacy Policy' } : { href: '/terms', label: 'Terms of Service' }
   return (
     <div className="site theme-fresh">
+      <a className="w-skip" href="#main">Skip to content</a>
       <header className="w-nav">
         <div className="w-wrap w-nav-inner">
           <Logo href="/" reload />
@@ -32,7 +33,7 @@ export function LegalArticle({ doc }: { doc: LegalDoc }) {
           <a className="w-btn w-btn-primary" href="/sign-up">Start free</a>
         </div>
       </header>
-      <main className="w-wrap w-legal">
+      <main id="main" className="w-wrap w-legal">
         <span className="kicker">Last updated {OPERATOR.updated} · version {TERMS_VERSION}</span>
         <h1>{doc.title}</h1>
         <p className="w-legal-summary">{doc.summary}</p>
