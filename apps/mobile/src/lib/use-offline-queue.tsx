@@ -41,6 +41,7 @@ export function OfflineQueueProvider({ children }: { children: ReactNode }) {
   }, [queue, userId, client, qc, refresh])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- loads this user's queue from device storage (an external store)
     void refresh()
     const unsubNet = NetInfo.addEventListener((s) => {
       const online = s.isConnected !== false && s.isInternetReachable !== false

@@ -45,6 +45,7 @@ export default function ReviewScreen() {
         setOpenedAt(row.updated_at)
       }).catch(() => setLoadError(true))
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- waits for the profile and categories, and takes the pending scan exactly once
       setDraft(takePendingDraft() ?? emptyDraft(ctx)) // the draft id is created once → saving twice is idempotent
     }
   }, [ctx, id, client, draft])
