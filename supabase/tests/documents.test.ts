@@ -27,6 +27,13 @@ describe('documents CRUD', () => {
     expect((await admin.from('documents').insert({ ...base, id: randomUUID(), document_type: 'spaceship' })).error).not.toBeNull()
   })
 
+  it('rejects NaN amounts, which would poison every total and export', async () => {
+    const admin = adminClient()
+    const base = { ...input(), user_id: A.userId }
+    expect((await admin.from('documents').insert({ ...base, id: randomUUID(), amount: 'NaN' })).error).not.toBeNull()
+    expect((await admin.from('documents').insert({ ...base, id: randomUUID(), amount: 10, tax_amount: 'NaN' })).error).not.toBeNull()
+  })
+
   it('updates updated_at and deletes', async () => {
     const row = await saveDocument(A.client, input())
     await new Promise((r) => setTimeout(r, 50))
