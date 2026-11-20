@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Linking as RNLinking, View } from 'react-native'
 import { useLocalSearchParams } from 'expo-router'
 import * as Linking from 'expo-linking'
@@ -23,11 +23,12 @@ export default function SheetsScreen() {
   const filter: DocumentFilter = params.from && params.to && isISODate(params.from) && isISODate(params.to) ? { from: params.from, to: params.to } : {}
   const label = params.label || 'All time'
   const files = useQuery({ queryKey: ['sheets-files'], enabled: connected, queryFn: () => sheets<{ id: string; name: string }[]>(client, { action: 'list-spreadsheets' }) })
-  const [fileId, setFileId] = useState('')
+  const [picked, setPicked] = useState('')
   const [newName, setNewName] = useState('Tax Steps Export')
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState<SheetsExportResult | null>(null)
-  useEffect(() => { if (!fileId && files.data) setFileId(status.data?.defaultSpreadsheetId ?? files.data[0]?.id ?? NEW) }, [files.data, fileId, status.data])
+  // Until the user picks one: the default spreadsheet, else the first, else a new one.
+  const fileId = picked || (files.data ? status.data?.defaultSpreadsheetId ?? files.data[0]?.id ?? NEW : '')
 
   async function connect() {
     setBusy(true)
@@ -90,8 +91,8 @@ export default function SheetsScreen() {
           <Muted>Connected{status.data?.email ? ` · ${status.data.email}` : ''}</Muted>
           <T weight="semibold">Export: {label}</T>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-            {(files.data ?? []).map((f) => <Chip key={f.id} label={f.name} selected={fileId === f.id} onPress={() => setFileId(f.id)} />)}
-            <Chip label="+ New spreadsheet" selected={fileId === NEW} onPress={() => setFileId(NEW)} />
+            {(files.data ?? []).map((f) => <Chip key={f.id} label={f.name} selected={fileId === f.id} onPress={() => setPicked(f.id)} />)}
+            <Chip label="+ New spreadsheet" selected={fileId === NEW} onPress={() => setPicked(NEW)} />
           </View>
           {fileId === NEW && <TextField label="Spreadsheet name" value={newName} onChangeText={setNewName} maxLength={100} />}
           <Button label="Send to Google Sheets" icon={Sheet} loading={busy} disabled={!fileId} onPress={() => void send()} />

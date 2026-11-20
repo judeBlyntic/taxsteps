@@ -151,7 +151,8 @@ export const ProfileUpdateSchema = z.object({
   timezone: z.string().min(1).max(64),
   locale: z.string().min(2).max(35).refine((l) => {
     try {
-      return Intl.getCanonicalLocales(l).length === 1 && Boolean(new Intl.NumberFormat(l))
+      // Well-formed isn't enough ("xx", "english"): the runtime must have formatting data for it.
+      return Intl.NumberFormat.supportedLocalesOf(l).length > 0
     } catch {
       return false
     }

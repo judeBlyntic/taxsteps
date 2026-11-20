@@ -8,7 +8,8 @@ import { Button, Screen, T, TextField } from '@/components/ui'
 export default function ProfileScreen() {
   const { data: profile } = useProfile()
   if (!profile) return <Screen><T>Loading…</T></Screen>
-  return <ProfileForm key={profile.updated_at} profile={profile} />
+  // Re-seed the form only when these fields change, not on any profile update (a theme switch would wipe typing).
+  return <ProfileForm key={[profile.full_name, profile.business_name, profile.tax_number].join('\n')} profile={profile} />
 }
 
 function ProfileForm({ profile }: { profile: NonNullable<ReturnType<typeof useProfile>['data']> }) {

@@ -3,7 +3,7 @@ import { ActivityIndicator, Pressable, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { FileSpreadsheet, FileText, Sheet, Table, type LucideIcon } from 'lucide-react-native'
 import { toUserMessage, type DocumentFilter, type ExportFormat } from '@taxsteps/core'
-import { exportDocuments, useClient } from '@taxsteps/data'
+import { exportDocuments, useClient, useSheetsStatus } from '@taxsteps/data'
 import { shareExport } from '@/lib/share'
 import { colors } from '@/lib/theme'
 import { useToast } from './Toast'
@@ -22,6 +22,7 @@ export function ExportTiles({ filter, label }: { filter: DocumentFilter; label: 
   const toast = useToast()
   const router = useRouter()
   const [busy, setBusy] = useState<string | null>(null)
+  const sheetsReady = useSheetsStatus().data?.configured === true // hidden while unknown, offline or not set up
 
   async function run(format: ExportFormat) {
     setBusy(format)
@@ -36,7 +37,7 @@ export function ExportTiles({ filter, label }: { filter: DocumentFilter; label: 
 
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
-      {tiles().map(({ key, label: l, sub, icon: Icon, bg, fg }) => (
+      {tiles().filter((t) => t.key !== 'sheets' || sheetsReady).map(({ key, label: l, sub, icon: Icon, bg, fg }) => (
         <Pressable key={key} accessibilityRole="button" accessibilityLabel={`Export ${l}`} disabled={busy !== null}
           onPress={() => (key === 'sheets'
             ? router.push({ pathname: '/sheets', params: { from: filter.from ?? '', to: filter.to ?? '', label } })

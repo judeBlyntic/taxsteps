@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Building, ChevronRight, Globe2, LogOut, Sheet, ShieldCheck, Tag, type LucideIcon } from 'lucide-react-native'
 import { COPY, THEME_OPTIONS, regionFor, toUserMessage, type ThemeName } from '@taxsteps/core'
 import { deleteAccount, deleteAllDocuments, exportDocuments, invalidateDocuments, useClient, useProfile, useSheetsStatus, useUpdateProfile } from '@taxsteps/data'
+import { useAiConsent } from '@/components/AiConsent'
 import { ConfirmDelete } from '@/components/ConfirmDelete'
 import { useToast } from '@/components/Toast'
 import { Button, H, Muted, Screen, T } from '@/components/ui'
@@ -73,6 +74,7 @@ export default function SettingsScreen() {
   const { data: profile } = useProfile()
   const sheetsReady = useSheetsStatus().data?.configured === true
   const { clear } = useOfflineQueue()
+  const ai = useAiConsent()
   const [confirm, setConfirm] = useState<'documents' | 'account' | null>(null)
   const [busy, setBusy] = useState(false)
   const region = regionFor(profile?.country)
@@ -132,6 +134,10 @@ export default function SettingsScreen() {
         </View>
         <T size={13.5} color={colors.accent2Ramp[900]}>{COPY.privacyPanel}</T>
         <T size={12.5} color={colors.accent2Ramp[900]}>{COPY.providerNote}</T>
+        {ai.granted && (
+          <Button label="Turn off AI receipt reading" variant="secondary" size="md"
+            onPress={() => { void ai.revoke(); toast.show("AI receipt reading is off. We'll ask again before your next scan.") }} />
+        )}
         <Button label="Export all my data" variant="secondary" size="md" onPress={() => void exportAll()} />
         <Button label="Delete all documents" variant="danger" size="md" onPress={() => setConfirm('documents')} />
         <Button label="Delete account" variant="ghost" size="md" onPress={() => setConfirm('account')} />

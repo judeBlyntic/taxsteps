@@ -14,20 +14,21 @@ const COLORS = ['accent-2-300', 'accent-300', 'neutral-300', 'accent-200', 'acce
 function CategoryItem({ category }: { category: Category }) {
   const upsert = useUpsertCategory()
   const toast = useToast()
-  const [name, setName] = useState(category.name)
+  const [draft, setDraft] = useState<string | null>(null) // typed name; null shows the saved one, so renames elsewhere show up
   const save = async (patch: Partial<Category>) => {
     try {
       await upsert.mutateAsync({ id: category.id, name: category.name, icon: category.icon, color: category.color, ...patch })
     } catch (e) {
       toast.show(toUserMessage(e), 'error')
-      setName(category.name)
     }
+    setDraft(null)
   }
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6, opacity: category.archived ? 0.55 : 1 }}>
       <CategoryDot category={category} size={40} />
-      <TextInput value={name} onChangeText={setName} maxLength={60} accessibilityLabel="Category name"
-        onEndEditing={() => { if (name.trim() && name.trim() !== category.name) void save({ name: name.trim() }) }}
+      {/* onBlur, not onEndEditing: the web build never fires onEndEditing. */}
+      <TextInput value={draft ?? category.name} onChangeText={setDraft} maxLength={60} accessibilityLabel="Category name"
+        onBlur={() => { const name = draft?.trim(); if (name && name !== category.name) void save({ name }); else setDraft(null) }}
         style={{ flex: 1, minHeight: 44, paddingHorizontal: 14, borderRadius: 999, backgroundColor: colors.surface, fontFamily: fonts.semibold, fontSize: 15, color: colors.text }} />
       <Pressable accessibilityRole="button" accessibilityLabel={category.archived ? `Restore ${category.name}` : `Archive ${category.name}`}
         onPress={() => void save({ archived: !category.archived })} style={{ padding: 8 }}>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { Link, useRouter } from 'expo-router'
 import { Check, MailCheck } from 'lucide-react-native'
@@ -17,7 +17,7 @@ function deviceRegion(): string {
 }
 
 export default function SignUp() {
-  const [country, setCountry] = useState(useMemo(deviceRegion, []))
+  const [country, setCountry] = useState(deviceRegion)
   const [showCountries, setShowCountries] = useState(false)
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')

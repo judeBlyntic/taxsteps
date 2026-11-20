@@ -4,6 +4,8 @@ import { useRouter } from 'expo-router'
 import { randomUUID } from 'expo-crypto'
 import { CameraView, useCameraPermissions } from 'expo-camera'
 import * as ImagePicker from 'expo-image-picker'
+import { StatusBar } from 'expo-status-bar'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Check, Image as ImageIcon, PencilLine, ShieldCheck, X, Zap } from 'lucide-react-native'
 import { COPY, draftFromExtraction, toUserMessage } from '@taxsteps/core'
 import { useQueryClient } from '@tanstack/react-query'
@@ -21,7 +23,7 @@ const STEPS = ['Uploading securely', 'Extracting details', 'Discarding your phot
 type Phase = { kind: 'camera' } | { kind: 'working'; step: number } | { kind: 'error'; message: string }
 
 function ScanLine() {
-  const y = useRef(new Animated.Value(0)).current
+  const [y] = useState(() => new Animated.Value(0))
   useEffect(() => {
     const loop = Animated.loop(Animated.sequence([
       Animated.timing(y, { toValue: 1, duration: 1300, easing: Easing.inOut(Easing.ease), useNativeDriver: true }),
@@ -49,6 +51,7 @@ export default function ScanScreen() {
   const [torch, setTorch] = useState(false)
   const [phase, setPhase] = useState<Phase>({ kind: 'camera' })
   const consent = useAiConsent()
+  const insets = useSafeAreaInsets()
 
   // The photo is deleted however this ends: success, offline, or an error before processing starts.
   const process = (uri: string, width: number | undefined, height: number | undefined, source: 'scan' | 'upload') =>
@@ -97,25 +100,29 @@ export default function ScanScreen() {
   if (!consent.granted) {
     return <AiConsent onAllow={() => void consent.grant()} onManual={manual} onClose={() => router.back()} />
   }
-  if (!permission) return <View style={{ flex: 1, backgroundColor: colors.neutral[900] }} />
+  if (!permission) return <View style={{ flex: 1, backgroundColor: colors.neutral[900] }}><StatusBar style="light" /></View>
   if (!permission.granted) {
     return (
-      <Screen style={{ paddingTop: 40, gap: 16 }}>
-        <H size={30}>Camera access</H>
-        <T>Tax Steps uses the camera to photograph receipts. {COPY.photoPrivacy}</T>
-        {permission.canAskAgain
-          ? <Button label="Allow camera" onPress={() => void requestPermission()} />
-          : <Button label="Open settings" onPress={() => void Linking.openSettings()} />}
-        <Button label="Choose from photos" variant="secondary" icon={ImageIcon} onPress={() => void pickFromGallery()} />
-        <Button label="Enter manually" variant="ghost" icon={PencilLine} onPress={manual} />
-        <Button label="Close" variant="ghost" onPress={() => router.back()} />
-      </Screen>
+      <View style={{ flex: 1 }}>
+        <Screen style={{ paddingTop: 40, gap: 16 }}>
+          <H size={30}>Camera access</H>
+          <T>Tax Steps uses the camera to photograph receipts. {COPY.photoPrivacy}</T>
+          {permission.canAskAgain
+            ? <Button label="Allow camera" onPress={() => void requestPermission()} />
+            : <Button label="Open settings" onPress={() => void Linking.openSettings()} />}
+          <Button label="Choose from photos" variant="secondary" icon={ImageIcon} onPress={() => void pickFromGallery()} />
+          <Button label="Enter manually" variant="ghost" icon={PencilLine} onPress={manual} />
+          <Button label="Close" variant="ghost" onPress={() => router.back()} />
+        </Screen>
+        <Progress phase={phase} onRetry={() => setPhase({ kind: 'camera' })} onManual={manual} />
+      </View>
     )
   }
 
   const glass = { backgroundColor: 'rgba(249,244,237,0.14)' }
   return (
     <View style={{ flex: 1, backgroundColor: colors.neutral[900] }}>
+      <StatusBar style="light" />
       <CameraView ref={camera} style={{ position: 'absolute', top: 120, left: 34, right: 34, bottom: 220, borderRadius: 30 }} facing="back" enableTorch={torch} />
       <View pointerEvents="box-none" style={{ position: 'absolute', top: 120, left: 34, right: 34, bottom: 220 }}>
         {corner({ left: 14, top: 14 }, { borderLeftWidth: 4, borderTopWidth: 4, borderTopLeftRadius: 22 })}
@@ -125,7 +132,7 @@ export default function ScanScreen() {
         <ScanLine />
       </View>
 
-      <View style={{ position: 'absolute', top: 54, left: 18, right: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+      <View style={{ position: 'absolute', top: insets.top + 10, left: 18, right: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={() => router.back()} style={[{ width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center' }, glass]}>
           <X size={20} color={colors.neutral[100]} strokeWidth={2.75} />
         </Pressable>
@@ -157,36 +164,42 @@ export default function ScanScreen() {
         </Pressable>
       </View>
 
-      {phase.kind !== 'camera' && (
-        <View style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(46,43,37,0.55)', justifyContent: 'flex-end', padding: 10 }}>
-          <View style={[{ borderRadius: 38, backgroundColor: colors.bg, padding: 24, gap: 16 }, shadow.lg]} accessibilityLiveRegion="polite">
-            {phase.kind === 'working' ? (
-              <>
-                <H size={24}>Reading your receipt…</H>
-                {STEPS.map((label, i) => {
-                  const done = phase.step > i
-                  const active = phase.step === i
-                  return (
-                    <View key={label} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                      <View style={{ width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: done ? colors.accent2Ramp[300] : colors.neutral[200] }}>
-                        {done ? <Check size={14} color={colors.accent2Ramp[900]} strokeWidth={2.75} /> : active ? <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: colors.accent }} /> : null}
-                      </View>
-                      <T weight="semibold" color={done || active ? colors.text : colors.neutral[500]}>{label}</T>
-                    </View>
-                  )
-                })}
-              </>
-            ) : (
-              <>
-                <Banner>{phase.message}</Banner>
-                <Button label="Try again" variant="secondary" onPress={() => setPhase({ kind: 'camera' })} />
-                <Button label="Enter manually" onPress={manual} />
-              </>
-            )}
-            <Banner tone="ok" icon={ShieldCheck}>{COPY.photoPrivacy}</Banner>
-          </View>
-        </View>
-      )}
+      <Progress phase={phase} onRetry={() => setPhase({ kind: 'camera' })} onManual={manual} />
+    </View>
+  )
+}
+
+/** Progress and errors for a capture or a chosen photo, over the camera or the camera-access screen. */
+function Progress({ phase, onRetry, onManual }: { phase: Phase; onRetry: () => void; onManual: () => void }) {
+  if (phase.kind === 'camera') return null
+  return (
+    <View style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(46,43,37,0.55)', justifyContent: 'flex-end', padding: 10 }}>
+      <View style={[{ borderRadius: 38, backgroundColor: colors.bg, padding: 24, gap: 16 }, shadow.lg]} accessibilityLiveRegion="polite">
+        {phase.kind === 'working' ? (
+          <>
+            <H size={24}>Reading your receipt…</H>
+            {STEPS.map((label, i) => {
+              const done = phase.step > i
+              const active = phase.step === i
+              return (
+                <View key={label} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                  <View style={{ width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: done ? colors.accent2Ramp[300] : colors.neutral[200] }}>
+                    {done ? <Check size={14} color={colors.accent2Ramp[900]} strokeWidth={2.75} /> : active ? <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: colors.accent }} /> : null}
+                  </View>
+                  <T weight="semibold" color={done || active ? colors.text : colors.neutral[500]}>{label}</T>
+                </View>
+              )
+            })}
+          </>
+        ) : (
+          <>
+            <Banner>{phase.message}</Banner>
+            <Button label="Try again" variant="secondary" onPress={onRetry} />
+            <Button label="Enter manually" onPress={onManual} />
+          </>
+        )}
+        <Banner tone="ok" icon={ShieldCheck}>{COPY.photoPrivacy}</Banner>
+      </View>
     </View>
   )
 }

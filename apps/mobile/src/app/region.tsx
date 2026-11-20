@@ -6,6 +6,7 @@ import { BackHeader } from '@/components/BackHeader'
 import { PickerModal, type PickerOption } from '@/components/PickerModal'
 import { useToast } from '@/components/Toast'
 import { Button, Muted, Screen, T, TextField } from '@/components/ui'
+import { fyStartDay } from '@/lib/dates'
 import { colors } from '@/lib/theme'
 
 
@@ -15,7 +16,8 @@ const COUNTRIES: PickerOption[] = [...Object.values(TAX_REGIONS).sort((a, b) => 
 export default function RegionScreen() {
   const { data: profile } = useProfile()
   if (!profile) return <Screen><T>Loading…</T></Screen>
-  return <RegionForm key={profile.updated_at} profile={profile} />
+  // Re-seed the form only when these fields change, not on any profile update (a theme switch would wipe typing).
+  return <RegionForm key={[profile.country, profile.currency, profile.timezone, profile.locale, profile.fy_start_month, profile.fy_start_day].join('\n')} profile={profile} />
 }
 
 function SelectRow({ label, value, onPress }: { label: string; value: string; onPress: () => void }) {
@@ -35,7 +37,7 @@ function RegionForm({ profile }: { profile: Profile }) {
   const toast = useToast()
   const [form, setForm] = useState({
     country: profile.country ?? FALLBACK_REGION.country, currency: profile.currency, timezone: profile.timezone, locale: profile.locale,
-    fy_start_month: profile.fy_start_month, fy_start_day: profile.fy_start_day,
+    fy_start_month: profile.fy_start_month, fy_start_day: fyStartDay(profile.fy_start_month, profile.fy_start_day),
   })
   const [picker, setPicker] = useState<'country' | 'currency' | 'month' | null>(null)
   const region = regionFor(form.country)
@@ -45,7 +47,7 @@ function RegionForm({ profile }: { profile: Profile }) {
   async function save() {
     if (localeError) return
     try {
-      await update.mutateAsync({ ...form, country: form.country === FALLBACK_REGION.country ? null : form.country, fy_start_day: Math.min(31, Math.max(1, form.fy_start_day)) })
+      await update.mutateAsync({ ...form, country: form.country === FALLBACK_REGION.country ? null : form.country, fy_start_day: fyStartDay(form.fy_start_month, form.fy_start_day) })
       toast.show('Region settings saved')
     } catch (e) {
       toast.show(toUserMessage(e), 'error')
@@ -58,7 +60,7 @@ function RegionForm({ profile }: { profile: Profile }) {
       <SelectRow label="Country" value={COUNTRIES.find((c) => c.value === form.country)?.label ?? form.country} onPress={() => setPicker('country')} />
       <SelectRow label="Currency" value={form.currency} onPress={() => setPicker('currency')} />
       <SelectRow label="Financial year starts" value={`${form.fy_start_day} ${MONTHS[form.fy_start_month - 1]!.label}`} onPress={() => setPicker('month')} />
-      <TextField label="Start day" keyboardType="number-pad" value={String(form.fy_start_day)} onChangeText={(v) => setForm({ ...form, fy_start_day: Number(v.replace(/\D/g, '')) || 1 })} />
+      <TextField label="Start day" keyboardType="number-pad" value={String(form.fy_start_day)} onChangeText={(v) => setForm({ ...form, fy_start_day: fyStartDay(form.fy_start_month, Number(v.replace(/\D/g, '')) || 1) })} />
       <TextField label="Timezone" value={form.timezone} onChangeText={(v) => setForm({ ...form, timezone: v.trim() })} autoCapitalize="none"
         note={`This device: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`} />
       <Button label="Use this device's timezone" variant="ghost" size="md" onPress={() => setForm({ ...form, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone })} />
@@ -78,7 +80,7 @@ function RegionForm({ profile }: { profile: Profile }) {
       )}
       {picker === 'month' && (
         <PickerModal title="Financial year starts in" options={MONTHS} value={String(form.fy_start_month)}
-          onClose={() => setPicker(null)} onPick={(m) => setForm((f) => ({ ...f, fy_start_month: Number(m) }))} />
+          onClose={() => setPicker(null)} onPick={(m) => setForm((f) => ({ ...f, fy_start_month: Number(m), fy_start_day: fyStartDay(Number(m), f.fy_start_day) }))} />
       )}
     </Screen>
   )
