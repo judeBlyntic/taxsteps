@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import {
-  COPY, financialYearRange, formatMoney, formatMonth, periodLabel, resolvePeriod, type DocumentFilter, type PeriodSpec,
+  COPY, dateRangeError, financialYearRange, formatMoney, formatMonth, periodLabel, resolvePeriod, type DocumentFilter, type PeriodSpec,
 } from '@taxsteps/core'
 import { useCategories, useSummary } from '@taxsteps/data'
 import { PageHeader } from '@/components/shell/PageHeader'
@@ -23,12 +23,13 @@ export default function ReportsPage() {
   const [type, setType] = useState<'all' | 'business' | 'personal'>('all')
 
   const a = anchor ?? { year: Number(today.slice(0, 4)), month: Number(today.slice(5, 7)) }
+  const rangeError = kind === 'custom' ? dateRangeError(custom.from, custom.to) : null
   const fyNow = financialYearRange(`${a.year}-${String(a.month).padStart(2, '0')}-01`, fy.fyStartMonth, fy.fyStartDay)
   const spec: PeriodSpec =
     kind === 'month' ? { kind: 'month', year: a.year, month: a.month }
       : kind === 'year' ? { kind: 'year', year: a.year }
         : kind === 'fy' ? { kind: 'fy', date: fyNow.from }
-          : custom.from && custom.to ? { kind: 'custom', from: custom.from, to: custom.to } : { kind: 'month', year: a.year, month: a.month }
+          : custom.from && custom.to && !rangeError ? { kind: 'custom', from: custom.from, to: custom.to } : { kind: 'month', year: a.year, month: a.month }
   const range = resolvePeriod(spec, fy)
   const label = periodLabel(spec, fy, locale)
 
@@ -65,7 +66,7 @@ export default function ReportsPage() {
             {kind === 'custom' ? (
               <div className="field-grid">
                 <TextField label="From" type="date" value={custom.from} onChange={(e) => setCustom((c) => ({ ...c, from: e.target.value }))} />
-                <TextField label="To" type="date" value={custom.to} onChange={(e) => setCustom((c) => ({ ...c, to: e.target.value }))} />
+                <TextField label="To" type="date" value={custom.to} onChange={(e) => setCustom((c) => ({ ...c, to: e.target.value }))} error={rangeError} />
               </div>
             ) : (
               <div className="row" style={{ justifyContent: 'space-between' }}>

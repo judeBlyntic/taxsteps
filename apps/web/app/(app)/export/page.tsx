@@ -2,7 +2,7 @@
 import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Download } from 'lucide-react'
-import { COPY, isISODate, periodLabel, resolvePeriod, type DocumentFilter, type ExportFormat, type PeriodSpec } from '@taxsteps/core'
+import { COPY, dateRangeError, isISODate, periodLabel, resolvePeriod, type DocumentFilter, type ExportFormat, type PeriodSpec } from '@taxsteps/core'
 import { useCategories } from '@taxsteps/data'
 import { PageHeader } from '@/components/shell/PageHeader'
 import { quickPeriods } from '@/components/documents/FilterPanel'
@@ -33,7 +33,8 @@ function ExportView() {
   const active = (categories ?? []).filter((c) => !c.archived)
   const preset = presets.find((p) => p.id === range)
   const spec: PeriodSpec = range === 'custom' ? { kind: 'custom', from: custom.from, to: custom.to } : preset?.spec ?? { kind: 'all' }
-  const dates = range === 'custom' && !(isISODate(custom.from) && isISODate(custom.to)) ? null : resolvePeriod(spec, fy)
+  const rangeError = range === 'custom' ? dateRangeError(custom.from, custom.to) : null
+  const dates = range === 'custom' && (rangeError || !(isISODate(custom.from) && isISODate(custom.to))) ? null : resolvePeriod(spec, fy)
   const label = range === 'selected' ? `${ids.length} selected documents` : periodLabel(spec, fy, locale)
   const filter: DocumentFilter = range === 'selected' ? { ids } : {
     ...(dates ?? {}),
@@ -65,7 +66,7 @@ function ExportView() {
             {range === 'custom' && (
               <div className="field-grid" style={{ maxWidth: 420 }}>
                 <TextField label="From" type="date" value={custom.from} onChange={(e) => setCustom((c) => ({ ...c, from: e.target.value }))} />
-                <TextField label="To" type="date" value={custom.to} onChange={(e) => setCustom((c) => ({ ...c, to: e.target.value }))} />
+                <TextField label="To" type="date" value={custom.to} onChange={(e) => setCustom((c) => ({ ...c, to: e.target.value }))} error={rangeError} />
               </div>
             )}
             {dates && <span className="muted" style={{ fontSize: 13 }}>{dates.from} to {dates.to}</span>}

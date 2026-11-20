@@ -39,6 +39,11 @@ export function isISODate(s: string): boolean {
   return m >= 1 && m <= 12 && d >= 1 && d <= daysInMonth(y, m)
 }
 
+/** Why a from/to pair can't be used as a range, or null. Open ends and half-typed dates are not reversed ranges. */
+export function dateRangeError(from?: string, to?: string): string | null {
+  return from && to && isISODate(from) && isISODate(to) && from > to ? 'The start date is after the end date' : null
+}
+
 export function monthRange(year: number, month: number): DateRange {
   return { from: iso(year, month, 1), to: iso(year, month, daysInMonth(year, month)) }
 }

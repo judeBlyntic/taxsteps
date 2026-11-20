@@ -6,11 +6,14 @@ import { DocumentStatusSchema, DocumentTypeCodeSchema, ExpenseTypeSchema } from 
 const IsoDateSchema = z.string().refine(isISODate, 'Invalid date')
 const Amount = z.number().min(0)
 
+/** Longest search / merchant text a filter accepts (inputs cap at this; longer URL values are cut to it). */
+export const FILTER_TEXT_MAX = { search: 100, merchant: 200 } as const
+
 export const DocumentFilterSchema = z.object({
   from: IsoDateSchema.optional(),
   to: IsoDateSchema.optional(),
-  search: z.string().max(100).optional(),
-  merchant: z.string().max(200).optional(),
+  search: z.string().max(FILTER_TEXT_MAX.search).optional(),
+  merchant: z.string().max(FILTER_TEXT_MAX.merchant).optional(),
   categoryIds: z.array(z.uuid()).max(100).optional(),
   /** Categories to leave out; uncategorised documents are always kept. */
   excludeCategoryIds: z.array(z.uuid()).max(200).optional(),

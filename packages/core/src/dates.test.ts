@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  financialYearRange, formatDate, fyLabel, isISODate, lastNMonths, monthRange, parseUserDate, todayIn, yearRange,
+  dateRangeError, financialYearRange, formatDate, fyLabel, isISODate, lastNMonths, monthRange, parseUserDate, todayIn, yearRange,
 } from './dates.ts'
 
 describe('todayIn', () => {
@@ -34,6 +34,19 @@ describe('ranges', () => {
   it('lists the last N months oldest first', () => {
     expect(lastNMonths('2026-10-05', 3)).toEqual([{ year: 2026, month: 8 }, { year: 2026, month: 9 }, { year: 2026, month: 10 }])
     expect(lastNMonths('2026-01-15', 2)).toEqual([{ year: 2025, month: 12 }, { year: 2026, month: 1 }])
+  })
+})
+
+describe('dateRangeError', () => {
+  it('rejects a start date after the end date', () => {
+    expect(dateRangeError('2026-11-28', '2026-11-01')).toBe('The start date is after the end date')
+  })
+  it('accepts ordered, single-day, open-ended and half-typed ranges', () => {
+    expect(dateRangeError('2026-10-01', '2026-10-31')).toBeNull()
+    expect(dateRangeError('2026-10-01', '2026-10-01')).toBeNull()
+    expect(dateRangeError('2026-10-01', undefined)).toBeNull()
+    expect(dateRangeError(undefined, '2026-10-01')).toBeNull()
+    expect(dateRangeError('2026-10-31', '2026-1')).toBeNull() // still being typed: not a reversed range
   })
 })
 
