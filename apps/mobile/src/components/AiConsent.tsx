@@ -1,9 +1,9 @@
 // Explicit, one-time permission before any receipt photo goes to the AI provider.
 // Required by App Review Guideline 5.1.2(i) (third-party AI) and Google Play's User Data policy.
 // Stored per account on this device; nothing is captured or uploaded until it is granted.
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { View } from 'react-native'
-import { useRouter } from 'expo-router'
+import { useFocusEffect, useRouter } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Sparkles } from 'lucide-react-native'
 import { COPY } from '@taxsteps/core'
@@ -16,10 +16,11 @@ const keyFor = (userId: string) => `taxsteps.aiConsent.v1.${userId}`
 export function useAiConsent() {
   const userId = useSession().session?.user.id ?? 'signed-out'
   const [granted, setGranted] = useState<boolean | null>(null)
-  useEffect(() => {
-    setGranted(null)
+  // Re-read on every focus: it's granted on the Scan screen and can be withdrawn in Settings.
+  // (Signing out unmounts these screens, so a value never carries over to another account.)
+  useFocusEffect(useCallback(() => {
     void AsyncStorage.getItem(keyFor(userId)).then((v) => setGranted(v === '1')).catch(() => setGranted(false))
-  }, [userId])
+  }, [userId]))
   const grant = useCallback(async () => {
     setGranted(true)
     await AsyncStorage.setItem(keyFor(userId), '1').catch(() => undefined)

@@ -42,7 +42,8 @@ export function DocumentForm({ draft, errors, categories, region, onChange, date
         return (
           <View key={def.key} style={{ borderRadius: 22, backgroundColor: flagged ? colors.accentRamp[100] : 'transparent', paddingVertical: 6, paddingHorizontal: 14 }}>
             <View style={{ flexDirection: 'row', alignItems: def.kind === 'textarea' ? 'flex-start' : 'center', gap: 10, minHeight: 40 }}>
-              <T size={13} color={colors.neutral[700]} style={{ width: 92 }}>{label}{def.required ? ' *' : ''}</T>
+              {/* Sized to its text (values are right-aligned, so the column needn't line up); the * never wraps alone. */}
+              <T size={13} color={colors.neutral[700]} style={{ flexShrink: 0, maxWidth: '50%' }}>{label}{def.required ? ' *' : ''}</T>
               {opts ? (
                 <Pressable accessibilityRole="button" accessibilityLabel={`${label}: ${display || 'not set'}`} onPress={() => setPicker(def)}
                   style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 6 }}>
@@ -53,7 +54,7 @@ export function DocumentForm({ draft, errors, categories, region, onChange, date
                 <TextInput accessibilityLabel={label} value={value} onChangeText={(v) => onChange(def.key, v)} maxLength={def.maxLength}
                   multiline={def.kind === 'textarea'} keyboardType={def.kind === 'money' ? 'decimal-pad' : 'default'}
                   placeholder={def.kind === 'date' ? datePlaceholder : undefined} placeholderTextColor={colors.neutral[500]}
-                  style={{ flex: 1, textAlign: def.kind === 'textarea' ? 'left' : 'right', fontFamily: fonts.bold, fontSize: 15, color: colors.text, paddingVertical: 6 }} />
+                  style={{ flex: 1, minWidth: 0, textAlign: def.kind === 'textarea' ? 'left' : 'right', fontFamily: fonts.bold, fontSize: 15, color: colors.text, paddingVertical: 6 }} />
               )}
               <View style={{ width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', backgroundColor: flagged ? colors.accentRamp[300] : colors.accent2Ramp[200] }}>
                 {flagged ? <AlertTriangle size={12} color={colors.accentRamp[900]} strokeWidth={2.75} /> : <Check size={12} color={colors.accent2Ramp[800]} strokeWidth={2.75} />}

@@ -6,14 +6,10 @@ import { formatMoney, formatMonth, lastNMonths, monthRange, otherCurrencies, tot
 import { useCategories, useDocuments, useSummary } from '@taxsteps/data'
 import { DocumentRow } from '@/components/DocumentRow'
 import { Banner, Button, Card, H, Muted, Screen, T } from '@/components/ui'
+import { greeting } from '@/lib/dates'
 import { colors, shadow } from '@/lib/theme'
 import { useOfflineQueue } from '@/lib/use-offline-queue'
 import { useToday } from '@/lib/use-today'
-
-function greeting(timeZone: string) {
-  const h = Number(new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hour12: false, timeZone }).format(new Date()))
-  return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'
-}
 
 export default function HomeScreen() {
   const router = useRouter()
