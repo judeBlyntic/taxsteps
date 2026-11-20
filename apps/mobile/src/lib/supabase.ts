@@ -6,8 +6,11 @@ import type { Database } from '@taxsteps/core'
 import type { TaxStepsClient } from '@taxsteps/data'
 import { createChunkedStorage } from './secure-storage'
 
-const url = process.env.EXPO_PUBLIC_SUPABASE_URL!
-const key = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!
+const url = process.env.EXPO_PUBLIC_SUPABASE_URL
+const key = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
+// EXPO_PUBLIC_* values are inlined at build time (EAS environment variables / eas.json `env`).
+// A store build without them must fail in the preview smoke test, not in App Review.
+if (!url || !key) throw new Error('Build is missing EXPO_PUBLIC_SUPABASE_URL or EXPO_PUBLIC_SUPABASE_ANON_KEY')
 
 /** Publishable key only — every query is protected by Row Level Security. */
 export const supabase: TaxStepsClient = createClient<Database>(url, key, {
@@ -29,4 +32,4 @@ if (Platform.OS !== 'web') {
   })
 }
 
-export const WEB_URL = process.env.EXPO_PUBLIC_WEB_URL ?? 'http://localhost:3000'
+export const WEB_URL = process.env.EXPO_PUBLIC_WEB_URL ?? 'https://taxsteps.pro'

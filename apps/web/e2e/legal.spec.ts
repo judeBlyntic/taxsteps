@@ -11,6 +11,15 @@ for (const [path, title] of [['/terms', 'Terms of Service'], ['/privacy', 'Priva
   })
 }
 
+for (const [path, title] of [['/delete-account', 'Delete your Tax Steps account'], ['/support', 'Tax Steps support']] as const) {
+  test(`${path} is public for the app stores`, async ({ page }) => {
+    await page.goto(path)
+    await expect(page).toHaveURL(new RegExp(`${path}$`)) // not bounced to sign-in
+    await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible()
+    await expect(page.getByText('Blyntic Ltd').first()).toBeVisible()
+  })
+}
+
 test('the Privacy Policy names every service provider', async ({ page }) => {
   await page.goto('/privacy')
   const table = page.getByRole('table', { name: 'Service providers' })

@@ -178,4 +178,52 @@ export const TERMS: LegalDoc = {
   ],
 }
 
+/** Public page for Google Play's "delete account" URL: reachable without the app or a reinstall. */
+export const ACCOUNT_DELETION: LegalDoc = {
+  slug: 'privacy',
+  title: 'Delete your Tax Steps account',
+  summary: `You can delete your Tax Steps account and all its data at any time, from the phone app, the web app, or by email. Tax Steps is published by ${OPERATOR.name}.`,
+  sections: [
+    {
+      heading: 'Delete it yourself (immediate)',
+      body: [{ list: [
+        'Phone app (iPhone or Android): Settings → Privacy → Delete account, then type DELETE to confirm.',
+        'Web: sign in at taxsteps.pro → Settings → Privacy → Delete account, then type DELETE to confirm.',
+      ] }],
+    },
+    {
+      heading: 'Ask us to delete it',
+      body: [`Can't sign in? Email ${OPERATOR.email} from the address on your account with the subject “Delete my account”. We confirm it is you, delete the account within 7 days, and reply when it is done.`],
+    },
+    {
+      heading: 'What is deleted',
+      body: [{ list: [
+        'Your account (name, email address and password or Google sign-in).',
+        'Your profile and business details, including any tax or GST number.',
+        'All expense records and categories.',
+        'Your Google Sheets connection: Tax Steps revokes its access to your Google account. Spreadsheets already in your Google Drive stay yours.',
+      ] }],
+    },
+    {
+      heading: 'What is kept, and for how long',
+      body: [
+        'Receipt photos are never stored, so there are none to delete.',
+        'Encrypted database backups held by our provider (Supabase) expire on their normal schedule, within 7 days. OpenAI may keep a receipt request for up to 30 days to check for abuse, then deletes it.',
+        'Export your records first if you need them: tax law usually requires you to keep them for several years.',
+      ],
+    },
+  ],
+}
+
+/** App Store "Support URL". */
+export const SUPPORT: LegalDoc = {
+  slug: 'privacy',
+  title: 'Tax Steps support',
+  summary: `Questions, problems or feedback about Tax Steps on iPhone, Android or the web? Email ${OPERATOR.email} and we will reply within 2 business days.`,
+  sections: [
+    { heading: 'Your data', body: ['Export, delete documents or delete your account any time in Settings. See the Privacy Policy and the account deletion page for details.'] },
+    { heading: 'About', body: [`Tax Steps is made by ${OPERATOR.name}, ${OPERATOR.country}. It helps you organise expense records; it is not tax advice.`] },
+  ],
+}
+
 export const LEGAL_DOCS = { terms: TERMS, privacy: PRIVACY } as const

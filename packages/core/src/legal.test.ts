@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { LEGAL_DOCS, OPERATOR, PRIVACY, SERVICE_PROVIDERS, TERMS_VERSION } from './legal.ts'
+import { COPY } from './copy.ts'
+import { ACCOUNT_DELETION, LEGAL_DOCS, OPERATOR, PRIVACY, SERVICE_PROVIDERS, SUPPORT, TERMS_VERSION } from './legal.ts'
 
 const text = (d: typeof PRIVACY) => JSON.stringify(d)
 
@@ -29,6 +30,20 @@ describe('legal documents', () => {
       expect(said, fact).toContain(fact)
     expect(said).not.toContain('no advertising or analytics trackers in the app')
     expect(SERVICE_PROVIDERS.find((p) => p.name === 'Vercel')?.role).toMatch(/visit statistics/)
+  })
+
+  it('publish the store pages: account deletion (Google Play) and support (App Store)', () => {
+    for (const doc of [ACCOUNT_DELETION, SUPPORT]) {
+      expect(text(doc), doc.title).toContain(OPERATOR.name)
+      expect(text(doc), doc.title).toContain(OPERATOR.email)
+    }
+    const deletion = text(ACCOUNT_DELETION)
+    for (const fact of ['Settings → Privacy → Delete account', 'What is deleted', 'What is kept', 'never stored']) expect(deletion, fact).toContain(fact)
+  })
+
+  it('ask before sending a receipt to the AI provider, naming what goes where', () => {
+    for (const fact of ['OpenAI', 'United States', 'country, currency and category names', 'does not train on it', '30 days', 'never stores the photo'])
+      expect(COPY.aiConsent, fact).toContain(fact)
   })
 
   it('name the operator and a contact in both documents, with no empty sections', () => {

@@ -4,7 +4,7 @@ import { Link, useRouter, type Href } from 'expo-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { Building, ChevronRight, Globe2, LogOut, Sheet, ShieldCheck, Tag, type LucideIcon } from 'lucide-react-native'
 import { COPY, THEME_OPTIONS, regionFor, toUserMessage, type ThemeName } from '@taxsteps/core'
-import { deleteAccount, deleteAllDocuments, exportDocuments, invalidateDocuments, useClient, useProfile, useUpdateProfile } from '@taxsteps/data'
+import { deleteAccount, deleteAllDocuments, exportDocuments, invalidateDocuments, useClient, useProfile, useSheetsStatus, useUpdateProfile } from '@taxsteps/data'
 import { ConfirmDelete } from '@/components/ConfirmDelete'
 import { useToast } from '@/components/Toast'
 import { Button, H, Muted, Screen, T } from '@/components/ui'
@@ -71,6 +71,7 @@ export default function SettingsScreen() {
   const toast = useToast()
   const { session } = useSession()
   const { data: profile } = useProfile()
+  const sheetsReady = useSheetsStatus().data?.configured === true
   const { clear } = useOfflineQueue()
   const [confirm, setConfirm] = useState<'documents' | 'account' | null>(null)
   const [busy, setBusy] = useState(false)
@@ -122,7 +123,7 @@ export default function SettingsScreen() {
         <Row icon={Building} label="Profile & business" value={profile?.business_name ?? undefined} href="/profile" tint={[colors.accent2Ramp[200], colors.accent2Ramp[800]]} />
         <Row icon={Globe2} label="Region & tax year" value={`${profile?.currency ?? ''} · ${region.taxLabel}`} href="/region" tint={[colors.neutral[200], colors.text]} />
         <Row icon={Tag} label="Categories" href="/categories" tint={[colors.accentRamp[200], colors.accentRamp[800]]} />
-        <Row icon={Sheet} label="Google Sheets" href="/sheets" tint={[colors.accent2Ramp[200], colors.accent2Ramp[800]]} />
+        {sheetsReady && <Row icon={Sheet} label="Google Sheets" href="/sheets" tint={[colors.accent2Ramp[200], colors.accent2Ramp[800]]} />}
       </View>
       <Appearance current={profile?.theme} />
       <View style={{ gap: 10, padding: 18, borderRadius: 30, backgroundColor: colors.accent2Ramp[100] }}>

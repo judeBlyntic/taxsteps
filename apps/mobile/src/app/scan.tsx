@@ -8,6 +8,7 @@ import { Check, Image as ImageIcon, PencilLine, ShieldCheck, X, Zap } from 'luci
 import { COPY, draftFromExtraction, toUserMessage } from '@taxsteps/core'
 import { useQueryClient } from '@tanstack/react-query'
 import { extractDocument, getProfile, listCategories, qk, useClient } from '@taxsteps/data'
+import { AiConsent, useAiConsent } from '@/components/AiConsent'
 import { Banner, Button, H, Screen, T } from '@/components/ui'
 import { discardUri, prepareCapture } from '@/lib/capture'
 import { withTempFile } from '@/lib/temp-file'
@@ -47,6 +48,7 @@ export default function ScanScreen() {
   const camera = useRef<CameraView>(null)
   const [torch, setTorch] = useState(false)
   const [phase, setPhase] = useState<Phase>({ kind: 'camera' })
+  const consent = useAiConsent()
 
   // The photo is deleted however this ends: success, offline, or an error before processing starts.
   const process = (uri: string, width: number | undefined, height: number | undefined, source: 'scan' | 'upload') =>
@@ -90,6 +92,11 @@ export default function ScanScreen() {
 
   const manual = () => router.replace('/review')
 
+  // Nothing is captured or sent to the AI provider until the user has explicitly agreed.
+  if (consent.granted === null) return <View style={{ flex: 1, backgroundColor: colors.bg }} />
+  if (!consent.granted) {
+    return <AiConsent onAllow={() => void consent.grant()} onManual={manual} onClose={() => router.back()} />
+  }
   if (!permission) return <View style={{ flex: 1, backgroundColor: colors.neutral[900] }} />
   if (!permission.granted) {
     return (
