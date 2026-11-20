@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AppState, Platform } from 'react-native'
 import NetInfo from '@react-native-community/netinfo'
-import { Stack, SplashScreen, router, usePathname, type Href } from 'expo-router'
+import { Stack, SplashScreen, usePathname } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { useFonts, Caprasimo_400Regular } from '@expo-google-fonts/caprasimo'
@@ -14,7 +14,7 @@ import { AppThemeProvider, useAppTheme } from '@/lib/app-theme'
 import { SessionProvider, useSession } from '@/lib/session'
 import { supabase } from '@/lib/supabase'
 import { OfflineQueueProvider } from '@/lib/use-offline-queue'
-import { colors } from '@/lib/theme'
+import { PALETTES } from '@/lib/theme'
 
 void SplashScreen.preventAutoHideAsync()
 
@@ -28,26 +28,24 @@ if (Platform.OS !== 'web') {
   onlineManager.setEventListener((setOnline) => NetInfo.addEventListener((s) => setOnline(s.isConnected !== false)))
 }
 
+// Screens that may hold typing the user hasn't saved yet (or a scan in progress).
+const EDITING = ['/review', '/profile', '/region', '/categories', '/sheets', '/scan']
+
 /** Follows the account's theme, including a change made on another device. */
 function ProfileThemeSync() {
   const saved = useProfile().data?.theme
   const { theme, setTheme } = useAppTheme()
-  useEffect(() => { if (saved && saved !== theme) setTheme(saved) }, [saved, theme, setTheme])
+  // A theme switch remounts every screen, so one from another device waits until the user leaves an edit.
+  const editing = EDITING.includes(usePathname())
+  useEffect(() => { if (saved && saved !== theme && !editing) setTheme(saved) }, [saved, theme, setTheme, editing])
   return null
 }
 
 function RootNavigator() {
   const { session, loading } = useSession()
+  // Screens read theme colours while rendering, so a theme switch remounts them (Stack key below). Navigation
+  // state lives outside the navigator in expo-router 58, so the current screen, its params and history stay.
   const { theme } = useAppTheme()
-  const pathname = usePathname()
-  // Screens read theme colours while rendering, so a theme switch remounts them (Stack key below), which
-  // resets navigation. Go back to the screen the user was on once the new screens are up.
-  const shown = useRef({ theme, pathname })
-  useEffect(() => {
-    const prev = shown.current
-    shown.current = { theme, pathname }
-    if (prev.theme !== theme && prev.pathname !== '/') router.navigate(prev.pathname as Href)
-  }, [theme, pathname])
   const qc = useQueryClient()
   const [guard] = useState(() => userChangeGuard(() => qc.clear()))
   guard(session?.user.id ?? null) // a different person signed in: drop the previous user's cached data
@@ -58,7 +56,8 @@ function RootNavigator() {
   return (
     <>
       {signedIn && <ProfileThemeSync />}
-      <Stack key={theme} screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
+      {/* PALETTES[theme], not the live `colors`: the React Compiler caches this object and only sees `theme` change. */}
+      <Stack key={theme} screenOptions={{ headerShown: false, contentStyle: { backgroundColor: PALETTES[theme].colors.bg } }}>
         {/* SDK 58 needs explicit targets: the default fallback is '/(auth)', which has no index route. */}
         <Stack.Protected guard={!signedIn} redirectTo="/">
           <Stack.Screen name="(auth)" />
